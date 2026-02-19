@@ -1,0 +1,22 @@
+[gd_resource type="Theme" format=3 uid="uid://dec5ybfoofmmr"]
+
+[ext_resource type="FontFile" uid="uid://3ebwatmax8xw" path="res://ArticaPro-Bold.ttf" id="1_ngb7v"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ak2if"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ig5kc"]
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_05l2w"]
+bg_color = Color(0.6190818, 0.6190819, 0.6190818, 1)
+
+[resource]
+Button/colors/font_color = Color(0, 0, 0, 1)
+Button/colors/font_hover_color = Color(0, 0, 0, 1)
+Button/colors/font_pressed_color = Color(0, 0, 0, 1)
+Button/font_sizes/font_size = 40
+Button/fonts/font = ExtResource("1_ngb7v")
+Button/styles/hover = SubResource("StyleBoxFlat_ak2if")
+Button/styles/normal = SubResource("StyleBoxFlat_ig5kc")
+Button/styles/pressed = SubResource("StyleBoxFlat_05l2w")

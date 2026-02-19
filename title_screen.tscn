@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://dxi1ilkmpyr7w"]
+
+[ext_resource type="Texture2D" uid="uid://8g17wjp67qvh" path="res://fundo1.png" id="1_v6p8y"]
+[ext_resource type="Theme" uid="uid://dec5ybfoofmmr" path="res://default_btn.tres" id="2_ak2if"]
+
+[node name="TitleScreen" type="Control" unique_id=1328081052]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="bg" type="TextureRect" parent="." unique_id=140988201]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = ExtResource("1_v6p8y")
+expand_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1745111668]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=140877893]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=1474799695]
+layout_mode = 2
+size_flags_horizontal = 6
+
+[node name="game_logo" type="TextureRect" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=746106370]
+layout_mode = 2
+
+[node name="jg_btn" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer/game_logo" unique_id=1177653834]
+layout_mode = 0
+offset_left = -552.0
+offset_top = 410.0
+offset_right = -422.0
+offset_bottom = 451.0
+theme = ExtResource("2_ak2if")
+text = "JOGAR                  "
+
+[node name="opc_btn" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer/game_logo" unique_id=1561603895]
+layout_mode = 0
+offset_left = -569.0
+offset_top = 457.0
+offset_right = -376.0
+offset_bottom = 498.0
+theme = ExtResource("2_ak2if")
+text = " OPÇÕES                    "
+
+[node name="cred_btn" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer/game_logo" unique_id=232194374]
+layout_mode = 0
+offset_left = -554.0
+offset_top = 505.0
+offset_right = -353.0
+offset_bottom = 546.0
+theme = ExtResource("2_ak2if")
+text = "CRÉDITOS                   "
+
+[node name="sair_btn" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer/game_logo" unique_id=800708729]
+layout_mode = 0
+offset_left = -552.0
+offset_top = 555.0
+offset_right = -451.0
+offset_bottom = 596.0
+theme = ExtResource("2_ak2if")
+text = "SAIR                              "
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=767844803]
+layout_mode = 2
