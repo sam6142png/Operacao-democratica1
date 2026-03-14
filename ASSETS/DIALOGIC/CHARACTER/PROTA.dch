@@ -1,0 +1,49 @@
+{
+"@path": "res://addons/dialogic/Resources/character.gd",
+"@subpath": NodePath(""),
+&"_translation_id": "",
+&"color": Color(0.0078125, 0, 1, 1),
+&"custom_info": {
+"prefix": "",
+"sound_mood_default": "",
+"sound_moods": {},
+"style": "",
+"suffix": ""
+},
+&"default_portrait": "Neutro",
+&"description": "",
+&"display_name": "Dante",
+&"mirror": false,
+&"nicknames": [""],
+&"offset": Vector2(0, 0),
+&"portraits": {
+"Falando": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Prota Falando.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Neutro": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/ProtaBravo e falando-Photoroom_waifu2x_art_scan_scale.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Sorrindo": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Prota Sorrindo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+}
+},
+&"scale": 1.0
+}
