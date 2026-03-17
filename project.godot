@@ -32,6 +32,7 @@ directories/dch_directory={
 "MILITAR": "res://ASSETS/DIALOGIC/CHARACTER/MILITAR.dch",
 "PEIXEIRO": "res://ASSETS/DIALOGIC/CHARACTER/PEIXEIRO.dch",
 "PROTA": "res://ASSETS/DIALOGIC/CHARACTER/PROTA.dch",
+"Protestante": "res://ASSETS/DIALOGIC/CHARACTER/Protestante.dch",
 "SENHORA": "res://ASSETS/DIALOGIC/CHARACTER/SENHORA.dch",
 "VÉIO": "res://ASSETS/DIALOGIC/CHARACTER/VÉIO.dch"
 }
@@ -73,8 +74,9 @@ audio/channel_defaults={
 }
 }
 glossary/default_case_sensitive=true
-layout/style_list=[""]
+layout/style_list=[]
 layout/default_style=""
+glossary/glossary_files=["uid://bdja4ucryprw0"]
 
 [display]
 

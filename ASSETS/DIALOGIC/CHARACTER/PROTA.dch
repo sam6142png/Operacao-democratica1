@@ -15,11 +15,38 @@
 &"display_name": "Dante",
 &"mirror": false,
 &"nicknames": [""],
-&"offset": Vector2(0, 0),
+&"offset": Vector2(-8, 0),
 &"portraits": {
+"Apontando": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Apontando (braço estendido, expressão acusatória).png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Bravo/Determinado": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Bravo determinado.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Confuso(Coçando a cabeça)": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Coçando a cabeça (confusão leve, mão no cabelo).png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
 "Falando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Prota Falando.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Falando (boca aberta, olho fechado).png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +55,16 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/ProtaBravo e falando-Photoroom_waifu2x_art_scan_scale.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/neutro.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Pensando": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Pensativo confuso (mão no queixo).png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +73,16 @@
 },
 "Sorrindo": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Prota Sorrindo.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Sorrindo aliviado (leve sorriso).png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Surpreso": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Surpreso.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -45,5 +90,5 @@
 "scene": ""
 }
 },
-&"scale": 1.0
+&"scale": 0.75
 }

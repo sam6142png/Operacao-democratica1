@@ -1,2 +1,18 @@
-join PROTA (Neutro) rightmost
-PROTA (Neutro): <Empty Text Event>
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.0"]
+join PROTA (Pensando) rightmost
+PROTA: Ai ai, mais um dia nessa cidade, mais um dia tendo que aturar aquela ditadura maldita...
+update PROTA (Surpreso)
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg" fade="0.5" transition="Simple Fade"]
+PROTA: Meu Deus! Que barulho de gritos são esses que eu tô ouvindo, preciso averiguar
+update PROTA (Surpreso) leftmost [animation="Slide To Left" length="1.2" fade="Fade Cross" fade_length="1.1"]
+[wait time="0.5"]
+join Protestante (Protestando Normal) center [animation="Slide From Right" length="1.0"]
+PROTA (Confuso(Coçando a cabeça)): Errr... O que tá acontecendo, moça?
+Protestante: Não tá vendo, guri? Estamos manifestando a favor da nossa liberdade, democracia e pela queda desse governo "fulero"
+join MILITAR (Neutro) right [animation="Zoom In" length="2.0" wait="true"]
+PROTA (Falando): Olha, moça... Você não acha que é muito perigoso ficar por a -
+update MILITAR (Bravo Falando) [animation="Shake X" length="0.7"]
+update PROTA (Surpreso) leftmost [animation="Heartbeat" length="1.0" fade="Fade Cross" fade_length="0.6"]
+update Protestante (Assustada c/ placa) left [animation="Heartbeat" mirrored="false" fade="Fade Cross" fade_length="1.0"]
+MILITAR: EI VOCÊS AÍ, SAIAM DAQUI ANTES QUE EU LEVE OS DOIS PARA O XILINDRÓ
+[wait_input]

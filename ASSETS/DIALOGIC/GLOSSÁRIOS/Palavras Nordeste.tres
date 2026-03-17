@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogicGlossary" format=3 uid="uid://b6f6js5mp1oja"]
+
+[ext_resource type="Script" uid="uid://80elcodyqohb" path="res://addons/dialogic/Modules/Glossary/glossary_resource.gd" id="1_h07jx"]
+
+[resource]
+script = ExtResource("1_h07jx")
+entries = {
+"Fulero": {
+"alternatives": ["fulero", "Fulero"],
+"case_sensitive": true,
+"color": Color(1, 0.9609375, 0, 1),
+"name": "Fulero",
+"text": "Algo de má qualidade, sem valor, reles, cafona ou irresponsável"
+},
+"fulero": "Fulero"
+}

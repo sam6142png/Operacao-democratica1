@@ -10,34 +10,34 @@
 "style": "",
 "suffix": ""
 },
-&"default_portrait": "Neutro",
+&"default_portrait": "Protestando Normal",
 &"description": "",
-&"display_name": "Militar",
+&"display_name": "Protestante",
 &"mirror": false,
 &"nicknames": [""],
-&"offset": Vector2(0, 0),
+&"offset": Vector2(0, 8),
 &"portraits": {
-"Apenas Bravo": {
+"Assustada c/ placa": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/bravo.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/assustada segurando a placa.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
 "scale": 1,
 "scene": ""
 },
-"Bravo Falando": {
+"Protestando Normal": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/falando bravo e apontando.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/protestante.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
 "scale": 1,
 "scene": ""
 },
-"Neutro": {
+"Sendo presa": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/neutro.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/militar prendendo a protestante.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
