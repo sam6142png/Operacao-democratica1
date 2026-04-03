@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DialogicGlossary" format=3 uid="uid://cbfvkr6xhgsw1"]
+
+[ext_resource type="Script" uid="uid://80elcodyqohb" path="res://addons/dialogic/Modules/Glossary/glossary_resource.gd" id="1_7ah6j"]
+
+[resource]
+script = ExtResource("1_7ah6j")
+entries = {
+"Sófocles": {
+"case_sensitive": false,
+"color": Color(0, 0.015380859, 0.984375, 1),
+"name": "Sófocles",
+"text": "Sófocles (496 a.C. - 406 a.C.) foi um poeta e dramaturgo grego, um dos mais importantes e reconhecidos da sua época.",
+"title": "Sófocles"
+}
+}

@@ -37,7 +37,8 @@ directories/dch_directory={
 "VÉIO": "res://ASSETS/DIALOGIC/CHARACTER/VÉIO.dch"
 }
 directories/dtl_directory={
-"FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl"
+"FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl",
+"m012 - vila  peixeiro": "res://ASSETS/DIALOGIC/TIMELINES/m012 - vila  peixeiro.dtl"
 }
 layout/style_directory={}
 extensions_folder="res://addons/dialogic_additions"
@@ -76,7 +77,7 @@ audio/channel_defaults={
 glossary/default_case_sensitive=true
 layout/style_list=[]
 layout/default_style=""
-glossary/glossary_files=["uid://bdja4ucryprw0"]
+glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
 
 [display]
 

@@ -5,12 +5,11 @@
 [resource]
 script = ExtResource("1_h07jx")
 entries = {
-"Fulero": {
-"alternatives": ["fulero", "Fulero"],
-"case_sensitive": true,
-"color": Color(1, 0.9609375, 0, 1),
-"name": "Fulero",
-"text": "Algo de má qualidade, sem valor, reles, cafona ou irresponsável"
-},
-"fulero": "Fulero"
+"fulero": {
+"case_sensitive": false,
+"color": Color(0.9453125, 1, 0, 1),
+"name": "fulero",
+"text": "Fuleiro é um adjetivo coloquial brasileiro usado para descrever algo ou alguém de má qualidade, sem valor, reles ou irresponsável. Pode significar algo ordinário, cafona, brega ou pouco confiável. É comum no Nordeste e varia em gênero (fuleiro/fuleira) e número.",
+"title": "O que é?"
+}
 }

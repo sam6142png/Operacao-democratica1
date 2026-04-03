@@ -2,7 +2,7 @@
 "@path": "res://addons/dialogic/Resources/character.gd",
 "@subpath": NodePath(""),
 &"_translation_id": "",
-&"color": Color(1, 1, 1, 1),
+&"color": Color(0, 0.3203125, 1, 1),
 &"custom_info": {
 "prefix": "",
 "sound_mood_default": "",
@@ -10,12 +10,58 @@
 "style": "",
 "suffix": ""
 },
-&"default_portrait": "",
+&"default_portrait": "Neutro",
 &"description": "",
-&"display_name": "Véio",
+&"display_name": "Senhor Anônimo",
 &"mirror": false,
 &"nicknames": [""],
 &"offset": Vector2(0, 0),
-&"portraits": {},
-&"scale": 1.0
+&"portraits": {
+"Bravo e flaando": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Velho 3/falando bravo sem fundo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Falando": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Velho 3/falando sem fundo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Neutro": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Velho 3/neutro sem fundo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Rindo": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Velho 3/sorrindo sem fundo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"bravo": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Velho 3/bravo sem fundo.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+}
+},
+&"scale": 0.75
 }

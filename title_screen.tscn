@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dxi1ilkmpyr7w"]
 
-[node name="MainMenu" type="Control" unique_id=1317398485]
+[ext_resource type="Texture2D" uid="uid://8g17wjp67qvh" path="res://fundo1.png" id="1_v6p8y"]
+[ext_resource type="FontFile" uid="uid://3ebwatmax8xw" path="res://ArticaPro-Bold.ttf" id="2_ak2if"]
+
+[node name="TitleScreen" type="Control" unique_id=1328081052]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -8,47 +11,47 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Background" type="TextureRect" parent="." unique_id=899243674]
+[node name="bg" type="TextureRect" parent="." unique_id=140988201]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-stretch_mode = 6
+texture = ExtResource("1_v6p8y")
+expand_mode = 2
 
-[node name="DustWaves" type="VideoStreamPlayer" parent="." unique_id=432130807]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1560981338]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1986947116]
 layout_mode = 1
-offset_bottom = 4.0
+anchors_preset = -1
+anchor_left = 0.029000001
+anchor_top = 0.726
+anchor_right = 0.379
+anchor_bottom = 0.97800004
+offset_left = -7.6800003
+offset_top = 7.919983
+offset_right = -339.68
+offset_bottom = -128.23999
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=35111682]
+[node name="JogarBotao" type="Button" parent="VBoxContainer" unique_id=1383451121]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ak2if")
+text = "JOGAR"
 
-[node name="TextureRect" type="TextureRect" parent="CenterContainer/VBoxContainer" unique_id=387951146]
+[node name="OpçõesBotao" type="Button" parent="VBoxContainer" unique_id=14698577]
 layout_mode = 2
-size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_ak2if")
+text = "OPÇÕES"
 
-[node name="Panel" type="Panel" parent="CenterContainer/VBoxContainer" unique_id=1847920845]
+[node name="CréditosBotao" type="Button" parent="VBoxContainer" unique_id=1221660707]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ak2if")
+text = "CRÉDITOS"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/Panel" unique_id=1181996559]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="JogarButton" type="Button" parent="CenterContainer/VBoxContainer/Panel/VBoxContainer" unique_id=1462728997]
+[node name="SairBotao" type="Button" parent="VBoxContainer" unique_id=522692178]
 layout_mode = 2
-
-[node name="OpçõesButton" type="Button" parent="CenterContainer/VBoxContainer/Panel/VBoxContainer" unique_id=1732084493]
-layout_mode = 2
-
-[node name="CréditosButton" type="Button" parent="CenterContainer/VBoxContainer/Panel/VBoxContainer" unique_id=1445512615]
-layout_mode = 2
-
-[node name="SairButton" type="Button" parent="CenterContainer/VBoxContainer/Panel/VBoxContainer" unique_id=1562172964]
-layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ak2if")
+text = "SAIR"

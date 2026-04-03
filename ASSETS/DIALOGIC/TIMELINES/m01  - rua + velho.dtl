@@ -15,4 +15,68 @@ update MILITAR (Bravo Falando) [animation="Shake X" length="0.7"]
 update PROTA (Surpreso) leftmost [animation="Heartbeat" length="1.0" fade="Fade Cross" fade_length="0.6"]
 update Protestante (Assustada c/ placa) left [animation="Heartbeat" mirrored="false" fade="Fade Cross" fade_length="1.0"]
 MILITAR: EI VOCÊS AÍ, SAIAM DAQUI ANTES QUE EU LEVE OS DOIS PARA O XILINDRÓ
-[wait_input]
+update Protestante (Protestando Normal)
+Protestante: SÓ SAIO DAQUI MORTA OU PRESA, NÃO VOU ME RENDER AS ORDENS DE UM SOLDADO DE MEIA TIGELA
+update MILITAR (Apenas Bravo) [fade="Fade Cross" fade_length="0.9"]
+MILITAR: HAHAHAHA... SENDO ASSIM
+update MILITAR center
+leave MILITAR [animation="Fade Out" length="0.9"]
+update Protestante (Sendo presa) center [animation="Fade In" length="0.7"]
+Protestante: ARRGH, SOLDADO MALDITO...
+Protestante: GAROTO, NÃO SEI QUEM É VOCÊ,MAS POR FAVOR, LUTE POR UMA CIDADE MELHOR...
+Protestante: LUTE PELO PRESENTE, TENHA EM MENTE O FUTURO E HONRE O PASSADO DAQUELES QUE UM DIA FIZERAM ESSA CIDADE DIGNA
+MILITAR: CALA ESSA BOCA, MULHER! VOCÊ VAI CONHECER O QUE É A VERDADEIRA AUTORIDADE
+leave Protestante [animation="Slide To Left" length="0.7" wait="true"]
+[wait time="1.4"]
+PROTA (Confuso(Coçando a cabeça)): Rapaz, o que foi isso que eu acabei de presenciar? Aquela mulher é louca, mas é o que dizem\: "De médico e louco, todo mundo tem um pouco"
+PROTA (Pensando): Enfim, ainda tô em dúvida do motivo geral dessa manifestação, sendo que há anos estamos nessa ditadura...
+PROTA (Falando): Pensei que no decorrer desses anos os moradores teriam se acostumado, ou melhor, se amedrontados
+join VÉIO rightmost [animation="Fade In" length="1.6" wait="true"]
+VÉIO (Falando): Ei, Dante! Vem aqui rapidinho
+update PROTA (Surpreso) leftmost [animation="Shake X" length="1.2"]
+PROTA: C-Como você sabe meu nome?
+VÉIO (Falando): Calma menino, eu posso te explicar mió em um lugar mais tranquilo, aqui os "hómi" podem escutar. Vem comigo
+update VÉIO [mirrored="true"]
+VÉIO (Falando): Confia em mim, num quero fazer mal pra tu
+PROTA (Bravo/Determinado): Ok, eu vou com você mas se algo ficar estranho demais, prometo que você vai se arrepender
+update PROTA (Bravo/Determinado) center [fade="Fade Cross" fade_length="1.2"]
+update VÉIO (Rindo) [mirrored="true" fade="Fade Cross" fade_length="0.7"]
+VÉIO: Hahahaha, você é igualzinho ao seu pai
+leave VÉIO
+PROTA (Surpreso): M-Meu pai, como ele sabe...
+leave PROTA [animation="Slide To Right" length="0.7" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Casa do veio.jpeg" fade="1.1" transition="Simple Fade" wait="true"]
+join VÉIO rightmost [animation="Slide From Left" length="0.7" wait="true"]
+VÉIO (Falando): Pode entrar meu fi, a casa é simples mas é cheia de amor
+join PROTA leftmost [animation="Slide From Left" length="1.0" wait="true"]
+PROTA (Confuso(Coçando a cabeça)): Tá, já estamos aqui, o que você quer me contar de tão importante?
+VÉIO (Falando): Antes de tudo, quero que tu saiba… tô do teu lado, firme com tu e com essa ideia de mudá as coisa que tu e teus amigo carrega
+PROTA (Falando): Pelo menos isso me tranquiliza um pouco, mas...
+PROTA (Confuso(Coçando a cabeça)): Como você sabe sobre meus pais?  Como você conheceu eles? Isso tá martelando na minha cabeça no caminho todo
+VÉIO (Falando): Calma, menino! Num aperreia o destino não… estrada apressada só leva pra lugar errado…
+VÉIO (Falando): Mas ó… posso te contar umas coisa de tu e dos teus véio, e te guiar um pouco
+PROTA (Sorrindo): Ótimo! Tô pronto para ouvir tudo, pode começar a falar
+VÉIO (Rindo): Hahaha, tu num achou que seria tão fácil, achou?
+PROTA (Bravo/Determinado): Arrgh, seu velho...
+VÉIO (Bravo e flaando): Me respeita, menino véi! Tô com as costas lascadas, mas ainda posso te dar "mói" de "peia"
+VÉIO (Falando): Mas...
+PROTA (Falando): Desembucha, vel-
+update VÉIO (Bravo e flaando) [animation="Heartbeat" length="0.6"]
+PROTA (Confuso(Coçando a cabeça)): Quer dizer... senhor!
+VÉIO (Falando): Certo, vai lá pra Vila do Açude Seco, e procura um livro de direito e dever do povo…
+VÉIO (Falando): É por ele que a gente começa o plano… chamando o povo, abrindo os olho deles e acendendo essa vontade de justiça no peito de cada um…
+PROTA (Falando): Tá, essa parte eu entendi, mas chegando lá eu procuro onde? Saio chamando o nome dele igual um cachorrinho?
+VÉIO (Falando): Você é gaiato né meu rapaz? Você vai procurar um velho camarada meu...
+VÉIO (Falando): O antigo peixeiro da vila pode te ajudar ou te complicar, só depende da tua prosa com ele
+PROTA (Confuso(Coçando a cabeça)): Nhe... Meio complicado mas posso tentar
+PROTA (Bravo/Determinado): Porém temos um trato, certo?
+VÉIO (Rindo): Pode ficar tranquilo, rapaz! Assim que você voltar com esse livro eu te conto tudo.
+update PROTA (Neutro)
+VÉIO (Falando): Melhor ir apressando o passo, ouvi dizer que os militares estão prendendo todos que eles descofiam ser contra o governo
+update PROTA [mirrored="true"]
+VÉIO (Falando): Dante!
+update PROTA (Confuso(Coçando a cabeça) [mirrored="false"]
+VÉIO (Falando): Antes de tu seguir, te desejo sorte… teu pai confiô em mim pra cuidar de tu, e eu num vou deixar essa palavra cair no chão. Vai em paz menino
+update VÉIO (Rindo)
+update PROTA [mirrored="true"]
+leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
