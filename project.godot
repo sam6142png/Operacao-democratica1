@@ -29,6 +29,7 @@ BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
 
 directories/dch_directory={
 "ATENA": "res://ASSETS/DIALOGIC/CHARACTER/ATENA.dch",
+"Luis": "res://ASSETS/DIALOGIC/CHARACTER/Luis.dch",
 "MILITAR": "res://ASSETS/DIALOGIC/CHARACTER/MILITAR.dch",
 "PEIXEIRO": "res://ASSETS/DIALOGIC/CHARACTER/PEIXEIRO.dch",
 "PROTA": "res://ASSETS/DIALOGIC/CHARACTER/PROTA.dch",
@@ -37,8 +38,9 @@ directories/dch_directory={
 "VÉIO": "res://ASSETS/DIALOGIC/CHARACTER/VÉIO.dch"
 }
 directories/dtl_directory={
+"Dante_na_usina - Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina - Fase1.dtl",
 "FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl",
-"m012 - vila  peixeiro": "res://ASSETS/DIALOGIC/TIMELINES/m012 - vila  peixeiro.dtl"
+"m012 - vila  peixeiro": "res://ASSETS/DIALOGIC/TIMELINES/m01_2 - vila  peixeiro.dtl"
 }
 layout/style_directory={}
 extensions_folder="res://addons/dialogic_additions"

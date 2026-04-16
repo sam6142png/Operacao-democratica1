@@ -38,8 +38,8 @@ PROTA: C-Como você sabe meu nome?
 VÉIO (Falando): Calma menino, eu posso te explicar mió em um lugar mais tranquilo, aqui os "hómi" podem escutar. Vem comigo
 update VÉIO [mirrored="true"]
 VÉIO (Falando): Confia em mim, num quero fazer mal pra tu
-PROTA (Bravo/Determinado): Ok, eu vou com você mas se algo ficar estranho demais, prometo que você vai se arrepender
-update PROTA (Bravo/Determinado) center [fade="Fade Cross" fade_length="1.2"]
+PROTA (Determinado): Ok, eu vou com você mas se algo ficar estranho demais, prometo que você vai se arrepender
+update PROTA (Determinado) center [fade="Fade Cross" fade_length="1.2"]
 update VÉIO (Rindo) [mirrored="true" fade="Fade Cross" fade_length="0.7"]
 VÉIO: Hahahaha, você é igualzinho ao seu pai
 leave VÉIO
@@ -57,7 +57,7 @@ VÉIO (Falando): Calma, menino! Num aperreia o destino não… estrada apressada
 VÉIO (Falando): Mas ó… posso te contar umas coisa de tu e dos teus véio, e te guiar um pouco
 PROTA (Sorrindo): Ótimo! Tô pronto para ouvir tudo, pode começar a falar
 VÉIO (Rindo): Hahaha, tu num achou que seria tão fácil, achou?
-PROTA (Bravo/Determinado): Arrgh, seu velho...
+PROTA (Determinado): Arrgh, seu velho...
 VÉIO (Bravo e flaando): Me respeita, menino véi! Tô com as costas lascadas, mas ainda posso te dar "mói" de "peia"
 VÉIO (Falando): Mas...
 PROTA (Falando): Desembucha, vel-
@@ -69,7 +69,7 @@ PROTA (Falando): Tá, essa parte eu entendi, mas chegando lá eu procuro onde? S
 VÉIO (Falando): Você é gaiato né meu rapaz? Você vai procurar um velho camarada meu...
 VÉIO (Falando): O antigo peixeiro da vila pode te ajudar ou te complicar, só depende da tua prosa com ele
 PROTA (Confuso(Coçando a cabeça)): Nhe... Meio complicado mas posso tentar
-PROTA (Bravo/Determinado): Porém temos um trato, certo?
+PROTA (Determinado): Porém temos um trato, certo?
 VÉIO (Rindo): Pode ficar tranquilo, rapaz! Assim que você voltar com esse livro eu te conto tudo.
 update PROTA (Neutro)
 VÉIO (Falando): Melhor ir apressando o passo, ouvi dizer que os militares estão prendendo todos que eles descofiam ser contra o governo

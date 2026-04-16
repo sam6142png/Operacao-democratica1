@@ -26,18 +26,27 @@
 "scale": 1,
 "scene": ""
 },
-"Bravo/Determinado": {
+"Confuso(Coçando a cabeça)": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Bravo determinado.png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Coçando a cabeça (confusão leve, mão no cabelo).png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
 "scale": 1,
 "scene": ""
 },
-"Confuso(Coçando a cabeça)": {
+"De fininho": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Coçando a cabeça (confusão leve, mão no cabelo).png\""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Prota Andando de fininho.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 195),
+"scale": 1.16,
+"scene": ""
+},
+"Determinado": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Bravo determinado.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),

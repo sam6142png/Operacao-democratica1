@@ -1,0 +1,17 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.8" transition="Simple Fade"]
+join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
+PROTA: Será que isso realmente pode funcionar?
+PROTA (Confuso(Coçando a cabeça)): E se esse velho só tiver me usando...
+update PROTA center
+PROTA (Determinado): Não! Isso não pode acontecer, vou ter fé que
+PROTA (Sorrindo): Melhor eu dar uma passadinha na usina, vou ver se o Luis ou a Atena não querem me ajudar
+leave PROTA [animation="Slide To Left" length="0.7"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Externa.jpeg" fade="0.9" wait="true"]
+join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="1.1" wait="true"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8"]
+PROTA (De fininho): Melhor eu ter cuidado para nenhum soldado perceber minha presença
+leave PROTA [animation="Slide To Right" length="2.7"]
+leave MILITAR [animation="Fade Out" length="1.9"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.7"]
+join  center
+join  center
