@@ -3,15 +3,38 @@ join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
 PROTA: Será que isso realmente pode funcionar?
 PROTA (Confuso(Coçando a cabeça)): E se esse velho só tiver me usando...
 update PROTA center
-PROTA (Determinado): Não! Isso não pode acontecer, vou ter fé que
+PROTA (Determinado): Não! Isso não pode acontecer, vou ter fé que vamos conseguir conter esse governo injusto!
+PROTA (Confuso(Coçando a cabeça)): Pensando bem... Antes de ir para a Vila do Açude Seco...
 PROTA (Sorrindo): Melhor eu dar uma passadinha na usina, vou ver se o Luis ou a Atena não querem me ajudar
 leave PROTA [animation="Slide To Left" length="0.7"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Usina Externa.jpeg" fade="0.9" wait="true"]
 join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="1.1" wait="true"]
 join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8"]
 PROTA (De fininho): Melhor eu ter cuidado para nenhum soldado perceber minha presença
-leave PROTA [animation="Slide To Right" length="2.7"]
-leave MILITAR [animation="Fade Out" length="1.9"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.7"]
-join  center
-join  center
+leave PROTA [animation="Slide To Right" length="2.7" wait="true"]
+leave MILITAR [animation="Fade Out" length="1.9" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.9"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="1.1"]
+join ATENA (Neutro) left
+join Luis leftmost
+ATENA (Falando): Dante?
+update PROTA (Surpreso) [animation="Heartbeat" length="1.2"]
+PROTA: Aaaah! Que susto Athena!
+update ATENA (Rindo)
+update Luis (Rindo)
+ATENA: Hahahahaha! Você tinha que ver sua cara, ficou parecendo um gato espichado
+update PROTA (Determinado)
+update ATENA (Neutro)
+update Luis (Neutro)
+PROTA: Ha- ha - ha, você tá muito engraçadinha né, senhorita? Mas enfim, queria contar uma novidade para vocês
+ATENA (Falando): Desembucha, Dante! Sabe que eu sou "aperriada"
+PROTA (Falando): Calma, calma. Em resumo\:Encontrei um velho que diz ser conhecido dos meus pais...
+PROTA (Confuso(Coçando a cabeça)): Agora tenho que ir na Vila do Açude procurar um livro pra ajudar na reconquista da democracia da nossa cidade
+PROTA (Sorrindo): E aí? Vocês vêm comigo?
+ATENA (Falando): Macho... Achei estranho mas não vou te deixar na mão. Tô Dentro!
+PROTA: Obrigado Athenaa! Sabia que vc não ia vacilar. E você, Luis?
+Luis (Falando): Eeee... Eu tô com preguiça, mas vamo lá, não quero vacilar com tu
+PROTA (Confuso(Coçando a cabeça)): Não era o que eu esperava, maaas...
+PROTA (Sorrindo): Obrigado meu mano Luis!! Você é um caba macho mesmo!
+PROTA (Falando): Então vamo lá galera! Temos um grande caminho pra percorrer!
+update PROTA [animation="Tada" length="1.0" mirrored="true"]

@@ -3,6 +3,15 @@
 [ext_resource type="Texture2D" uid="uid://8g17wjp67qvh" path="res://fundo1.png" id="1_v6p8y"]
 [ext_resource type="FontFile" uid="uid://3ebwatmax8xw" path="res://ArticaPro-Bold.ttf" id="2_ak2if"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ak2if"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ig5kc"]
+bg_color = Color(0.9999998, 0.15477121, 0.78725064, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_05l2w"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
 [node name="TitleScreen" type="Control" unique_id=1328081052]
 layout_mode = 3
 anchors_preset = 15
@@ -21,37 +30,45 @@ grow_vertical = 2
 texture = ExtResource("1_v6p8y")
 expand_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1986947116]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.029000001
-anchor_top = 0.726
-anchor_right = 0.379
-anchor_bottom = 0.97800004
-offset_left = -7.6800003
-offset_top = 7.919983
-offset_right = -339.68
-offset_bottom = -128.23999
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(2, 2)
-
-[node name="JogarBotao" type="Button" parent="VBoxContainer" unique_id=1383451121]
-layout_mode = 2
+[node name="JogarBotao" type="Button" parent="." unique_id=1383451121]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 512.0
+offset_right = 405.0
+offset_bottom = 633.0
 theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 120
+theme_override_styles/normal = SubResource("StyleBoxFlat_ak2if")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_ig5kc")
 text = "JOGAR"
 
-[node name="OpçõesBotao" type="Button" parent="VBoxContainer" unique_id=14698577]
-layout_mode = 2
+[node name="OpçõesBotao" type="Button" parent="." unique_id=14698577]
+layout_mode = 0
+offset_left = 136.0
+offset_top = 960.0
+offset_right = 476.0
+offset_bottom = 985.0
 theme_override_fonts/font = ExtResource("2_ak2if")
 text = "OPÇÕES"
 
-[node name="CréditosBotao" type="Button" parent="VBoxContainer" unique_id=1221660707]
-layout_mode = 2
+[node name="CréditosBotao" type="Button" parent="." unique_id=1221660707]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 704.0
+offset_right = 350.0
+offset_bottom = 765.0
 theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 52
 text = "CRÉDITOS"
 
-[node name="SairBotao" type="Button" parent="VBoxContainer" unique_id=522692178]
-layout_mode = 2
+[node name="SairBotao" type="Button" parent="." unique_id=522692178]
+light_mask = 0
+layout_mode = 0
+offset_left = 104.0
+offset_top = 624.0
+offset_right = 328.0
+offset_bottom = 728.0
 theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 103
+theme_override_styles/normal = SubResource("StyleBoxFlat_05l2w")
 text = "SAIR"

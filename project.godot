@@ -24,6 +24,7 @@ Dialogic="*uid://ds2q0uclmolvu"
 PhantomCameraManager="*uid://duq6jhf6unyis"
 BeehaveGlobalMetrics="*uid://c3ktl6ontsdt7"
 BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
+TimelineManager="*uid://dfbdafrijkfrt"
 
 [dialogic]
 
@@ -42,7 +43,10 @@ directories/dtl_directory={
 "FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl",
 "m012 - vila  peixeiro": "res://ASSETS/DIALOGIC/TIMELINES/m01_2 - vila  peixeiro.dtl"
 }
-layout/style_directory={}
+layout/style_directory={
+"": "res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres",
+"style_visualbox": "res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"
+}
 extensions_folder="res://addons/dialogic_additions"
 text/letter_speed=0.01
 text/initial_text_reveal_skippable=true
@@ -77,8 +81,8 @@ audio/channel_defaults={
 }
 }
 glossary/default_case_sensitive=true
-layout/style_list=[]
-layout/default_style=""
+layout/style_list=["res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"]
+layout/default_style="res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"
 glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
 
 [display]
