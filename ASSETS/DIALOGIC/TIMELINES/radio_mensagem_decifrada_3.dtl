@@ -1,0 +1,15 @@
+join PROTA (Falando) center [animation="Fade In" length="0.6" wait="true"]
+PROTA: Última transmissão... essa tem que ser a importante
+[wait time="0.8"]
+update PROTA (Surpreso) [animation="Heartbeat" length="1.0"]
+PROTA (Pensando): "Operação Consenso — mobilização de novos apoiadores confirmada para a Praça do Palácio. Evento público com presença obrigatória da população. Data: em breve."
+update PROTA (Confuso(Coçando a cabeça))
+PROTA: Evento público... presença obrigatória
+update PROTA (Determinado) [animation="Heartbeat" length="0.8"]
+PROTA: Eles vão usar a praça pra recrutar gente. Transformar cidadão em fantoche do regime na frente de todo mundo
+update PROTA (Falando)
+PROTA: Se eu não fizer nada, metade da cidade vai virar fiel do governo sem nem perceber
+[wait time="1.0"]
+update PROTA (Pensando)
+PROTA (Pensando): Preciso de um plano. E preciso falar com o velho
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

@@ -1,0 +1,6 @@
+join PROTA (Confuso(Coçando a cabeça)) center [animation="Shake X" length="0.6" wait="true"]
+PROTA: Ainda não... tô errando em alguma coisa
+update PROTA (Pensando)
+PROTA (Pensando): Espera... nas anotações do meu pai tinha um número marcado. Era pequeno, menor que cinco
+PROTA (Falando): Vou tentar de novo com mais calma
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]

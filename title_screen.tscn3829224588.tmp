@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://dxi1ilkmpyr7w"]
+
+[ext_resource type="Script" uid="uid://dmgskmxunin6b" path="res://ASSETS/CENAS/SCRIPTS CENAS/titlescreen_script.gd" id="1_ig5kc"]
+[ext_resource type="Texture2D" uid="uid://8g17wjp67qvh" path="res://fundo1.png" id="1_v6p8y"]
+[ext_resource type="FontFile" uid="uid://3ebwatmax8xw" path="res://ArticaPro-Bold.ttf" id="2_ak2if"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ig5kc"]
+
+[node name="TitleScreen" type="Control" unique_id=1328081052]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ig5kc")
+
+[node name="bg" type="TextureRect" parent="." unique_id=140988201]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_v6p8y")
+expand_mode = 2
+
+[node name="JogarBotao" type="Button" parent="." unique_id=1301054612]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 576.0
+offset_right = 424.0
+offset_bottom = 640.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxTexture_ig5kc")
+text = "Jogar"
+
+[node name="OpçõesBotao" type="Button" parent="." unique_id=1964309161]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 656.0
+offset_right = 420.0
+offset_bottom = 716.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 46
+text = "Opções"
+
+[node name="CréditosBotao" type="Button" parent="." unique_id=1723779800]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 736.0
+offset_right = 420.0
+offset_bottom = 796.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 40
+text = "Créditos"
+
+[node name="SairBotao" type="Button" parent="." unique_id=1473521325]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 818.0
+offset_right = 420.0
+offset_bottom = 878.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 32
+text = "Sair"
+
+[node name="OverlayFade" type="ColorRect" parent="." unique_id=1467317]
+z_index = 100
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)

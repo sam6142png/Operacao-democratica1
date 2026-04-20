@@ -19,6 +19,11 @@ entries = {
 "text": "Cabra macho\" é uma expressão popular, muito comum no Nordeste brasileiro, utilizada para descrever um homem valente, corajoso, destemido e determinado",
 "title": "O que é?"
 },
+"empaiar": {
+"name": "empaiar",
+"text": "\"Empaiar\" é um termo regional, comumente usado no Nordeste brasileiro, que significa atrapalhar, consumir o tempo de alguém, fazer perder tempo ou enrolar",
+"title": "O que é?"
+},
 "fulero": {
 "case_sensitive": false,
 "color": Color(0.9453125, 1, 0, 1),

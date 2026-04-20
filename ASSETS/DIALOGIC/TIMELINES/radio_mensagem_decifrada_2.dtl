@@ -1,0 +1,14 @@
+join PROTA (Surpreso) center [animation="Heartbeat" length="0.6" wait="true"]
+PROTA: Outra transmissão... deve ser importante
+[wait time="0.8"]
+update PROTA (Confuso(Coçando a cabeça))
+PROTA (Pensando): "Transmissão urgente ao Comandante Ferraz — sua encomenda de queijo coalho chegou ao Palácio Central. Favor retirar até sexta-feira."
+[wait time="1.0"]
+update PROTA (Sorrindo)
+PROTA: ...queijo coalho
+update PROTA (Rindo)
+PROTA: O regime tá usando o sistema de comunicação secreto pra falar de QUEIJO?
+[wait time="0.8"]
+update PROTA (Determinado)
+PROTA: Tá bom... foco. Ainda tem mais uma transmissão
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

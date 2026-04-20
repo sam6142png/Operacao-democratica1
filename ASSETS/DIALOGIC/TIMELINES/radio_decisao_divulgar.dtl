@@ -1,0 +1,7 @@
+join PROTA (Determinado) center [animation="Heartbeat" length="0.8" wait="true"]
+PROTA: Decidi. O povo tem direito de saber o que esse governo tá planejando
+update PROTA (Falando)
+PROTA: Vou espalhar isso pela cidade. Quem souber a verdade vai pensar duas vezes antes de apoiar o regime
+update PROTA (Pensando)
+PROTA (Pensando): É arriscado... mas silêncio também tem um preço
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

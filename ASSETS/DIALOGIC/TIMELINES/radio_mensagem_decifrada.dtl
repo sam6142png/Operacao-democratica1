@@ -1,0 +1,12 @@
+join PROTA (Surpreso) center [animation="Heartbeat" length="0.8" wait="true"]
+PROTA: Espera... consegui decifrar
+PROTA (Pensando): "Operação Cinza — registros do primeiro reator da Usina Velha foram destruídos conforme ordenado. Nenhuma evidência restante."
+update PROTA (Confuso(Coçando a cabeça))
+PROTA: O acidente do reator... não foi acidente nenhum
+update PROTA (Determinado)
+PROTA: Eles apagaram tudo. Destruíram os registros pra ninguém saber a verdade
+PROTA (Pensando): Meu pai sabia disso. É por isso que ele foi tirado do poder
+[wait time="1.2"]
+update PROTA (Falando)
+PROTA: Tem mais sinal aqui... deixa eu continuar
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

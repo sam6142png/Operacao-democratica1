@@ -1,0 +1,12 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Radio.jpeg" fade="1.0" transition="Simple Fade" wait="true"]
+join PROTA (Pensando) center [animation="Fade In" length="0.8" wait="true"]
+PROTA (Falando): Então é aqui que eles ficavam... a rádio antiga do velho
+PROTA (Pensando): O senhor falou que meus pais usavam esse equipamento pra interceptar as transmissões do regime
+update PROTA (Surpreso) [animation="Heartbeat" length="0.7"]
+PROTA: Será que ainda funciona?
+[wait time="0.8"]
+update PROTA (Determinado)
+PROTA (Pensando): Só tem um jeito de descobrir
+PROTA (Falando): Tá bem... vamos ver o que esse governo anda tramando
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]
+[signal arg="iniciar_minigame"]

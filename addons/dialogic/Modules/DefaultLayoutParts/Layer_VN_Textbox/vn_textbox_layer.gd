@@ -1,23 +1,5 @@
 @tool
 extends DialogicLayoutLayer
-## This layer's scene file contains following nodes:
-## - a dialog_text node
-## - a name_label node
-## - a next_indicator node
-## - a type_sound node
-##
-## As well as custom:
-## - animations
-## - auto-advance progress indicator
-##
-## If you want to customize this layer, here is a little rundown of this layer:
-## The Layer Settings are divided into the `@export_group`s below.
-## They get applied in [method _apply_export_overrides].
-## Each `@export_group` has its own method to apply the settings to the scene.
-## If you want to change a specific part inside the scene, you can simply
-## remove or add # (commenting) to the method line.
-
-
 
 enum Alignments {LEFT, CENTER, RIGHT}
 
@@ -120,50 +102,42 @@ func _apply_export_overrides() -> void:
 	if !is_inside_tree():
 		await ready
 
-	## FONT SETTINGS
 	_apply_text_settings()
-
-
-	## BOX SETTINGS
 	_apply_box_settings()
-
-	## BOX ANIMATIONS
 	_apply_box_animations_settings()
-
-	## NAME LABEL SETTINGS
 	_apply_name_label_settings()
-
-	## NEXT INDICATOR SETTINGS
 	_apply_indicator_settings()
 
-	## OTHER
 	var progress_bar: ProgressBar = %AutoAdvanceProgressbar
 	progress_bar.set(&'enabled', autoadvance_progressbar)
 
-	#### SOUNDS
-
-	## TYPING SOUNDS
 	_apply_sounds_settings()
 
 
-## Applies all text box settings to the scene.
-## Except the box animations.
 func _apply_box_settings() -> void:
 	var dialog_text_panel: PanelContainer = %DialogTextPanel
-	if ResourceLoader.exists(box_panel):
-		dialog_text_panel.add_theme_stylebox_override(&'panel', load(box_panel) as StyleBox)
 
-	if box_color_use_global:
-		dialog_text_panel.self_modulate = get_global_setting(&'bg_color', box_color_custom)
-	else:
-		dialog_text_panel.self_modulate = box_color_custom
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("#0A0A1E")
+	style.bg_color.a = 0.92
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	style.border_color = Color("#59A5FF")
+	style.anti_aliasing = false
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	dialog_text_panel.add_theme_stylebox_override(&'panel', style)
+
+	dialog_text_panel.self_modulate = Color.WHITE
 
 	var sizer: Control = %Sizer
 	sizer.size = box_size
 	sizer.position = box_size * Vector2(-0.5, -1)+Vector2(0, -box_margin_bottom)
-
-
-## Applies box animations settings to the scene.
+	
 func _apply_box_animations_settings() -> void:
 	var animations: AnimationPlayer = %Animations
 	animations.set(&'animation_in', box_animation_in)
@@ -171,7 +145,6 @@ func _apply_box_animations_settings() -> void:
 	animations.set(&'animation_new_text', box_animation_new_text)
 
 
-## Applies all name label settings to the scene.
 func _apply_name_label_settings() -> void:
 	var name_label: DialogicNode_NameLabel = %DialogicNode_NameLabel
 
@@ -193,15 +166,23 @@ func _apply_name_label_settings() -> void:
 	name_label.use_character_color = name_label_use_character_color
 
 	var name_label_panel: PanelContainer = %NameLabelPanel
-	if ResourceLoader.exists(name_label_box_panel):
-		name_label_panel.add_theme_stylebox_override(&'panel', load(name_label_box_panel) as StyleBox)
-	else:
-		name_label_panel.add_theme_stylebox_override(&'panel', load(this_folder.path_join("vn_textbox_name_label_panel.tres")) as StyleBox)
 
-	if name_label_box_use_global_color:
-		name_label_panel.self_modulate = get_global_setting(&'bg_color', name_label_box_modulate)
-	else:
-		name_label_panel.self_modulate = name_label_box_modulate
+	var name_style = StyleBoxFlat.new()
+	name_style.content_margin_left = 10
+	name_style.content_margin_right = 10
+	name_style.content_margin_top = 5
+	name_style.content_margin_bottom = 5
+
+	name_style.bg_color = Color("4b4b4bcb")
+	name_style.border_width_left = 2
+	name_style.border_width_right = 2
+	name_style.border_width_top = 2
+	name_style.border_width_bottom = 2
+	name_style.border_color = Color("fff8f7ff")
+	name_style.anti_aliasing = false
+	name_label_panel.add_theme_stylebox_override(&'panel', name_style)
+	name_label_panel.self_modulate = Color.WHITE
+
 	var dialog_text_panel: PanelContainer = %DialogTextPanel
 	name_label_panel.position = name_label_box_offset+Vector2(0, -40)
 	name_label_panel.position -= Vector2(
@@ -212,7 +193,6 @@ func _apply_name_label_settings() -> void:
 	name_label_panel.grow_horizontal = [1, 2, 0][name_label_alignment]
 
 
-## Applies all text settings to the scene.
 func _apply_text_settings() -> void:
 	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
 	dialog_text.alignment = text_alignment as DialogicNode_DialogText.Alignment
@@ -241,7 +221,6 @@ func _apply_text_settings() -> void:
 		dialog_text.add_theme_font_override(&"bold_italics_font", load(bold_italics_font) as Font)
 
 
-## Applies all indicator settings to the scene.
 func _apply_indicator_settings() -> void:
 	var next_indicator: DialogicNode_NextIndicator = %NextIndicator
 	next_indicator.enabled = next_indicator_enabled
@@ -256,7 +235,6 @@ func _apply_indicator_settings() -> void:
 		next_indicator.indicator_offset = next_indicator_position_offset
 
 
-## Applies all sound settings to the scene.
 func _apply_sounds_settings() -> void:
 	var type_sounds: DialogicNode_TypeSounds = %DialogicNode_TypeSounds
 	type_sounds.enabled = typing_sounds_enabled

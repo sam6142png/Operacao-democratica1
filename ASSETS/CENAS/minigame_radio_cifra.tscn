@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://xar4vu7myn0n"]
+
+[ext_resource type="Script" uid="uid://bytwjg24p6cqc" path="res://ASSETS/CENAS/SCRIPTS CENAS/MinigameRadioCifra_script.gd" id="1_0q4eu"]
+[ext_resource type="FontFile" uid="uid://qu4bn0k5q75b" path="res://ASSETS/FONTES/pixel.ttf" id="2_2c1oy"]
+[ext_resource type="FontFile" uid="uid://c731g01hgfie2" path="res://ASSETS/FONTES/determination.ttf" id="3_2c1oy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0q4eu"]
+content_margin_left = 50.0
+content_margin_top = 50.0
+content_margin_right = 50.0
+content_margin_bottom = 50.0
+bg_color = Color(0.16862746, 0.101960786, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[node name="MinigameRadioCifra" type="Control" unique_id=1839378610]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0q4eu")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1707690544]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.101960786, 0.05882353, 0, 1)
+
+[node name="PainelRadio" type="PanelContainer" parent="." unique_id=1557304038]
+custom_minimum_size = Vector2(1600, 700)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0q4eu")
+
+[node name="Layout" type="VBoxContainer" parent="PainelRadio" unique_id=1239179627]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="MensagemCifrada" type="Label" parent="PainelRadio/Layout" unique_id=414343255]
+custom_minimum_size = Vector2(1500, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76862746, 0.47843137, 0, 1)
+theme_override_fonts/font = ExtResource("2_2c1oy")
+theme_override_font_sizes/font_size = 32
+text = "DXQWH GHVFREULX R SODQR"
+horizontal_alignment = 1
+
+[node name="MensagemDecifrada" type="Label" parent="PainelRadio/Layout" unique_id=1903627036]
+custom_minimum_size = Vector2(1500, 60)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_2c1oy")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="RodaCifra" type="HSlider" parent="PainelRadio/Layout" unique_id=877557742]
+layout_mode = 2
+max_value = 25.0
+
+[node name="DeslocamentoLabel" type="Label" parent="PainelRadio/Layout" unique_id=362410229]
+layout_mode = 2
+
+[node name="BotaoConfirmar" type="Button" parent="PainelRadio/Layout" unique_id=436067287]
+layout_mode = 2
+
+[node name="DicaLabel" type="Label" parent="PainelRadio/Layout" unique_id=2036085405]
+layout_mode = 2
+
+[node name="PainelDecisao" type="Control" parent="." unique_id=1344503851]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BotaoDivulgar" type="Button" parent="PainelDecisao" unique_id=1455440421]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="BotaoAlterar" type="Button" parent="PainelDecisao" unique_id=1424592364]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="BotaoGuardar" type="Button" parent="PainelDecisao" unique_id=568457529]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0

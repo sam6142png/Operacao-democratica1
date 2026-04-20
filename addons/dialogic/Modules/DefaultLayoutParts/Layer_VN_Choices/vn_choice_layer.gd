@@ -15,7 +15,7 @@ extends DialogicLayoutLayer
 @export var text_color_use_global: bool = true
 @export var text_color_custom: Color = Color.WHITE
 @export var text_color_pressed: Color = Color.WHITE
-@export var text_color_hovered: Color = Color.GRAY
+@export var text_color_hovered: Color = Color("#59A5FF")
 @export var text_color_disabled: Color = Color.DARK_GRAY
 @export var text_color_focused: Color = Color.WHITE
 
@@ -52,9 +52,27 @@ func get_button_sound() -> DialogicNode_ButtonSound:
 	return %DialogicNode_ButtonSound
 
 
-## Method that applies all exported settings
+func _make_choice_style(bg: Color, border: Color) -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = bg
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	style.border_color = border
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_left = 0
+	style.corner_radius_bottom_right = 0
+	style.anti_aliasing = false
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	return style
+
+
 func _apply_export_overrides() -> void:
-	# apply text settings
 	var layer_theme: Theme = Theme.new()
 
 	# font
@@ -78,34 +96,24 @@ func _apply_export_overrides() -> void:
 	layer_theme.set_color(&'font_pressed_color', &'Button', text_color_pressed)
 	layer_theme.set_color(&'font_hover_color', &'Button', text_color_hovered)
 	layer_theme.set_color(&'font_disabled_color', &'Button', text_color_disabled)
-	layer_theme.set_color(&'font_pressed_color', &'Button', text_color_pressed)
 	layer_theme.set_color(&'font_focus_color', &'Button', text_color_focused)
 
+	# Estilos customizados dos botões de escolha
+	var style_normal = _make_choice_style(Color("#0A0A1EEB"), Color("#59A5FF"))
+	var style_hovered = _make_choice_style(Color("#193F8C"), Color("#59A5FF"))
+	var style_pressed = _make_choice_style(Color("#0D2660"), Color("#59A5FF"))
+	var style_focused = _make_choice_style(Color("#193F8C"), Color("#FFFFFF"))
 
-	# apply box settings
-	if ResourceLoader.exists(boxes_stylebox_normal):
-		var style_box: StyleBox = load(boxes_stylebox_normal)
-		layer_theme.set_stylebox(&'normal', &'Button', style_box)
-		layer_theme.set_stylebox(&'hover', &'Button', style_box)
-		layer_theme.set_stylebox(&'pressed', &'Button', style_box)
-		layer_theme.set_stylebox(&'disabled', &'Button', style_box)
-		layer_theme.set_stylebox(&'focus', &'Button', style_box)
+	layer_theme.set_stylebox(&'normal', &'Button', style_normal)
+	layer_theme.set_stylebox(&'hover', &'Button', style_hovered)
+	layer_theme.set_stylebox(&'pressed', &'Button', style_pressed)
+	layer_theme.set_stylebox(&'disabled', &'Button', style_normal)
+	layer_theme.set_stylebox(&'focus', &'Button', style_focused)
 
-	if ResourceLoader.exists(boxes_stylebox_hovered):
-		layer_theme.set_stylebox(&'hover', &'Button', load(boxes_stylebox_hovered) as StyleBox)
-
-	if ResourceLoader.exists(boxes_stylebox_pressed):
-		layer_theme.set_stylebox(&'pressed', &'Button', load(boxes_stylebox_pressed) as StyleBox)
-	if ResourceLoader.exists(boxes_stylebox_disabled):
-		layer_theme.set_stylebox(&'disabled', &'Button', load(boxes_stylebox_disabled) as StyleBox)
-	if ResourceLoader.exists(boxes_stylebox_focused):
-		layer_theme.set_stylebox(&'focus', &'Button', load(boxes_stylebox_focused) as StyleBox)
-
-	var choices : Control = get_choices()
+	var choices: Control = get_choices()
 	choices.add_theme_constant_override(&"separation", boxes_v_separation)
 	self.position = boxes_offset
 
-	# replace choice buttons and apply settings
 	for child: Node in choices.get_children():
 		if child is DialogicNode_ChoiceButton:
 			child.queue_free()
@@ -118,7 +126,7 @@ func _apply_export_overrides() -> void:
 			printerr("[Dialogic] Unable to load custom choice button from ", choices_custom_button)
 
 	for i in range(0, maximum_choices):
-		var new_choice : DialogicNode_ChoiceButton
+		var new_choice: DialogicNode_ChoiceButton
 		if choices_button != null:
 			new_choice = (choices_button.instantiate() as DialogicNode_ChoiceButton)
 		else:
@@ -132,10 +140,8 @@ func _apply_export_overrides() -> void:
 
 		new_choice.custom_minimum_size = boxes_min_size
 
-
 	set(&'theme', layer_theme)
 
-	# apply sound settings
 	var button_sound: DialogicNode_ButtonSound = get_button_sound()
 	button_sound.volume_db = sounds_volume
 	button_sound.sound_pressed = load(sounds_pressed)

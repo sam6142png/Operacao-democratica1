@@ -1,0 +1,12 @@
+join PROTA (Determinado) center [animation="Fade In" length="0.6" wait="true"]
+PROTA: Tenho três transmissões nas mãos agora. A questão é... o que eu faço com isso?
+update PROTA (Pensando)
+PROTA (Pensando): Posso divulgar tudo pra população saber o que tá acontecendo
+PROTA (Pensando): Mas se o regime perceber que alguém interceptou... vai ser perigoso
+update PROTA (Confuso(Coçando a cabeça))
+PROTA: Também posso alterar o conteúdo antes de vazar... confundir eles
+PROTA (Pensando): Ou guardar estrategicamente e usar no momento certo
+[wait time="0.8"]
+update PROTA (Determinado)
+PROTA: Não tem resposta fácil aqui. Cada escolha tem um preço
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

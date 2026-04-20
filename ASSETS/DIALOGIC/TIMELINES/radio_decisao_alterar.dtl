@@ -1,0 +1,7 @@
+join PROTA (Pensando) center [animation="Fade In" length="0.6" wait="true"]
+PROTA: Se eu vazar a mensagem original eles vão saber que foram interceptados
+update PROTA (Determinado)
+PROTA: Melhor alterar o conteúdo antes. Deixar o regime confuso por um tempo
+update PROTA (Confuso(Coçando a cabeça))
+PROTA (Pensando): Não é honesto... mas às vezes é preciso jogar sujo pra vencer quem não tem escrúpulos
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

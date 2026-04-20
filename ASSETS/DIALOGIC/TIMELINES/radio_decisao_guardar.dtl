@@ -1,0 +1,7 @@
+join PROTA (Pensando) center [animation="Fade In" length="0.6" wait="true"]
+PROTA: Ainda não é hora de agir com isso
+update PROTA (Determinado)
+PROTA: Vou guardar. Uma informação usada na hora certa vale mais do que um grito no escuro
+update PROTA (Falando)
+PROTA (Pensando): Paciência também é uma forma de resistência
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]

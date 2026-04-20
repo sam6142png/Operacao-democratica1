@@ -18,6 +18,10 @@ run/main_scene="uid://dxi1ilkmpyr7w"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://cllvsxfqewhbc"
+
 [autoload]
 
 Dialogic="*uid://ds2q0uclmolvu"
@@ -25,6 +29,8 @@ PhantomCameraManager="*uid://duq6jhf6unyis"
 BeehaveGlobalMetrics="*uid://c3ktl6ontsdt7"
 BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
 TimelineManager="*uid://dfbdafrijkfrt"
+FadeManager="*uid://dg36vxmdiur07"
+GameState="*uid://65ipybngwntw"
 
 [dialogic]
 
@@ -41,11 +47,22 @@ directories/dch_directory={
 directories/dtl_directory={
 "Dante_na_usina - Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina - Fase1.dtl",
 "FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl",
-"m012 - vila  peixeiro": "res://ASSETS/DIALOGIC/TIMELINES/m01_2 - vila  peixeiro.dtl"
+"Timeline - VilaPeixeiro": "res://ASSETS/DIALOGIC/TIMELINES/Timeline - VilaPeixeiro.dtl",
+"radio_abertura": "res://ASSETS/DIALOGIC/TIMELINES/radio_abertura.dtl",
+"radio_decisao_alterar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_alterar.dtl",
+"radio_decisao_divulgar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_divulgar.dtl",
+"radio_decisao_guardar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_guardar.dtl",
+"radio_dica_direta": "res://ASSETS/DIALOGIC/TIMELINES/radio_dica_direta.dtl",
+"radio_dica_leve": "res://ASSETS/DIALOGIC/TIMELINES/radio_dica_leve.dtl",
+"radio_encerramento": "res://ASSETS/DIALOGIC/TIMELINES/radio_encerramento.dtl",
+"radio_escolha_intro": "res://ASSETS/DIALOGIC/TIMELINES/radio_escolha_intro.dtl",
+"radio_mensagem_decifrada": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada.dtl",
+"radio_mensagem_decifrada_2": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada_2.dtl",
+"radio_mensagem_decifrada_3": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada_3.dtl"
 }
 layout/style_directory={
-"": "res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres",
-"style_visualbox": "res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"
+"": "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres",
+"Base_testebox": "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
 }
 extensions_folder="res://addons/dialogic_additions"
 text/letter_speed=0.01
@@ -81,8 +98,8 @@ audio/channel_defaults={
 }
 }
 glossary/default_case_sensitive=true
-layout/style_list=["res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"]
-layout/default_style="res://ASSETS/DIALOGIC/STYLES/style_visualbox.tres"
+layout/style_list=["", "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"]
+layout/default_style="res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
 glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
 
 [display]

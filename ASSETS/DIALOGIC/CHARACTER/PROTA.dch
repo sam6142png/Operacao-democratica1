@@ -23,7 +23,7 @@
 },
 "mirror": false,
 "offset": Vector2(0, 0),
-"scale": 1,
+"scale": 1.0,
 "scene": ""
 },
 "Confuso(Coçando a cabeça)": {
@@ -99,5 +99,5 @@
 "scene": ""
 }
 },
-&"scale": 0.75
+&"scale": 0.7
 }
