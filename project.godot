@@ -16,7 +16,8 @@ config/name_localized={
 }
 run/main_scene="uid://dxi1ilkmpyr7w"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 0)
+config/icon="uid://l08sufjcun5m"
 
 [audio]
 
@@ -25,12 +26,10 @@ buses/default_bus_layout="uid://cllvsxfqewhbc"
 [autoload]
 
 Dialogic="*uid://ds2q0uclmolvu"
-PhantomCameraManager="*uid://duq6jhf6unyis"
-BeehaveGlobalMetrics="*uid://c3ktl6ontsdt7"
-BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
 TimelineManager="*uid://dfbdafrijkfrt"
-FadeManager="*uid://dg36vxmdiur07"
 GameState="*uid://65ipybngwntw"
+MedidorConfianca="*res://ASSETS/CENAS/MedidorConfianca.tscn"
+MinigamePaginas="*res://ASSETS/CENAS/minigame_paginas.tscn"
 
 [dialogic]
 
@@ -45,20 +44,10 @@ directories/dch_directory={
 "VÉIO": "res://ASSETS/DIALOGIC/CHARACTER/VÉIO.dch"
 }
 directories/dtl_directory={
-"Dante_na_usina - Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina - Fase1.dtl",
-"FASE1": "res://ASSETS/DIALOGIC/TIMELINES/m01  - rua + velho.dtl",
-"Timeline - VilaPeixeiro": "res://ASSETS/DIALOGIC/TIMELINES/Timeline - VilaPeixeiro.dtl",
-"radio_abertura": "res://ASSETS/DIALOGIC/TIMELINES/radio_abertura.dtl",
-"radio_decisao_alterar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_alterar.dtl",
-"radio_decisao_divulgar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_divulgar.dtl",
-"radio_decisao_guardar": "res://ASSETS/DIALOGIC/TIMELINES/radio_decisao_guardar.dtl",
-"radio_dica_direta": "res://ASSETS/DIALOGIC/TIMELINES/radio_dica_direta.dtl",
-"radio_dica_leve": "res://ASSETS/DIALOGIC/TIMELINES/radio_dica_leve.dtl",
-"radio_encerramento": "res://ASSETS/DIALOGIC/TIMELINES/radio_encerramento.dtl",
-"radio_escolha_intro": "res://ASSETS/DIALOGIC/TIMELINES/radio_escolha_intro.dtl",
-"radio_mensagem_decifrada": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada.dtl",
-"radio_mensagem_decifrada_2": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada_2.dtl",
-"radio_mensagem_decifrada_3": "res://ASSETS/DIALOGIC/TIMELINES/radio_mensagem_decifrada_3.dtl"
+"Dante_na_usina_Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina_Fase1.dtl",
+"Timeline_VilaPeixeiro": "res://ASSETS/DIALOGIC/TIMELINES/Timeline_VilaPeixeiro.dtl",
+"m01_rua_velho": "res://ASSETS/DIALOGIC/TIMELINES/m01_rua_velho.dtl",
+"timeline_resultado_paginas": "res://ASSETS/DIALOGIC/TIMELINES/timeline_resultado_paginas.dtl"
 }
 layout/style_directory={
 "": "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres",
@@ -106,6 +95,9 @@ glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/mode=2
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 
 [editor_plugins]
 

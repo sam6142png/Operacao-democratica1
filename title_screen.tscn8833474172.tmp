@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://dxi1ilkmpyr7w"]
+
+[ext_resource type="Script" uid="uid://dmgskmxunin6b" path="res://ASSETS/CENAS/SCRIPTS CENAS/titlescreen_script.gd" id="1_ig5kc"]
+[ext_resource type="Texture2D" uid="uid://bpygu4jq1q2ty" path="res://ASSETS/SPRITES/FUNDOS/UI/Background para menu.jpg" id="2_013yr"]
+[ext_resource type="FontFile" uid="uid://3ebwatmax8xw" path="res://ArticaPro-Bold.ttf" id="2_ak2if"]
+[ext_resource type="AudioStream" uid="uid://comxo3mk71uh3" path="res://ASSETS/SOUNDS/TrilhaSuspense_Menu3.mp3" id="4_013yr"]
+[ext_resource type="AudioStream" uid="uid://bwbn1l2yod6wj" path="res://ASSETS/SOUNDS/FSX/BotoesHover.mp3" id="5_013yr"]
+[ext_resource type="AudioStream" uid="uid://87woad65v04n" path="res://ASSETS/SOUNDS/FSX/BotoesClick.mp3" id="6_8vmu4"]
+[ext_resource type="AudioStream" uid="uid://ccdslmc3mxdxk" path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3" id="7_xfn3p"]
+[ext_resource type="AudioStream" uid="uid://bqoe4vxu30bnt" path="res://ASSETS/SOUNDS/FSX/MenuClose.mp3" id="8_rhgbh"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ig5kc"]
+
+[node name="TitleScreen" type="Control" unique_id=1328081052]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_ig5kc")
+
+[node name="bg" type="TextureRect" parent="." unique_id=140988201]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.037
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.9599991
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_013yr")
+expand_mode = 2
+
+[node name="JogarBotao" type="Button" parent="." unique_id=1301054612]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 576.0
+offset_right = 424.0
+offset_bottom = 640.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxTexture_ig5kc")
+text = "Jogar"
+
+[node name="OpçõesBotao" type="Button" parent="." unique_id=1964309161]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 656.0
+offset_right = 420.0
+offset_bottom = 716.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 46
+text = "Opções"
+
+[node name="CréditosBotao" type="Button" parent="." unique_id=1723779800]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 736.0
+offset_right = 420.0
+offset_bottom = 796.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 40
+text = "Créditos"
+
+[node name="SairBotao" type="Button" parent="." unique_id=1473521325]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 818.0
+offset_right = 420.0
+offset_bottom = 878.0
+theme_override_fonts/font = ExtResource("2_ak2if")
+theme_override_font_sizes/font_size = 32
+text = "Sair"
+
+[node name="MusicaFundo" type="AudioStreamPlayer2D" parent="." unique_id=719948772]
+stream = ExtResource("4_013yr")
+volume_db = 3.888
+autoplay = true
+bus = &"Musica"
+
+[node name="SomHover" type="AudioStreamPlayer2D" parent="." unique_id=2017575141]
+stream = ExtResource("5_013yr")
+
+[node name="SomClique" type="AudioStreamPlayer2D" parent="." unique_id=1852199384]
+stream = ExtResource("6_8vmu4")
+
+[node name="SomDeslize" type="AudioStreamPlayer2D" parent="." unique_id=1352396615]
+stream = ExtResource("7_xfn3p")
+
+[node name="SomFechar" type="AudioStreamPlayer2D" parent="." unique_id=1558968723]
+stream = ExtResource("8_rhgbh")

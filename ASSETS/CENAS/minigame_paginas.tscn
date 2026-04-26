@@ -1,0 +1,286 @@
+[gd_scene format=3 uid="uid://c2jtyd3tmewxs"]
+
+[ext_resource type="Script" uid="uid://cwgcjq6h2vh1e" path="res://ASSETS/CENAS/SCRIPTS GLOBAIS/minigame_paginas.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://c731g01hgfie2" path="res://ASSETS/FONTES/determination.ttf" id="2_font"]
+[ext_resource type="AudioStream" uid="uid://bxpomqlf2uusk" path="res://ASSETS/SOUNDS/TrilhaSuspense_Menu.mp3" id="3_music"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 30.0
+content_margin_top = 30.0
+content_margin_right = 30.0
+content_margin_bottom = 30.0
+bg_color = Color(0.1686, 0.1019, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7686, 0.4784, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_botao_direito"]
+bg_color = Color(0.1019, 0.2274, 0.4313, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.349, 0.647, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_botao_dever"]
+bg_color = Color(0.4313, 0.1647, 0.1019, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.4196, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_botao_adulterada"]
+bg_color = Color(0.29, 0.102, 0.431, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.667, 0.267, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_explicacao"]
+bg_color = Color(0.039, 0.039, 0.1176, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.349, 0.647, 1, 1)
+
+[node name="MinigamePaginas" type="Control" unique_id=1982587022]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Fundo" type="ColorRect" parent="." unique_id=364690544]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1019, 0.0588, 0, 1)
+
+[node name="ZonaEsquerda" type="Control" parent="." unique_id=1301759708]
+modulate = Color(0.2, 0.5, 1, 0.15)
+layout_mode = 1
+anchor_top = 0.2
+anchor_right = 0.08
+anchor_bottom = 0.85
+offset_left = 10.0
+offset_right = -10.0
+
+[node name="LabelDireito" type="Label" parent="ZonaEsquerda" unique_id=1858213424]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 10.0
+offset_bottom = 45.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.349, 0.647, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 32
+text = "DIREITO"
+horizontal_alignment = 1
+
+[node name="AreaDireito" type="Control" parent="ZonaEsquerda" unique_id=1958210323]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ZonaDireita" type="Control" parent="." unique_id=1598539718]
+modulate = Color(1, 0.4, 0.1, 0.15)
+layout_mode = 1
+anchor_left = 0.92
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.85
+offset_left = 10.0
+offset_right = -10.0
+
+[node name="LabelDever" type="Label" parent="ZonaDireita" unique_id=1175207949]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 10.0
+offset_bottom = 45.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.4196, 0, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 32
+text = "DEVER"
+horizontal_alignment = 1
+
+[node name="AreaDever" type="Control" parent="ZonaDireita" unique_id=1928648271]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PaginaContainer" type="Control" parent="." unique_id=1393377279]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -220.0
+offset_right = 320.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PaginaCard" type="PanelContainer" parent="PaginaContainer" unique_id=1653671509]
+custom_minimum_size = Vector2(0, 280)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 280.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="TextoPagina" type="Label" parent="PaginaContainer/PaginaCard" unique_id=1818606282]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="BotoesContainer" type="HBoxContainer" parent="PaginaContainer" unique_id=151206142]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -65.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="BotaoDireito" type="Button" parent="PaginaContainer/BotoesContainer" unique_id=860699457]
+custom_minimum_size = Vector2(180, 55)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_botao_direito")
+text = "DIREITO"
+
+[node name="BotaoDever" type="Button" parent="PaginaContainer/BotoesContainer" unique_id=347480836]
+custom_minimum_size = Vector2(180, 55)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_botao_dever")
+text = "DEVER"
+
+[node name="BotaoAdulterada" type="Button" parent="PaginaContainer/BotoesContainer" unique_id=1460942230]
+custom_minimum_size = Vector2(260, 55)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_botao_adulterada")
+text = "ALTERADO PELO REGIME"
+
+[node name="Feedback" type="Label" parent="." unique_id=1399150516]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.25
+anchor_right = 0.5
+anchor_bottom = 0.25
+offset_left = -200.0
+offset_top = -20.0
+offset_right = 200.0
+offset_bottom = 20.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 24
+text = "vazio"
+horizontal_alignment = 1
+
+[node name="Progresso" type="Label" parent="." unique_id=1878756167]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 20.0
+offset_right = 150.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(0.6667, 0.6667, 0.6667, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 32
+text = "Página 1 de 5"
+horizontal_alignment = 1
+
+[node name="LabelTimer" type="Label" parent="." unique_id=1032392210]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 60.0
+offset_right = 150.0
+offset_bottom = 95.0
+theme_override_colors/font_color = Color(1, 0.667, 0, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+text = "vazio"
+horizontal_alignment = 1
+
+[node name="LabelErros" type="Label" parent="." unique_id=1530578165]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 220.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(1, 0.42, 0, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 34
+text = "Erros: 0/3"
+
+[node name="Explicacao" type="PanelContainer" parent="." unique_id=525304575]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 1.0
+anchor_right = 0.9
+anchor_bottom = 1.0
+offset_top = -130.0
+offset_bottom = -10.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_explicacao")
+
+[node name="TextoExplicacao" type="Label" parent="Explicacao" unique_id=1460011431]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.8667, 0.8667, 0.8667, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+text = "..."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=837264859]
+stream = ExtResource("3_music")
+autoplay = true

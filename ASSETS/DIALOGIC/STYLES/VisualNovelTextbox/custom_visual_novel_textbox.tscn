@@ -201,15 +201,40 @@ _data = {
 }
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0grvl"]
-bg_color = Color(0.9270924, 0.3642622, 0.65102595, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35elu"]
-bg_color = Color(0.49850887, 5.7756904e-07, 0.28534538, 0.59607846)
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.05, 0.05, 0.05, 0.92)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.09803922, 0.24705882, 0.54901963, 1)
+border_color = Color(1, 0.549, 0, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(1, 0.549, 0, 0.25)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35elu"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.02, 0.02, 0.02, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.549, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(1, 0.549, 0, 0.3)
+shadow_size = 8
 
 [node name="VN_TextboxLayer" type="Control" unique_id=1069355480]
 layout_mode = 3
@@ -223,14 +248,14 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 script = ExtResource("1_bpydr")
-box_panel = "res://addons/dialogic/Modules/DefaultLayoutParts/Layer_VN_Textbox/vn_textbox_default_panel.tres"
-box_size = Vector2(550, 150)
+box_panel = "res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/vn_custom_textbox_panel.tres"
+box_size = Vector2(800, 180)
 name_label_use_global_font = false
 name_label_font = "uid://c731g01hgfie2"
 name_label_use_global_font_size = false
 name_label_custom_font_size = 18
 name_label_box_panel = "res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/vn_textbox_name_label_panel.tres"
-name_label_box_modulate = Color(0, 0, 0, 1)
+name_label_box_modulate = Color(1, 1, 1, 1)
 name_label_alignment = 1
 
 [node name="Animations" type="AnimationPlayer" parent="." unique_id=652692692]
@@ -268,16 +293,16 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -50.0
-offset_right = 150.0
+offset_left = -400.0
+offset_top = -180.0
+offset_right = 400.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 
 [node name="DialogTextPanel" type="PanelContainer" parent="Anchor/AnimationParent/Sizer" unique_id=935131768]
 unique_name_in_owner = true
-self_modulate = Color(0.00784314, 0.00784314, 0.00784314, 0.843137)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -292,12 +317,12 @@ metadata/_edit_layout_mode = 1
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
-theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/default_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_fonts/normal_font = ExtResource("3_0grvl")
-theme_override_font_sizes/normal_font_size = 15
-theme_override_font_sizes/bold_font_size = 15
-theme_override_font_sizes/bold_italics_font_size = 15
-theme_override_font_sizes/italics_font_size = 15
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 20
+theme_override_font_sizes/bold_italics_font_size = 20
+theme_override_font_sizes/italics_font_size = 20
 bbcode_enabled = true
 text = "Some default text"
 visible_characters_behavior = 1
@@ -339,11 +364,10 @@ mouse_filter = 2
 
 [node name="NameLabelPanel" type="PanelContainer" parent="Anchor/AnimationParent/Sizer/DialogTextPanel/NameLabelHolder" unique_id=144758395]
 unique_name_in_owner = true
-self_modulate = Color(0.00784314, 0.00784314, 0.00784314, 0.843137)
 layout_mode = 1
-offset_left = 142.0
+offset_left = 10.0
 offset_top = -42.0
-offset_right = 166.0
+offset_right = 60.0
 offset_bottom = -17.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_35elu")

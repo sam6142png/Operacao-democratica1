@@ -1,4 +1,0 @@
-join PROTA (Confuso(Coçando a cabeça)) center [animation="Fade In" length="0.5" wait="true"]
-PROTA: Hmm... não tá certo ainda
-PROTA (Pensando): O velho falou que a cifra funciona avançando letras no alfabeto... preciso pensar em quantas posições elas foram deslocadas
-leave PROTA [animation="Fade Out" length="0.4" wait="true"]

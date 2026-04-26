@@ -19,7 +19,7 @@
 &"portraits": {
 "Apontando": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/AthenaApontando.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Brava": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Brava.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +37,7 @@
 },
 "Confusa/Pensando": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Pensando.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -46,7 +46,16 @@
 },
 "Falando": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Falando.png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Falando com raiva": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Brava.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -59,12 +68,12 @@
 },
 "mirror": false,
 "offset": Vector2(0, 0),
-"scale": 0.75,
+"scale": 1,
 "scene": ""
 },
 "Rindo": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Rindo.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -72,5 +81,5 @@
 "scene": ""
 }
 },
-&"scale": 0.75
+&"scale": 0.6
 }

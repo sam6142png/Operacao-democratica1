@@ -118,18 +118,24 @@ func _apply_box_settings() -> void:
 	var dialog_text_panel: PanelContainer = %DialogTextPanel
 
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color("#0A0A1E")
-	style.bg_color.a = 0.92
+	style.bg_color = Color("#0c0c0c")
+	style.bg_color.a = 0.65
 	style.border_width_left = 2
 	style.border_width_right = 2
 	style.border_width_top = 2
 	style.border_width_bottom = 2
-	style.border_color = Color("#59A5FF")
-	style.anti_aliasing = false
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
+	style.border_color = Color(1.0, 0.549, 0.0, 0.8)
+	style.anti_aliasing = true
+	style.corner_radius_top_left = 16
+	style.corner_radius_top_right = 16
+	style.corner_radius_bottom_right = 16
+	style.corner_radius_bottom_left = 16
+	style.shadow_color = Color(1.0, 0.549, 0.0, 0.25)
+	style.shadow_size = 12
+	style.content_margin_left = 20
+	style.content_margin_right = 20
+	style.content_margin_top = 20
+	style.content_margin_bottom = 20
 	dialog_text_panel.add_theme_stylebox_override(&'panel', style)
 
 	dialog_text_panel.self_modulate = Color.WHITE
@@ -168,18 +174,25 @@ func _apply_name_label_settings() -> void:
 	var name_label_panel: PanelContainer = %NameLabelPanel
 
 	var name_style = StyleBoxFlat.new()
-	name_style.content_margin_left = 10
-	name_style.content_margin_right = 10
-	name_style.content_margin_top = 5
-	name_style.content_margin_bottom = 5
+	name_style.content_margin_left = 12
+	name_style.content_margin_right = 12
+	name_style.content_margin_top = 6
+	name_style.content_margin_bottom = 6
 
-	name_style.bg_color = Color("4b4b4bcb")
+	name_style.bg_color = Color("#050505")
+	name_style.bg_color.a = 0.85
 	name_style.border_width_left = 2
 	name_style.border_width_right = 2
 	name_style.border_width_top = 2
 	name_style.border_width_bottom = 2
-	name_style.border_color = Color("fff8f7ff")
-	name_style.anti_aliasing = false
+	name_style.border_color = Color(1.0, 0.549, 0.0, 1.0)
+	name_style.anti_aliasing = true
+	name_style.corner_radius_top_left = 10
+	name_style.corner_radius_top_right = 10
+	name_style.corner_radius_bottom_right = 10
+	name_style.corner_radius_bottom_left = 10
+	name_style.shadow_color = Color(1.0, 0.549, 0.0, 0.3)
+	name_style.shadow_size = 8
 	name_label_panel.add_theme_stylebox_override(&'panel', name_style)
 	name_label_panel.self_modulate = Color.WHITE
 

@@ -1,0 +1,5 @@
+join PROTA (Pensando) center [animation="Fade In" length="0.7" wait="true"]
+PROTA: Então... esses são os direitos e deveres que o regime tentou apagar
+PROTA (Determinado): Mas não conseguiram. Ainda dá pra reconstruir isso
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]
+[signal arg="paginas_encerradas"]

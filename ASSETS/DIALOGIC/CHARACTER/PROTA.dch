@@ -26,7 +26,7 @@
 "scale": 1.0,
 "scene": ""
 },
-"Confuso(Coçando a cabeça)": {
+"Confuso_Cabeca": {
 "export_overrides": {
 "image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Coçando a cabeça (confusão leve, mão no cabelo).png\""
 },
@@ -40,8 +40,8 @@
 "image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Prota Andando de fininho.png\""
 },
 "mirror": false,
-"offset": Vector2(0, 195),
-"scale": 1.16,
+"offset": Vector2(0, 0),
+"scale": 1,
 "scene": ""
 },
 "Determinado": {
@@ -56,6 +56,15 @@
 "Falando": {
 "export_overrides": {
 "image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Falando (boca aberta, olho fechado).png\""
+},
+"mirror": false,
+"offset": Vector2(0, 0),
+"scale": 1,
+"scene": ""
+},
+"Machucado": {
+"export_overrides": {
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/PROTA/Dante Mao machucada.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -99,5 +108,5 @@
 "scene": ""
 }
 },
-&"scale": 0.7
+&"scale": 0.6
 }

@@ -16,7 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_kurgw")
-text_color_hovered = Color(0.74509805, 0.74509805, 0.74509805, 1)
+text_color_hovered = Color(1, 0.65, 0.2, 1)
 
 [node name="Choices" type="VBoxContainer" parent="." unique_id=852070515]
 layout_mode = 1

@@ -4,5 +4,3 @@
 
 [node name="GameScene" type="Node2D" unique_id=802898337]
 script = ExtResource("1_w1t1b")
-
-[node name="FadeLayer" type="CanvasLayer" parent="." unique_id=1102557086]

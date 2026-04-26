@@ -60,15 +60,17 @@ func _make_choice_style(bg: Color, border: Color) -> StyleBoxFlat:
 	style.border_width_top = 2
 	style.border_width_bottom = 2
 	style.border_color = border
-	style.corner_radius_top_left = 0
-	style.corner_radius_top_right = 0
-	style.corner_radius_bottom_left = 0
-	style.corner_radius_bottom_right = 0
-	style.anti_aliasing = false
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_left = 10
+	style.corner_radius_bottom_right = 10
+	style.anti_aliasing = true
 	style.content_margin_left = 14
 	style.content_margin_right = 14
 	style.content_margin_top = 8
 	style.content_margin_bottom = 8
+	style.shadow_color = Color(1.0, 0.549, 0.0, 0.3)
+	style.shadow_size = 6
 	return style
 
 
@@ -99,10 +101,17 @@ func _apply_export_overrides() -> void:
 	layer_theme.set_color(&'font_focus_color', &'Button', text_color_focused)
 
 	# Estilos customizados dos botões de escolha
-	var style_normal = _make_choice_style(Color("#0A0A1EEB"), Color("#59A5FF"))
-	var style_hovered = _make_choice_style(Color("#193F8C"), Color("#59A5FF"))
-	var style_pressed = _make_choice_style(Color("#0D2660"), Color("#59A5FF"))
-	var style_focused = _make_choice_style(Color("#193F8C"), Color("#FFFFFF"))
+	var bg_normal = Color("#050505")
+	bg_normal.a = 0.85
+	var bg_hover = Color("#151515")
+	bg_hover.a = 0.95
+	var border_normal = Color(1.0, 0.549, 0.0, 0.8)
+	var border_hover = Color(1.0, 0.65, 0.2, 1.0)
+
+	var style_normal = _make_choice_style(bg_normal, border_normal)
+	var style_hovered = _make_choice_style(bg_hover, border_hover)
+	var style_pressed = _make_choice_style(bg_hover, border_hover)
+	var style_focused = _make_choice_style(bg_hover, border_hover)
 
 	layer_theme.set_stylebox(&'normal', &'Button', style_normal)
 	layer_theme.set_stylebox(&'hover', &'Button', style_hovered)

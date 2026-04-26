@@ -46,7 +46,7 @@
 },
 "Falando": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Luis/Luis Falando.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -55,7 +55,7 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Luis/Luis Neutro.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -64,7 +64,7 @@
 },
 "Rindo": {
 "export_overrides": {
-"image": ""
+"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Luis/Luis Sorrindo e Falando.png\""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -72,5 +72,5 @@
 "scene": ""
 }
 },
-&"scale": 0.7
+&"scale": 0.6
 }

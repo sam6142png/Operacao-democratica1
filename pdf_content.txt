@@ -1,0 +1,700 @@
+OPERAÇÃO DEMOCRÁTICA  
+Context Project — Fases 1 e 2  
+Godot 4.x · GDScript · Dialogic Alpha 19  
+ 
+VISÃO GERAL DO PROJETO  
+Operação Democrática é um jogo narrativo pixel art estilo Point -and-Click Adventure ambientado na 
+cidade fictícia de Usina Velha. O jogador controla Dante, filho do ex -prefeito, que lidera uma resistência 
+contra um regime autoritário. O jogo combina diálog os com escolhas morais, minigames educativos 
+sobre democracia e puzzles narrativos.  
+ 
+Propriedade  Valor  
+Engine  Godot 4.6+  
+Linguagem  GDScript  
+Resolução  1920x1080  
+Diálogos  Dialogic Alpha 19  
+AutoLoad: GameState  res://ASSETS/SCRIPTS/GameState.gd  
+AutoLoad: TimelineManager  Gerencia chamadas de timelines do Dialogic  
+Fonte principal  res://ASSETS/FONTES/determination.ttf  
+ 
+ 
+AUTOLOADS GLOBAIS  
+GameState.gd  
+Guarda o estado persistente entre cenas e fases. Qualquer variável que precise ser lembrada entre 
+cenas fica aqui.  
+extends Node  
+ 
+var DecisaoRadio_Fase2: String = ""  
+# Valores possíveis: "divulgar", "alterar", "guardar"  
+ 
+TimelineManager — como usar  
+Função principal para chamar timelines do Dialogic. Sempre usar com await para o diálogo terminar 
+antes de continuar.  
+await TimelineManager.tocar_dialogo("nome_da_timeline")  
+ 
+ 
+FASE 1 — Um pequeno passo para o homem  
+Dinâmica geral  
+A Fase 1 é 100% narrativa — sem minigames de mecânica. Toda a interatividade acontece dentro das 
+timelines do Dialogic via escolhas (sintaxe de indentação com traço). O jogador acompanha Dante desde 
+a manifestação na rua até a busca pelo livro de Direitos e Deveres na Vila do Açude  Seco.  
+Cena principal: game_scene.tscn  
+Nó raiz: Node. Script anexado ao nó raiz.  
+extends Node  
+ 
+func _ready() -> void:  
+    await TimelineManager.tocar_dialogo("FASE1")  
+    await TimelineManager.tocar_dialogo("Dante_na_usina - Fase1")  
+    await TimelineManag er.tocar_dialogo("radio_abertura")  
+    # radio_abertura emite sinal iniciar_minigame ao final  
+ 
+func _on_dialogic_signal(valor: String) -> void:  
+    match valor:  
+        "iniciar_minigame":  
+            get_tree().change_scene_to_file(  
+                "res://ASSETS/CENAS/minigame_radio_cifra.tscn")  
+        "minigame_encerrado":  
+            get_tree().change_scene_to_file(  
+                "res://ASSETS/CENAS/game_scene.tscn")  
+ 
+Timelines da Fase 1  
+Timeline  Conteúdo  
+FASE1  Cena 1: manifestação, protestante, militar, encontro com o velho, casa do velho, 
+missão do livro  
+Dante_na_usina - 
+Fase1  Cena 2: Dante na usina, recrutamento de Atena e Luis, partida para a Vila  
+Cena_VilaAcude  Cena 3: chegada na vila, senhora, peixeiro, busca pelo livro (escolhas 
+aninhadas), livro encontrado  
+ 
+Sintaxe de escolhas do Dialogic (Fase 1)  
+Escolhas usam traço + indentação com TAB. Escolhas aninhadas usam TAB duplo. Opção vazia cai no 
+código abaixo del a (usado na chave dourada após chave verde).  
+- Dizer a verdade  
+    PROTA: O senhor sabe quem eu sou?  
+    ... 
+- Mentir  
+    PROTA: A gente tá procurando o pai dela...  
+    ... 
+ 
+Timeline completa: Cena_VilaAcude (texto bruto)  
+Cole diretamente no editor do Dialogic:  
+ 
+[background arg="res://ASSETS/SPRITES/FUNDOS/VilaAcude.png" fade="1.0" 
+transition="Simple Fade" wait="true"]  
+join PROTA (Neutro) center [animation="Slide From Left" length="0.8"]  
+join ATENA (Neutro) left  
+join Luis ( Neutro) leftmost  
+PROTA (Falando): Então essa é a Vila do Açude Seco... parece que o tempo parou aqui  
+Luis (Falando): Olha os olhares dessas pessoas... parece que a gente não é bem -
+vindo  
+update ATENA (Falando)  
+ATENA: Faz sentido. Um lugar dominado pelo regi me não confia em estranhos 
+facilmente  
+PROTA: Tem uma senhora ali, devemos perguntar algo pra ela  
+join SENHORA right [animation="Fade In" length="0.7"]  
+PROTA (Falando): EI SENHORA! PODERIA NOS AJUDAR?  
+SENHORA (Falando): Não precisa gritar comigo, sem juízo!  Sou véia mas num sou surda  
+SENHORA (Falando): Vocês não parecem daqui.  
+PROTA: A senhora tá certa. Estamos procurando um peixeiro que mora aqui nessa vila  
+SENHORA: Hum... Eu não deveria dizer isso pra um bando de menino véi sem juízo, mas 
+estou reconhecend o seu rosto  
+SENHORA (Falando): Ucê é o fi do antigo prefeito né, menino?  
+PROTA (Sorrindo): Sou sim, senhora.  
+SENHORA (Falando): Ele vive isolado. Mas cuidado com o que vão falar pra ele...  
+leave SENHORA [animation="Fade Out" length="0.8" wait="true"]  
+update PROTA (Pensando)  
+PROTA (Pensando): Interessante... será que esse peixeiro é tão desconfiado quanto o 
+velho?  
+update Luis (Falando)  
+Luis (Falando): Ô Dante, olha aqui... tem pegadas frescas no chão  
+update PROTA (Surpreso)  
+PROTA (Apontando): Alguém mora por aqui sim. Vamos seguir essas pegadas  
+update PROTA (Determinado) rightmost [animation="Slide To Right" length="1.5" 
+wait="true"]  
+update ATENA [animation="Slide To Right" length="1.5"]  
+update Luis [animation="Slide To Right " length="1.5" wait="true"]  
+[background arg="res://ASSETS/SPRITES/FUNDOS/frente da cada do peixeiropng.png" 
+fade="0.9" transition="Simple Fade" wait="true"]  
+join PROTA (Determinado) leftmost [animation="Slide From Left" length="0.7"]  
+join ATENA (Neutro) le ft 
+join Luis (Neutro) rightmost  
+PROTA (Pensando): Se o livro ainda existir, talvez ainda exista uma faísca de 
+esperança nessa cidade  
+update PROTA (Falando)  
+PROTA: Certo... chegou a hora. Vou bater na porta  
+update PROTA (Surpreso) [animation="Heartbeat"]  
+PROTA (Pensando): Agora não é só sobre mim. É sobre provar que sabemos o que 
+estamos defendendo  
+[wait time="1.2"]  
+join PEIXEIRO (Neutro) right [animation="Slide From Right" length="0.9" 
+wait="true"]  
+PEIXEIRO (Falando e Ameaçando): O que vocês querem?  
+- Dizer a verdade  
+    update PROTA (Falando)  
+    PROTA: O senhor sabe quem eu sou?  
+    update PEIXEIRO [animation="Heartbeat" length="0.8"]  
+    PEIXEIRO: Você me parece familiar... você é o Dante, filho do ex -prefeito da 
+Usina Velha, não é?  
+    PROTA (Sorrindo): Sou eu mesmo. O senhor pode nos ajudar?  
+    update PEIXEIRO (Falando)  
+    PEIXEIRO: Claro. Entrem.  
+- Mentir  
+    update PROTA (Falando)  
+    PROTA: A gente tá procurando o pai dela... — (aponta para Atena)  
+    update ATENA (Surpresa) [animation="Shake X" length="0.7"]  
+    PEIXEIRO: E por que vocês vieram justamente até mim?  
+    update ATENA (Falando)  
+    ATENA: Fala logo a verdade... ele parece confiável  
+    update PROTA (Determinado)  
+    PROTA: Tá certo... o senhor tem um livro chamado Direitos e Deveres Civis? Sou 
+filho do ex -prefeito  
+    update PEIXEIRO [animation="Heartbeat" length="0.8"]  
+    PEIXEIRO: Agora sim faz sentido... Esse livro tá aqui em casa, mas não lembro 
+onde guardei  
+    PEIXEIRO (Falando):  Pode entrar  
+[background arg="res://ASSETS/SPRITES/FUNDOS/Interior Casa Peixeiro.jpeg" 
+fade="0.8" transition="Simple Fade" wait="true"]  
+join PROTA leftmost [animation="Slide From Left" length="0.8" wait="true"]  
+join ATENA left  
+join Luis rightmost  
+PEIXEIRO (Falando): Só peço uma coisa... me ajudem a procurar.  
+ATENA: Vamos nos dividir. Assim achamos mais rápido  
+PROTA: Certo. Eu começo a busca. Onde primeiro...  
+- Quarto  
+    [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.jpeg" fade="0.7" 
+transition="Simple Fade" wait="true"]  
+    join PROTA (De fininho) center [animation="Fade In" length="0.7"]  
+    PROTA (Falando): Quarto simples... móveis velhos... muita poei ra...  
+    update PROTA (Surpreso)  
+    PROTA: Espera... tem um baú no canto. Vou tentar abrir  
+    PROTA (Confuso(Coçando a cabeça)): Trancado. Preciso de uma chave ou forço essa 
+coisa  
+    - Procurar a chave  
+        [background arg="res://ASSETS/SPRITES/FUND OS/Interior Casa Peixeiro.jpeg" 
+fade="0.6" transition="Simple Fade" wait="true"]  
+        join PROTA (Falando) leftmost [animation="Slide From Left" length="0.7"]  
+        join ATENA (Neutro) right  
+        PROTA: Atena, achou alguma coisa?  
+        ATENA: Nada muito útil... mas achei essas chaves. Guardei, vai que servem  
+        [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.jpeg" 
+fade="0.6" transition="Simple Fade" wait="true"]  
+        join PROTA (Falando) center [animation="Fa de In" length="0.7"]  
+        PROTA: Tenho duas chaves aqui. Qual eu uso primeiro...  
+        - Chave verde  
+            update PROTA (Surpreso) [animation="Shake X" length="0.8"]  
+            PROTA: Entra mas não gira... vou forçar  
+            update PROTA (C onfuso(Coçando a cabeça))  
+            PROTA: Aarrgh! Machuquei a mão...  
+            join ATENA (Falando) right [animation="Slide From Right" length="0.7"]  
+            ATENA: Calma! Usa esse suprimento... deixa eu tentar com a outra  
+        - Chave dourada  
+        update ATENA (Falando)  
+        ATENA: A fechadura girou fácil! Abre aí, Dante  
+        PROTA (Sorrindo): Dentro do baú... é o livro!  
+        ATENA: Tem outros objetos. Vou guardar, pode ser útil depois  
+    - Quebrar o baú  
+        update PROTA (Deter minado) [animation="Shake X" length="1.0"]  
+        PROTA: Não tenho tempo. Vou usar esse martelo daqui  
+        [wait time="0.8"]  
+        update PROTA (Surpreso)  
+        PROTA: A madeira cedeu. Dentro tem... o livro!  
+- Porão  
+    [background arg="res://ASSET S/SPRITES/FUNDOS/Porao Peixeiro.jpeg" fade="0.7" 
+transition="Simple Fade" wait="true"]  
+    join PROTA (De fininho) center [animation="Fade In" length="0.8"]  
+    PROTA (Falando): Escuro aqui embaixo... mas pode ser um bom esconderijo  
+    update PROTA (Surpreso) [animation="Shake X" length="1.0"]  
+    PROTA: AAAH! O CHÃO CEDEU!  
+    [wait time="0.5"]  
+    join ATENA (Falando) right [animation="Slide From Right" length="0.7"]  
+    ATENA: Sério mesmo? Ainda bem que eu trouxe suprimentos...  
+    ATENA (Rindo): Vai pro quarto. Mais sorte por lá  
+    [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.jpeg" fade="0.7" 
+transition="Simple Fade" wait="true"]  
+    join PROTA (De fininho) center [animation="Fade In" length="0.7"]  
+    PROTA (Fala ndo): Quarto simples... móveis velhos...  
+    update PROTA (Surpreso)  
+    PROTA: Espera... tem um baú no canto. Vou tentar abrir  
+    PROTA (Confuso(Coçando a cabeça)): Trancado.  
+    - Procurar a chave  
+        [background arg="res://ASSETS/SPRITES/FUNDOS/Interior Casa Peixeiro.jpeg" 
+fade="0.6" transition="Simple Fade" wait="true"]  
+        join PROTA (Falando) leftmost [animation="Slide From Left" length="0.7"]  
+        join ATENA (Neutro) right  
+        PROTA: Atena, achou alguma coisa?  
+        ATENA: Achei essas chaves. Guardei, vai que servem  
+        [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.jpeg" 
+fade="0.6" transition="Simple Fade" wait="true"]  
+        join PROTA (Falando) center [anim ation="Fade In" length="0.7"]  
+        PROTA: Tenho duas chaves. Qual primeiro...  
+        - Chave verde  
+            update PROTA (Surpreso) [animation="Shake X" length="0.8"]  
+            PROTA: Não gira... vou forçar  
+            PROTA: Aarrgh! Machuquei a m ão...  
+            join ATENA (Falando) right [animation="Slide From Right" length="0.7"]  
+            ATENA: Calma! Usa o suprimento... deixa eu tentar com a outra  
+        - Chave dourada  
+        ATENA: Girou fácil! Abre aí  
+        PROTA (Sorrindo): É o livro!  
+    - Quebrar o baú  
+        update PROTA (Determinado) [animation="Shake X" length="1.0"]  
+        PROTA: Martelo nisso  
+        update PROTA (Surpreso)  
+        PROTA: Dentro tem... o livro!  
+[background arg="res://ASSETS/ SPRITES/FUNDOS/Interior Casa Peixeiro.jpeg" 
+fade="0.8" transition="Simple Fade" wait="true"]  
+join PROTA (Sorrindo) leftmost [animation="Fade In" length="0.7"]  
+join PEIXEIRO right [animation="Fade In" length="0.7"]  
+PROTA: Senhor... é esse o livro?  
+PEIXEIRO (Falando): É ele mesmo. O tempo não perdoou, mas ainda tem muito valor  
+join Luis left [animation="Fade In" length="0.7"]  
+join ATENA center [animation="Fade In" length="0.7"]  
+Luis (Falando): Espera... tem coisa faltando aqui. Várias páginas  
+ATENA (Falando):  Eu também percebi. Alguém mexeu nisso  
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA: Preciso falar com o velho. Talvez saiba o que tá acontecendo  
+leave PEIXEIRO [animation="Fade Out" length="0.7"]  
+leave Luis [animation="Slide To Left" length="0.7"]  
+leave ATENA [animation="Slide To Left" length="0.7"]  
+leave PROTA [animation="Slide To Left" length="0.8" wait="true"]  
+ 
+ 
+FASE 2 — Voz nas Entrelinhas  
+Dinâmica geral  
+A Fase 2 combina timelines do Dialogic com um minigame de mecânica desenvolvido em GDScript. O 
+Dialogic cuida dos backgrounds, sons, expressões e diálogos. O GDScript cuida exclusivamente da 
+mecânica da Cifra de César (slider, labels, botões de confirmação  e decisão). A comunicação entre os 
+dois sistemas acontece via sinais do Dialogic e chamadas de TimelineManager dentro do script.  
+ 
+⚠️ REGRA DE OURO DA FASE 2 
+Dialogic = visual + narrativa. GDScript = mecânica. Os dois nunca se misturam na mesma 
+responsabil idade.  
+ 
+Fluxo completo da Fase 2  
+# Etapa  Responsável  
+1 radio_abertura (timeline)  Dialogic — background da rádio + diálogo de contexto  
+2 Sinal: iniciar_minigame  game_scene detecta e troca para minigame_radio_cifra.tscn  
+3 Mensagem 1 — Cifra de César  GDScript — slider + labels + verificação  
+4 radio_mensagem_decifrada  Dialogic — reação do Dante (passado da cidade)  
+5 Mensagem 2 — Cifra de César  GDScript — carrega próxima automaticamente  
+6 radio_mensagem_decifrada_2  Dialogic — alívio cômico (queijo coalho)  
+7 Mensagem 3 — Cifra de César  GDScript — última mensagem  
+8 radio_mensagem_decifrada_3  Dialogic — revelação do plano na Praça  
+9 radio_escolha_intro  Dialogic — Dante pondera as 3 opções  
+10 Painel de decisão aparece  GDScript — 3 botões visíveis  
+11 radio_decisao_X  Dialogic — reação à escolha do jogador  
+12 radio_encerramento  Dialogic — gancho para Fase 3 + sinal minigame_encerrado  
+13 Sinal: minigame_encerrado  Script detecta e volta para game_scene.tscn  
+ 
+Cena: minigame_radio_cifra.tscn  
+Árvore de nós  
+MinigameRadioCifra (Control — nó raiz, transparente)  
+├── PainelRadio (PanelContainer)  
+│   └── Layout (VBoxContainer)  
+│       ├── MensagemCifrada (Label)  
+│       ├── MensagemDecifrada (Label)  
+│       ├── DeslocamentoLabel (Label)  
+│       ├── RodaCifra (HSlider)  
+│       ├── DicaLabel (Label)  
+│       └── BotaoConfirmar (Button)  
+└── PainelDecisao (Control — visível=false por padrão)  
+    └── LayoutDecisao (HBoxContainer)  
+        ├── BotaoDivulgar (Button)  
+        ├── BotaoAlterar (Button)  
+        └── BotaoGuardar (Button)  
+ 
+Para que serve cada nó  
+Nó Função  
+MinigameRadioCifra  Nó raiz transparente. Sem background — o Dialogic já colocou o fundo antes de 
+trocar de cena  
+PainelRadio  Container visual da interface da cifra. Estilizado com tons laranja/marrom  
+Layout (VBox)  Empilha os elementos verticalmente com separação automática  
+MensagemCifrada  Exibe o texto cifrado atual (atualizado pelo script a cada mensagem)  
+MensagemDecifrada  Exibe o texto sendo decifrado em tempo real conforme o slider move  
+DeslocamentoLabel  Mostra o número do deslocamento atual (ex: Deslocamento: 3)  
+RodaCifra (HSlider)  O jogador arrasta para testar deslocamentos de 0 a 25  
+DicaLabel  Exibe dicas progressivas após erros. Vazio por padrão  
+BotaoConfirmar  Dispara a verificação do gabarito  
+PainelDecisao  Invisível até todas as mensagens serem decifradas. Contém os 3 botões de 
+escolha  
+LayoutDecisao 
+(HBox)  Alinha os 3 botões de decisão lado a lado horizontalmente  
+BotaoDivulgar  Escolha: divulgar informação para a população (+apoio, +exposição)  
+BotaoAlterar  Escolha: alterar conteúdo antes de vazar (confunde regime, eticamente duvidoso)  
+BotaoGuardar  Escolha: guardar estrategicamente (seguro agora, afeta fases seguintes)  
+ 
+Sinais e para que servem  
+Sinal  Emitido em  Capturado em  
+iniciar_minigame  radio_abertura (última linha)  game_scene._on_dialogic_signal()  
+minigame_encerrado  radio_encerramento (última linha)  minigame_radio_cifra._on_dialogic_signal()  
+ 
+Script completo: game_scene.gd  
+extends Node  
+ 
+func _ready() -> void:  
+    Dialogic.signal_event.connect(_on_dialogic_signal)  
+    await TimelineManager.tocar_dialogo("FASE1")  
+    await TimelineManager.tocar_dialogo("Dante_na_usina - Fase1")  
+    await TimelineManager.tocar_dialogo("radio_abertura")  
+    # radio_abertura emite s inal iniciar_minigame ao final  
+    # _on_dialogic_signal captura e troca de cena  
+ 
+func _on_dialogic_signal(valor: String) -> void:  
+    match valor:  
+        "iniciar_minigame":  
+            get_tree().change_scene_to_file(  
+                "res://ASSETS/CENAS/minigame_radio_cifra.tscn")  
+        "minigame_encerrado":  
+            get_tree().change_scene_to_file(  
+                "res://ASSETS/CENAS/game_scene.tscn")  
+ 
+Script completo: minigame_radio_cifra.gd  
+extends Control  
+ 
+const MENSAGENS = [  
+    { 
+        "cifrada": "RSHUDCDR FLQCD — UHJLVWURV GHVWUXLGRV FRQIRUPH RUGHQDGR",  
+        "gabarito": "OPERACAO CINZA — REGISTROS DESTRUIDOS CONFORME ORDENADO",  
+        "deslocamento": 3,  
+        "timeline_acerto": "radio_mensagem_decifra da" 
+    }, 
+    { 
+        "cifrada": "HQFRPHQGD GH TXHLMR FRDOKR FKHJRX DR SDODFlr FHQWUDO",  
+        "gabarito": "ENCOMENDA DE QUEIJO COALHO CHEGOU AO PALACIO CENTRAL",  
+        "deslocamento": 3,  
+        "timeline_acerto": "radio_mensagem_decifrada_2"  
+    }, 
+    { 
+        "cifrada": "RSHUDCDR FRQVHQVR — PRELOLCDCDR QD SUDC GR SDODFIR",  
+        "gabarito": "OPERACAO CONSENSO — MOBILIZACAO NA PRACA DO PALACIO",  
+        "deslocamento": 3,  
+        "timeline_acerto": "radio_mensagem_decifrada_3"  
+    } 
+] 
+ 
+var mensagem_atual: int = 0  
+var tentativas: int = 0  
+ 
+@onready var mensagem_cifrada_label: Label   = $PainelRadio/Layout/MensagemCifrada  
+@onready var mensagem_decifrada_label: Label = 
+$PainelRadio/Layout/MensagemDecifrada  
+@onready var slider: HSlider                 = $PainelRadio/Layout/RodaCifra  
+@onready var deslocamento_label: Label       = 
+$PainelRadio/Layout/DeslocamentoLabel  
+@onready var botao_confirmar: Button         = $PainelRadio/Layout/BotaoConfirmar  
+@onready var dica_label: Label               = $PainelRadio/Layout/DicaLabel  
+@onready var painel_decisao: Control         = $PainelDecisao  
+ 
+func _ready() -> void:  
+    painel_decisao.visible = false  
+    dica_label.text = ""  
+    _carregar_mensagem(0)  
+    slider.value_changed.connect(_on_slider_changed)  
+    botao_confirmar.pressed.connect(_on_confirmar)  
+    $PainelDecisao/LayoutDecisao/BotaoDivulgar.pressed.connect(func(): 
+_decisao("divulgar"))  
+    $PainelDecisao/LayoutDecisao/BotaoAlterar.pressed.connect(func(): 
+_decisao("alterar"))  
+    $PainelDecisao/Lay outDecisao/BotaoGuardar.pressed.connect(func(): 
+_decisao("guardar"))  
+    Dialogic.signal_event.connect(_on_dialogic_signal)  
+ 
+func _on_dialogic_signal(valor: String) -> void:  
+    match valor:  
+        "minigame_encerrado":  
+            get_tree().change_scene_to_file("res://ASSETS/CENAS/game_scene.tscn")  
+ 
+func _bloquear_interacao() -> void:  
+    slider.editable = false  
+    botao_confirmar.disabled = true  
+ 
+func _liberar_interacao() -> void:  
+    slider.editable = true  
+    botao_confirmar.disabled = false  
+ 
+func _carregar_mensagem(indice: int) -> void:  
+    mensagem_atual = indice  
+    tentativas = 0  
+    slider.value = 0  
+    dica_label.text = ""  
+    mensagem_cifrada_label.text = MENSAGENS[indice]["cifrada"]  
+    mensagem_decifrada_label.text = ""  
+    deslocamento_label.text = "Deslocamento: 0"  
+ 
+func _on_slider_changed(valor: float) -> void:  
+    var deslocamento = int(valor)  
+    deslocamento_label.text = "Deslocamento: " + str(deslocamento)  
+    mensagem_decifra da_label.text = _decifrar(  
+        MENSAGENS[mensagem_atual]["cifrada"], deslocamento)  
+ 
+func _decifrar(texto: String, deslocamento: int) -> String:  
+    var resultado = ""  
+    for caractere in texto:  
+        if caractere == " " or caractere == " —": 
+            resultado += caractere  
+        elif caractere >= "A" and caractere <= "Z":  
+            var pos = (ord(caractere) - ord("A") - deslocamento + 26) % 26  
+            resultado += char(ord("A") + pos)  
+        else:  
+            resultado += caractere  
+    return resultado  
+ 
+func _on_confirmar() -> void:  
+    var tentativa = mensagem_decifrada_label.text.strip_edges()  
+    tentativas += 1  
+    if tentativa == MENSAGENS[mensagem_atual]["gabarito"]:  
+        await _acertou()  
+    else:  
+        await _errou()  
+ 
+func _acertou() -> void:  
+    _bloquear_interacao()  
+    dica_label.text = ""  
+    await 
+TimelineManager.tocar_dialogo(MENSAGENS[mensagem_atual]["timeline_acerto"])  
+    if mensagem_atual < MENSAGENS.size() - 1: 
+        _carregar_mensagem(mensagem_atual + 1)  
+        _liberar_interacao()  
+    else:  
+        await TimelineManager.tocar_dialogo("radio_escolha_intro")  
+        painel_decisao.visible = true  
+ 
+func _errou() -> void:  
+    _bloquear_interacao()  
+    if tentativas == 1:  
+        dica_label.text = "Dica: pense  em quantas posições cada letra foi 
+avançada."  
+        await TimelineManager.tocar_dialogo("radio_dica_leve")  
+    elif tentativas == 2:  
+        dica_label.text = "Dica: tente o número " + 
+str(MENSAGENS[mensagem_atual]["deslocamento"]) + "."  
+        await TimelineManager.tocar_dialogo("radio_dica_direta")  
+    else:  
+        dica_label.text = "Dica: o deslocamento é " + 
+str(MENSAGENS[mensagem_atual]["deslocamento"]) + "."  
+    _liberar_interacao()  
+ 
+func _decisao(escolha: String) -> void:  
+    GameState.DecisaoRadio_Fase2 = escolha  
+    painel_decisao.visible = false  
+    _bloquear_interacao()  
+    match escolha:  
+        "divulgar":  
+            await TimelineManager.tocar_dialogo("radio_decisao_divulgar")  
+        "alterar":  
+            await Ti melineManager.tocar_dialogo("radio_decisao_alterar")  
+        "guardar":  
+            await TimelineManager.tocar_dialogo("radio_decisao_guardar")  
+    await TimelineManager.tocar_dialogo("radio_encerramento")  
+    # troca de cena via sinal minigame_encerrado  
+ 
+Configuração visual dos nós (1920x1080)  
+Nó Configurações  
+PainelRadio  Position X:160 Y:80 | Min Size X:1600 Y:700 | StyleBoxFlat BG:#2B1A00 
+Border:#C47A00 Border Width:2 Corner:0 Margin:50  
+Layout (VBox)  Separation: 30  
+MensagemCifrada  Min Size X:1500 | Font Size:32 | Color:#C47A00 | Align:Center  
+MensagemDecifrada  Min Size X:1500 | Font Size:32 | Color:#FFFFFF | Align:Center  
+DeslocamentoLabel  Font Size:26 | Color:#C47A00 | Align:Center  
+RodaCifra  Min Size X:1500 Y:40 | Min:0 Max:25 Step:1  
+DicaLabel  Min Size X:1500 | Font Size:22 | Color:#FF6B00 | Autowrap:Word  
+BotaoConfirmar  Min Size X:400 Y:65 | Font Size:24 | StyleBoxFlat BG:#8B4500 Border:#C47A00  
+PainelDecisao  Anchor:Bottom Wide | Pos Y: -140 | Visible:OFF  
+LayoutDecisao  Separation:60 | Alignment:Center  
+Botões decisão  Min Size X:420 Y:65 | Font Size:24 | StyleBoxFlat BG:#5C2D00 Border:#C47A00 
+Corner:0  
+ 
+Timelines da Fase 2 — texto bruto  
+Cole cada bloco abaixo no Dialogic com o nome exato indicado.  
+ 
+radio_abertura  
+[background arg="res://ASSETS/SPRITES/FUNDOS/Radio.jpeg" fade="1.0" 
+transition="Simple Fade" wait="true"]  
+join PROTA (Pensando) center [animation="Fade In" length="0.8" wait="tru e"] 
+PROTA (Falando): Então é aqui que eles ficavam... a rádio antiga do velho  
+PROTA (Pensando): O senhor falou que meus pais usavam esse equipamento pra 
+interceptar as transmissões do regime  
+update PROTA (Surpreso) [animation="Heartbeat" length="0.7"]  
+PROTA: Será que ainda funciona?  
+[wait time="0.8"]  
+update PROTA (Determinado)  
+PROTA (Pensando): Só tem um jeito de descobrir  
+PROTA (Falando): Tá bem... vamos ver o que esse governo anda tramando  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+[signal arg="iniciar_minigame"]  
+ 
+radio_mensagem_decifrada  
+join PROTA (Surpreso) center [animation="Heartbeat" length="0.8" wait="true"]  
+PROTA: Espera... consegui decifrar  
+PROTA (Pensando): Operação Cinza — registros do primeiro reator da Usina Velha 
+foram destru ídos conforme ordenado. Nenhuma evidência restante.  
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA: O acidente do reator... não foi acidente nenhum  
+update PROTA (Determinado)  
+PROTA: Eles apagaram tudo. Destruíram os registros pra ninguém saber a verdade  
+PROTA (Pensando): Meu pai sabia disso. É por isso que ele foi tirado do poder  
+[wait time="1.2"]  
+update PROTA (Falando)  
+PROTA: Tem mais sinal aqui... deixa eu continuar  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_mensagem_decifrada_2  
+join PROTA (Surpreso) center [animation="Heartbeat" length="0.6" wait="true"]  
+PROTA: Outra transmissão... deve ser importante  
+[wait time="0.8"]  
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA (Pensando): Transmissão urgente ao Comandante Ferraz — sua encomenda de 
+queijo coalho chegou ao Palácio Central. Favor retirar até sexta -feira.  
+[wait time="1.0"]  
+update PROTA (Sorrindo)  
+PROTA: ...queijo coalho  
+update PROTA (Rindo)  
+PROTA: O regime tá usando o sistema de comunicação secreto pra falar de QUEIJO?  
+[wait time="0.8"]  
+update PROTA (Determinado)  
+PROTA: Tá bom... foco. Ainda tem mais uma transmissão  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_mensagem_decifrada_3  
+join PRO TA (Falando) center [animation="Fade In" length="0.6" wait="true"]  
+PROTA: Última transmissão... essa tem que ser a importante  
+[wait time="0.8"]  
+update PROTA (Surpreso) [animation="Heartbeat" length="1.0"]  
+PROTA (Pensando): Operação Consenso — mobilização de novos apoiadores confirmada 
+para a Praça do Palácio. Evento público com presença obrigatória da população. 
+Data: em breve.  
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA: Evento público... presença obrig atória  
+update PROTA (Determinado) [animation="Heartbeat" length="0.8"]  
+PROTA: Eles vão usar a praça pra recrutar gente. Transformar cidadão em fantoche do 
+regime na frente de todo mundo  
+update PROTA (Falando)  
+PROTA: Se eu não fizer nada, metade da cidade v ai virar fiel do governo sem nem 
+perceber  
+[wait time="1.0"]  
+update PROTA (Pensando)  
+PROTA (Pensando): Preciso de um plano. E preciso falar com o velho  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_escolha_intro  
+join PROTA (Determinado)  center [animation="Fade In" length="0.6" wait="true"]  
+PROTA: Tenho três transmissões nas mãos agora. A questão é... o que eu faço com 
+isso?  
+update PROTA (Pensando)  
+PROTA (Pensando): Posso divulgar tudo pra população saber o que tá acontecendo  
+PROTA (Pensa ndo): Mas se o regime perceber que alguém interceptou... vai ser 
+perigoso  
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA: Também posso alterar o conteúdo antes de vazar... confundir eles  
+PROTA (Pensando): Ou guardar estrategicamente e usar no momento certo  
+[wait time="0.8"]  
+update PROTA (Determinado)  
+PROTA: Não tem resposta fácil aqui. Cada escolha tem um preço  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_dica_leve  
+join PROTA (Confuso(Coçando a cabeça)) center [animation="Fade In" length="0.5" 
+wait="true"]  
+PROTA: Hmm... não tá certo ainda  
+PROTA (Pensando): O velho falou que a cifra funciona avançando letras no 
+alfabeto... preciso pensar em quantas posições elas foram  deslocadas  
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]  
+ 
+radio_dica_direta  
+join PROTA (Confuso(Coçando a cabeça)) center [animation="Shake X" length="0.6" 
+wait="true"]  
+PROTA: Ainda não... tô errando em alguma coisa  
+update PROTA (Pensando)  
+PROTA (Pensando): Espera... nas anotações do meu pai tinha um número marcado. Era 
+pequeno, menor que cinco  
+PROTA (Falando): Vou tentar de novo com mais calma  
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]  
+ 
+radio_decisao_divulgar  
+join PROTA (Det erminado) center [animation="Heartbeat" length="0.8" wait="true"]  
+PROTA: Decidi. O povo tem direito de saber o que esse governo tá planejando  
+update PROTA (Falando)  
+PROTA: Vou espalhar isso pela cidade. Quem souber a verdade vai pensar duas vezes 
+antes de apoiar o regime  
+update PROTA (Pensando)  
+PROTA (Pensando): É arriscado... mas silêncio também tem um preço  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_decisao_alterar  
+join PROTA (Pensando) center [animation="Fade In" length="0.6" wait="true"]  
+PROTA: Se eu vazar a mensagem original eles vão saber que foram interceptados  
+update PROTA (Determinado)  
+PROTA: Melhor alterar o conteúdo antes. Deixar o regime confuso por um temp o 
+update PROTA (Confuso(Coçando a cabeça))  
+PROTA (Pensando): Não é honesto... mas às vezes é preciso jogar sujo pra vencer 
+quem não tem escrúpulos  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_decisao_guardar  
+join PROTA (Pensando) cent er [animation="Fade In" length="0.6" wait="true"]  
+PROTA: Ainda não é hora de agir com isso  
+update PROTA (Determinado)  
+PROTA: Vou guardar. Uma informação usada na hora certa vale mais do que um grito no 
+escuro  
+update PROTA (Falando)  
+PROTA (Pensando): Paciên cia também é uma forma de resistência  
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]  
+ 
+radio_encerramento  
+[background arg="res://ASSETS/SPRITES/FUNDOS/Radio.jpeg" fade="0.8" 
+transition="Simple Fade" wait="true"]  
+join PROTA (Determinado) center [animation="Fade In" length="0.7" wait="true"]  
+PROTA: A Praça do Palácio... é lá que tudo vai acontecer  
+update PROTA (Falando)  
+PROTA: Preciso chegar lá antes deles. Avisar o pessoal, montar um plano  
+update PROTA (Pensando)  
+PROTA (Pensando): O velho tinha razão quando disse que meus pais preservavam a 
+verdade  
+update PROTA (Determinado) [animation="Tada" length="0.8"]  
+PROTA: E agora essa missão é minha  
+leave PROTA [animation="Slide To Left" length="0.8" wait="true"]  
+[signal arg="minigame_encerrado"]  
+ 
+ 
+O QUE DÁ PRA OTIMIZAR E REFATORAR  
+Nas timelines  
+• As timelines radio_dica_leve e radio_dica_direta são chamadas para qualquer uma das 3 
+mensagens — se quiser personalizar a dica por mensagem basta criar radio_dica_leve_1, 
+radio_dica_leve_2 etc. e ajustar o array MENSAGENS no script  
+• Os leave PROTA no final de cada timeline podem ser removidos se o personagem não aparecer 
+entre o minigame e o próximo diálogo — economiza tempo de animação  
+• Se o background da rádio for o mesmo e m todas as timelines da Fase 2 exceto 
+radio_encerramento, pode ser colocado apenas na radio_abertura e removido das demais pois o 
+Dialogic mantém o último background ativo  
+ 
+No script do minigame  
+• O deslocamento das 3 mensagens é o mesmo (3) — se quiser difi culdade crescente basta 
+mudar os valores no array MENSAGENS sem mexer na lógica  
+• A função _decifrar() pode ser movida para o GameState.gd e virar um utilitário global caso outras 
+fases precisem de cifra  
+• Os botões de decisão podem receber hover animado igual  ao menu principal usando 
+mouse_entered e mouse_exited com Tween  
+ 
+Na arquitetura geral  
+• O game_scene.tscn acumula responsabilidades — no futuro considere criar uma cena por fase 
+(fase1_scene, fase2_scene) e um gerenciador global de fases  
+• O GameState pode cr escer bastante — organize as variáveis por fase com prefixos (Fase1_, 
+Fase2_) para facilitar a leitura  
+ 
+ 
+CHECKLIST DE IMPLEMENTAÇÃO  
+Fase 1  
+• ✅ Timeline FASE1 criada e funcionando  
+• ✅ Timeline Dante_na_usina - Fase1 criada e funcionando  
+• ✅ Timeline Cena_VilaAcude com escolhas aninhadas  
+• ✅ game_scene.gd com TimelineManager  
+ 
+Fase 2  
+• ⬜ GameState.gd criado e registrado no AutoLoad  
+• ⬜ minigame_radio_cifra.tscn criada com árvore correta  
+• ⬜ Script do minigame colado e caminhos conferidos  
+• ⬜ game_scene .gd atualizado com _on_dialogic_signal  
+• ⬜ 10 timelines da Fase 2 criadas no Dialogic  
+• ⬜ Visual dos nós configurado no editor (1920x1080)  
+• ⬜ Background Radio.jpeg gerado e na pasta correta  
+• ⬜ Teste completo do fluxo do minigame  
