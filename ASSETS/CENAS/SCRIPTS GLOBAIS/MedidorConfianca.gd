@@ -7,7 +7,7 @@ const TEMPO_VISIVEL = 3.0
 @onready var anim: AnimationPlayer = get_node_or_null("Anim")
 @onready var sprite_balanca: TextureRect = get_node_or_null("MainControl/Panel/VBox/ScaleContainer/SpriteBalanca")
 @onready var label_valor: Label = get_node_or_null("MainControl/Panel/VBox/LabelValor")
-@onready var notification: Label = get_node_or_null("MainControl/Notification")
+@onready var label_notificacao: Label = get_node_or_null("MainControl/Notification")
 @onready var main_control: Control = get_node_or_null("MainControl")
 
 var angulo_atual: float = 0.0
@@ -41,13 +41,13 @@ func _atualizar_visual(valor: int, delta: int) -> void:
 	# Configura a notificação de ganho/perda
 	if delta != 0:
 		var prefixo = "+" if delta > 0 else ""
-		notification.text = prefixo + str(delta)
+		label_notificacao.text = prefixo + str(delta)
 		
 		if delta > 0:
-			notification.add_theme_color_override("font_color", Color("#59A5FF"))
+			label_notificacao.add_theme_color_override("font_color", Color("#59A5FF"))
 			anim.play("impact_pos")
 		else:
-			notification.add_theme_color_override("font_color", Color("#CC1A1A"))
+			label_notificacao.add_theme_color_override("font_color", Color("#CC1A1A"))
 			anim.play("impact_neg")
 	
 	# Cores do valor total
