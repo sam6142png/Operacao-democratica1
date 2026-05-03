@@ -1,6 +1,5 @@
 extends CanvasLayer
 
-# Menu de Pausa Global estilizado
 const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 
 var painel_pausa: Control
@@ -25,7 +24,6 @@ func alternar_pausa():
 	painel_pausa.visible = novo_estado
 	
 	if novo_estado:
-		# Pequena animação de entrada
 		menu_container.modulate.a = 0
 		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		tween.tween_property(menu_container, "modulate:a", 1.0, 0.15)
@@ -35,9 +33,9 @@ func _criar_interface():
 	painel_pausa.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(painel_pausa)
 	
-	# Fundo escurecido
+	# Fundo escurecido translúcido
 	var bg = ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.7)
+	bg.color = Color(0, 0, 0, 0.85)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	painel_pausa.add_child(bg)
 	
@@ -46,30 +44,30 @@ func _criar_interface():
 	painel_pausa.add_child(center)
 	
 	menu_container = PanelContainer.new()
-	menu_container.custom_minimum_size = Vector2(450, 380)
+	menu_container.custom_minimum_size = Vector2(400, 420)
 	center.add_child(menu_container)
 	
-	# Estilo do Painel (Tema Burocrático/Vintage)
+	# Estilo do Painel (Neon Cyberpunk)
 	var sb = StyleBoxFlat.new()
-	sb.bg_color = Color("#F4E4BC") # Cor de papel antigo
-	sb.border_width_left = 6
-	sb.border_width_top = 6
-	sb.border_width_right = 6
-	sb.border_width_bottom = 6
-	sb.border_color = Color("#3A2A1A") # Marrom escuro
-	sb.corner_radius_top_left = 2
-	sb.corner_radius_top_right = 2
-	sb.corner_radius_bottom_left = 2
-	sb.corner_radius_bottom_right = 2
-	sb.shadow_size = 20
-	sb.shadow_color = Color(0, 0, 0, 0.6)
+	sb.bg_color = Color(0.02, 0.02, 0.02, 0.95)
+	sb.border_width_left = 2
+	sb.border_width_top = 2
+	sb.border_width_right = 2
+	sb.border_width_bottom = 2
+	sb.border_color = Color("#FF8C00") # Neon Laranja
+	sb.corner_radius_top_left = 8
+	sb.corner_radius_top_right = 8
+	sb.corner_radius_bottom_left = 8
+	sb.corner_radius_bottom_right = 8
+	sb.shadow_size = 30
+	sb.shadow_color = Color("#FF8C00", 0.15)
 	menu_container.add_theme_stylebox_override("panel", sb)
 	
 	var margin = MarginContainer.new()
 	margin.add_theme_constant_override("margin_top", 40)
 	margin.add_theme_constant_override("margin_bottom", 40)
-	margin.add_theme_constant_override("margin_left", 50)
-	margin.add_theme_constant_override("margin_right", 50)
+	margin.add_theme_constant_override("margin_left", 40)
+	margin.add_theme_constant_override("margin_right", 40)
 	menu_container.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
@@ -82,37 +80,42 @@ func _criar_interface():
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titulo.add_theme_font_override("font", FONTE)
 	titulo.add_theme_font_size_override("font_size", 42)
-	titulo.add_theme_color_override("font_color", Color("#3A2A1A"))
+	titulo.add_theme_color_override("font_color", Color("#FF8C00"))
 	vbox.add_child(titulo)
 	
 	var sep = ColorRect.new()
-	sep.custom_minimum_size = Vector2(0, 3)
-	sep.color = Color("#3A2A1A")
+	sep.custom_minimum_size = Vector2(0, 2)
+	sep.color = Color(1, 1, 1, 0.1)
 	vbox.add_child(sep)
 	
 	# Botões
-	_criar_botao(vbox, "CONTINUAR", alternar_pausa)
+	_criar_botao(vbox, "CONTINUAR", alternar_pausa, Color("#22FF55"))
 	_criar_botao(vbox, "SALVAR PROGRESSO", func(): 
 		GameState.salvar_jogo()
-		_mostrar_feedback_save("História escrita.")
-	)
-	_criar_botao(vbox, "SAIR PARA O DESKTOP", func(): get_tree().quit())
+		_mostrar_feedback_save("Progresso salvo no sistema.")
+	, Color("#FF8C00"))
+	_criar_botao(vbox, "MENU PRINCIPAL", func():
+		get_tree().paused = false
+		painel_pausa.visible = false
+		FadeManager.carregar_cena("res://title_screen.tscn")
+	, Color("#FF8C00"))
+	_criar_botao(vbox, "SAIR PARA O DESKTOP", func(): get_tree().quit(), Color("#FF2222"))
 	
 	# Label de Feedback
 	label_feedback = Label.new()
 	label_feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label_feedback.add_theme_font_override("font", FONTE)
-	label_feedback.add_theme_font_size_override("font_size", 22)
-	label_feedback.add_theme_color_override("font_color", Color("#8B4513")) # SaddleBrown para parecer tinta
+	label_feedback.add_theme_font_size_override("font_size", 20)
+	label_feedback.add_theme_color_override("font_color", Color("#22FF55"))
 	label_feedback.modulate.a = 0
 	vbox.add_child(label_feedback)
 
 func _mostrar_feedback_save(txt: String):
 	label_feedback.text = txt
-	label_feedback.pivot_offset = Vector2(225, 15) # Aproximado para o centro do menu
+	label_feedback.pivot_offset = Vector2(180, 15)
 	
 	var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	label_feedback.scale = Vector2(2.0, 2.0)
+	label_feedback.scale = Vector2(1.5, 1.5)
 	label_feedback.modulate.a = 0
 	
 	tween.set_parallel(true)
@@ -123,31 +126,46 @@ func _mostrar_feedback_save(txt: String):
 	tween.tween_interval(1.5)
 	tween.tween_property(label_feedback, "modulate:a", 0.0, 0.8)
 
-func _criar_botao(parent, texto, acao):
+func _criar_botao(parent, texto, acao, cor_destaque: Color):
 	var btn = Button.new()
 	btn.text = texto
-	btn.custom_minimum_size = Vector2(0, 55)
+	btn.custom_minimum_size = Vector2(320, 45)
 	btn.add_theme_font_override("font", FONTE)
-	btn.add_theme_font_size_override("font_size", 26)
-	btn.add_theme_color_override("font_color", Color("#3A2A1A"))
-	btn.add_theme_color_override("font_hover_color", Color("#F4E4BC"))
+	btn.add_theme_font_size_override("font_size", 22)
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	
-	# Estilos customizados
 	var normal = StyleBoxFlat.new()
-	normal.bg_color = Color(0, 0, 0, 0)
-	normal.border_width_bottom = 2
-	normal.border_color = Color("#3A2A1A", 0.4)
+	normal.bg_color = Color(1.0, 1.0, 1.0, 0.06)
+	normal.border_width_left = 1
+	normal.border_width_right = 1
+	normal.border_width_top = 1
+	normal.border_width_bottom = 1
+	normal.border_color = Color(1.0, 1.0, 1.0, 0.15)
+	normal.corner_radius_top_left = 6
+	normal.corner_radius_top_right = 6
+	normal.corner_radius_bottom_right = 6
+	normal.corner_radius_bottom_left = 6
 	
-	var hover = StyleBoxFlat.new()
-	hover.bg_color = Color("#3A2A1A")
+	var hover = normal.duplicate()
+	hover.bg_color = cor_destaque
+	hover.border_color = cor_destaque
+	hover.border_width_left = 2
+	hover.border_width_right = 2
+	hover.border_width_top = 2
 	hover.border_width_bottom = 2
-	hover.border_color = Color("#3A2A1A")
+	hover.shadow_color = cor_destaque
+	hover.shadow_color.a = 0.5
+	hover.shadow_size = 20
 	
 	btn.add_theme_stylebox_override("normal", normal)
 	btn.add_theme_stylebox_override("hover", hover)
 	btn.add_theme_stylebox_override("pressed", hover)
-	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn.add_theme_stylebox_override("focus", hover)
+	
+	btn.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1.0))
+	btn.add_theme_color_override("font_hover_color", Color(0.05, 0.05, 0.05, 1.0))
+	btn.add_theme_color_override("font_pressed_color", Color(0.05, 0.05, 0.05, 1.0))
+	btn.add_theme_color_override("font_focus_color", Color(0.05, 0.05, 0.05, 1.0))
 	
 	btn.pressed.connect(acao)
 	parent.add_child(btn)

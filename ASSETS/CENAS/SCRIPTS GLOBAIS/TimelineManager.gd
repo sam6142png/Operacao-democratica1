@@ -25,12 +25,13 @@ func tocar_dialogo(nome: String):
 		push_warning("[TimelineManager] Já existe um diálogo em execução. Aguardando...")
 		await dialogo_finalizado
 	
-	# Garante que não há nada rodando antes de começar
-	Dialogic.end_timeline()
-	Dialogic.paused = false
+	# Se por acaso o Dialogic tiver algo rodando (ex: restaurado de um save), encerramos e esperamos
+	if Dialogic.current_timeline != null:
+		Dialogic.end_timeline()
+		await Dialogic.timeline_ended
+		await get_tree().process_frame
 	
-	# Garante que o motor processou o frame anterior
-	await get_tree().process_frame
+	Dialogic.paused = false
 	
 	esta_tocando = true
 	GameState.timeline_atual = nome
@@ -44,7 +45,7 @@ func tocar_dialogo(nome: String):
 		await Dialogic.timeline_ended
 		esta_tocando = false
 		GameState.salvar_jogo() # Salva no slot_atual por padrão
-		Dialogic.Save.save("slot_" + str(GameState.slot_atual)) # Salva o estado interno do Dialogic no slot correto
+		Dialogic.Save.save("autosave") # Salva o estado interno do Dialogic no autosave
 		dialogo_finalizado.emit(nome)
 		print("[TimelineManager] Finalizado e salvo: ", nome)
 	else:

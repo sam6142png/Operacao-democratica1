@@ -15,7 +15,6 @@ var modal_dimmer: ColorRect
 var painel_opcoes: Panel
 var painel_creditos: Panel
 var painel_sair: Panel
-var painel_saves: Panel
 var painel_ativo: Panel = null
 var rastro_fogo: CPUParticles2D
 var menu_container: MarginContainer
@@ -94,6 +93,9 @@ func _ready() -> void:
 	btn_continuar.name = "ContinuarBotao"
 	btn_continuar.pressed.connect(_on_continuar_pressed)
 	
+	if not GameState.has_save():
+		btn_continuar.hide()
+	
 	botoes = [btn_continuar, jogar_botao, opcoes_botao, creditos_botao, sair_botao]
 	Input.set_custom_mouse_cursor(null)
 	
@@ -135,13 +137,14 @@ func _alinhar_botoes() -> void:
 	if not menu_container:
 		menu_container = MarginContainer.new()
 		menu_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-		menu_container.add_theme_constant_override("margin_left", 90)
-		menu_container.add_theme_constant_override("margin_top", 280) # Espaço para a logo
+		# Movendo para o espaço vazio (posição marcada pelo usuário)
+		menu_container.add_theme_constant_override("margin_left", 320)
+		menu_container.add_theme_constant_override("margin_top", 320) # Começa mais embaixo
 		menu_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(menu_container)
 		
 		vbox_botoes = VBoxContainer.new()
-		vbox_botoes.add_theme_constant_override("separation", 20) # Mais respiro
+		vbox_botoes.add_theme_constant_override("separation", 28) # Muito mais respiro entre eles
 		vbox_botoes.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		vbox_botoes.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		menu_container.add_child(vbox_botoes)
@@ -151,7 +154,8 @@ func _alinhar_botoes() -> void:
 			if btn.get_parent(): btn.get_parent().remove_child(btn)
 			vbox_botoes.add_child(btn)
 		
-		btn.custom_minimum_size = Vector2(280, 60)
+		# Proporção Gigante e Chamativa
+		btn.custom_minimum_size = Vector2(420, 65)
 		btn.pivot_offset = btn.custom_minimum_size / 2.0
 	
 	if has_node("bg"):
@@ -227,7 +231,7 @@ func _criar_rastro_fogo() -> void:
 
 func _criar_neon_cursor() -> void:
 	neon_cursor = ColorRect.new()
-	neon_cursor.size = Vector2(280, 3) 
+	neon_cursor.size = Vector2(420, 3) 
 	neon_cursor.color = C_NEON_LARANJA
 	neon_cursor.modulate.a = 0.0 # Garantir invisibilidade inicial
 	neon_cursor.z_index = -1
@@ -242,45 +246,50 @@ func _configurar_botoes() -> void:
 
 func _aplicar_estilo_principal(btn: Button, cor_destaque: Color) -> void:
 	btn.add_theme_font_override("font", dogica_font)
-	btn.add_theme_font_size_override("font_size", 24)
+	btn.add_theme_font_size_override("font_size", 28) # Maior para acompanhar o botão enorme
 	
+	# === ESTILO NORMAL (Glassmorphism + Achatado) ===
 	var estilo_normal = StyleBoxFlat.new()
-	estilo_normal.bg_color = Color(0.02, 0.02, 0.02, 0.85) # Escuro muito limpo
+	estilo_normal.bg_color = Color(1.0, 1.0, 1.0, 0.06) # Translúcido como vidro fosco
 	estilo_normal.border_width_left = 1
 	estilo_normal.border_width_right = 1
 	estilo_normal.border_width_top = 1
 	estilo_normal.border_width_bottom = 1
-	estilo_normal.border_color = Color(1.0, 1.0, 1.0, 0.15) # Borda sutil de repouso
-	estilo_normal.corner_radius_top_left = 8
-	estilo_normal.corner_radius_top_right = 8
-	estilo_normal.corner_radius_bottom_right = 8
-	estilo_normal.corner_radius_bottom_left = 8
+	estilo_normal.border_color = Color(1.0, 1.0, 1.0, 0.15)
+	estilo_normal.corner_radius_top_left = 6
+	estilo_normal.corner_radius_top_right = 6
+	estilo_normal.corner_radius_bottom_right = 6
+	estilo_normal.corner_radius_bottom_left = 6
 	
-	# Espaçamento interno (Padding) muito mais confortável e premium
-	estilo_normal.content_margin_left = 40
-	estilo_normal.content_margin_right = 40
-	estilo_normal.content_margin_top = 18
-	estilo_normal.content_margin_bottom = 18
+	# Margens reduzidas para ficarem mais finos e elegantes
+	estilo_normal.content_margin_left = 35
+	estilo_normal.content_margin_right = 35
+	estilo_normal.content_margin_top = 16
+	estilo_normal.content_margin_bottom = 16
 	
+	# === ESTILO HOVER (Preenchimento Tátil Sólido) ===
 	var estilo_hover = estilo_normal.duplicate()
+	estilo_hover.bg_color = cor_destaque # O fundo inteiro vira Laranja/Verde
 	estilo_hover.border_color = cor_destaque
 	estilo_hover.border_width_left = 2
 	estilo_hover.border_width_right = 2
 	estilo_hover.border_width_top = 2
 	estilo_hover.border_width_bottom = 2
 	estilo_hover.shadow_color = cor_destaque
-	estilo_hover.shadow_color.a = 0.35
-	estilo_hover.shadow_size = 20
+	estilo_hover.shadow_color.a = 0.5
+	estilo_hover.shadow_size = 25
 	
 	btn.add_theme_stylebox_override("normal", estilo_normal)
 	btn.add_theme_stylebox_override("hover", estilo_hover)
 	btn.add_theme_stylebox_override("pressed", estilo_hover)
 	btn.add_theme_stylebox_override("focus", estilo_hover)
 	
-	btn.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85, 1.0))
-	btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
-	btn.add_theme_color_override("font_pressed_color", Color(1.0, 1.0, 1.0, 1.0))
-	btn.add_theme_color_override("font_focus_color", Color(1.0, 1.0, 1.0, 1.0))
+	# Dinâmica de Contraste na Fonte:
+	# Branca no estado normal. Preta no hover (para ler em cima do fundo colorido)
+	btn.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1.0))
+	btn.add_theme_color_override("font_hover_color", Color(0.05, 0.05, 0.05, 1.0))
+	btn.add_theme_color_override("font_pressed_color", Color(0.05, 0.05, 0.05, 1.0))
+	btn.add_theme_color_override("font_focus_color", Color(0.05, 0.05, 0.05, 1.0))
 	
 	btn.set_meta("cor_neon", cor_destaque)
 
@@ -829,70 +838,10 @@ func _on_unhover_container_btn(btn: Button) -> void:
 
 
 # Lógica Moderna de Modal Central
-func _criar_painel_saves() -> void:
-	painel_saves = Panel.new()
-	painel_saves.custom_minimum_size = Vector2(700, 500)
-	painel_saves.set_anchors_preset(Control.PRESET_CENTER)
-	painel_saves.position -= painel_saves.custom_minimum_size / 2.0
-	add_child(painel_saves)
-	painel_saves.hide()
-	
-	var estilo = StyleBoxFlat.new()
-	estilo.bg_color = Color(0, 0, 0, 0.92)
-	estilo.border_width_left = 2
-	estilo.border_width_right = 2
-	estilo.border_width_top = 2
-	estilo.border_width_bottom = 2
-	estilo.border_color = C_NEON_VERDE
-	estilo.corner_radius_top_left = 12
-	estilo.corner_radius_top_right = 12
-	estilo.corner_radius_bottom_right = 12
-	estilo.corner_radius_bottom_left = 12
-	painel_saves.add_theme_stylebox_override("panel", estilo)
-	
-	var vbox = VBoxContainer.new()
-	vbox.name = "VBox"
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.add_theme_constant_override("separation", 20)
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.offset_left = 30
-	vbox.offset_right = -30
-	vbox.offset_top = 20
-	vbox.offset_bottom = -20
-	painel_saves.add_child(vbox)
-	
-	var tit = Label.new()
-	tit.name = "Titulo"
-	tit.text = "SELECIONAR PROGRESSO"
-	tit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tit.add_theme_font_override("font", dogica_font)
-	tit.add_theme_font_size_override("font_size", 28)
-	vbox.add_child(tit)
-	
-	var scroll = ScrollContainer.new()
-	scroll.name = "Scroll"
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	vbox.add_child(scroll)
-	
-	var slot_container = VBoxContainer.new()
-	slot_container.name = "SlotContainer"
-	slot_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slot_container.add_theme_constant_override("separation", 15)
-	scroll.add_child(slot_container)
-	
-	var btn_voltar = Button.new()
-	btn_voltar.text = "CANCELAR"
-	btn_voltar.custom_minimum_size = Vector2(0, 60)
-	_aplicar_estilo_neon(btn_voltar, C_NEON_VERMELHO, true)
-	btn_voltar.pressed.connect(_fechar_modal)
-	vbox.add_child(btn_voltar)
-
 func _criar_paineis() -> void:
 	_criar_painel_opcoes()
 	_criar_painel_creditos()
 	_criar_painel_sair()
-	_criar_painel_saves()
 
 func _abrir_modal(modal: Panel) -> void:
 	if painel_ativo != null: return
@@ -937,94 +886,31 @@ func _fechar_modal() -> void:
 	tween.chain().tween_callback(func(): p.hide())
 
 func _on_jogar_pressed() -> void:
-	_abrir_selecao_saves("novo")
+	_iniciar_partida("novo")
 
 func _on_continuar_pressed() -> void:
-	_abrir_selecao_saves("carregar")
+	_iniciar_partida("carregar")
 
-func _abrir_selecao_saves(modo: String) -> void:
-	if painel_ativo != null: return
-	_tocar_clique()
-	
-	# Atualizar o conteúdo do painel de saves antes de abrir
-	_atualizar_painel_saves(modo)
-	_abrir_modal(painel_saves)
-
-func _atualizar_painel_saves(modo: String) -> void:
-	# Limpar filhos antigos do container de slots
-	var container = painel_saves.get_node("VBox/Scroll/SlotContainer")
-	for child in container.get_children():
-		child.queue_free()
-	
-	painel_saves.get_node("VBox/Titulo").text = "SELECIONAR SLOT" if modo == "carregar" else "INICIAR EM QUAL SLOT?"
-	
-	for i in range(1, 4):
-		var slot_btn = Button.new()
-		slot_btn.custom_minimum_size = Vector2(500, 100)
-		
-		var info = _obter_info_save(i)
-		if info.vazio:
-			slot_btn.text = "SLOT " + str(i) + " - [ VAZIO ]"
-			if modo == "carregar":
-				slot_btn.disabled = true
-				slot_btn.modulate.a = 0.4
-		else:
-			slot_btn.text = "SLOT " + str(i) + " - " + info.data
-		
-		_aplicar_estilo_neon(slot_btn, C_NEON_VERDE if not info.vazio else C_NEON_LARANJA, true)
-		
-		slot_btn.pressed.connect(func(): _confirmar_slot(i, modo))
-		slot_btn.mouse_entered.connect(func(): _on_hover_container_btn(slot_btn))
-		slot_btn.mouse_exited.connect(func(): _on_unhover_container_btn(slot_btn))
-		
-		container.add_child(slot_btn)
-
-func _obter_info_save(slot: int) -> Dictionary:
-	var path = GameState.get_save_path(slot)
-	if not FileAccess.file_exists(path):
-		return {"vazio": true}
-	
-	var file = FileAccess.open(path, FileAccess.READ)
-	var data_str = "[ DESCONHECIDO ]"
-	if file:
-		var json = JSON.new()
-		if json.parse(file.get_as_text()) == OK:
-			var d = json.get_data()
-			if d.has("data_salvamento"):
-				var dt = d["data_salvamento"].split(" ")[0].split("-")
-				var hr = d["data_salvamento"].split(" ")[1].split(":")
-				data_str = dt[2] + "/" + dt[1] + " às " + hr[0] + ":" + hr[1]
-		file.close()
-	return {"vazio": false, "data": data_str}
-
-func _confirmar_slot(slot: int, modo: String) -> void:
+func _iniciar_partida(modo: String) -> void:
 	_tocar_clique()
 	
 	# 1. Preparar os dados ANTES da transição
-	GameState.slot_atual = slot
 	await TimelineManager.parar_tudo()
 	
 	if modo == "novo":
-		GameState.reset_save(slot)
+		GameState.reset_save()
 	else:
-		GameState.carregar_jogo(slot)
+		GameState.carregar_jogo()
 	
 	# 2. Transição visual
-	_fechar_modal()
 	for btn in botoes:
 		btn.disabled = true
 	
-	var tween = create_tween()
-	tween.tween_property(overlay, "color", Color(0, 0, 0, 1), 0.5).set_ease(Tween.EASE_IN_OUT)
-	
-	await tween.finished
-	
-	# 3. Mudar de cena (Forçando o caminho correto para Novo Jogo)
 	var cena_para_carregar = "res://ASSETS/CENAS/game_scene.tscn"
 	if modo == "carregar":
 		cena_para_carregar = GameState.cena_atual
 		
-	get_tree().change_scene_to_file(cena_para_carregar)
+	FadeManager.carregar_cena(cena_para_carregar)
 
 func _on_opcoes_pressed() -> void:
 	_abrir_modal(painel_opcoes)

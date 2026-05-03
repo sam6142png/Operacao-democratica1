@@ -13,28 +13,38 @@ func _ready() -> void:
 	# Se existe uma timeline salva para retomar
 	if GameState.timeline_atual != "":
 		var t_retomar = GameState.timeline_atual
-		# Se for um path completo, pega só o nome base (que o Dialogic prefere)
-		if t_retomar.contains("res://"):
-			t_retomar = t_retomar.get_file().replace(".dtl", "")
 		
-		await TimelineManager.tocar_dialogo(t_retomar)
+		# Prevenção contra autosave defasado: se a timeline for da fase 1 mas já estamos na fase 2, ignorar
+		if GameState.fase_atual == 2 and t_retomar.contains("VilaPeixeiro"):
+			GameState.timeline_atual = ""
+			t_retomar = ""
 		
-		# Após terminar a timeline retomada, verifica se deve seguir a sequência
-		if t_retomar == "m01_rua_velho":
-			await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")
-			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
-		elif t_retomar == "Dante_na_usina_Fase1":
-			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
-		return
+		if t_retomar != "":
+			# Se for um path completo, pega só o nome base (que o Dialogic prefere)
+			if t_retomar.contains("res://"):
+				t_retomar = t_retomar.get_file().replace(".dtl", "")
+			
+			await TimelineManager.tocar_dialogo(t_retomar)
+			
+			# Após terminar a timeline retomada, verifica se deve seguir a sequência
+			if t_retomar == "m01_rua_velho":
+				await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")
+				await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
+			elif t_retomar == "Dante_na_usina_Fase1":
+				await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
+			return
 
 	# Sequência normal (Novo Jogo ou fim de timeline)
 	match GameState.fase_atual:
 		1:
 			await TimelineManager.tocar_dialogo("m01_rua_velho")
+			await FadeManager.transicao_com_dica()
 			await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")
+			await FadeManager.transicao_com_dica()
 			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
 		2:
 			await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
+			FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
 
 func _on_dialogic_signal(valor: String) -> void:
 	match valor:
@@ -50,5 +60,6 @@ func _on_dialogic_signal(valor: String) -> void:
 		"escolha_entender_peixeiro": GameState.confianca += 1
 		"escolha_esperar_guardas": GameState.confianca += 1
 		"iniciar_minigame_paginas":
-			await FadeManager.fade_out()
-			get_tree().change_scene_to_file("res://ASSETS/CENAS/minigame_paginas.tscn")
+			GameState.timeline_atual = ""
+			GameState.salvar_jogo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_paginas.tscn")

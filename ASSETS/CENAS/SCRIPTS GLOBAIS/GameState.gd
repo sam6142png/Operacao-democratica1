@@ -1,8 +1,6 @@
 extends Node
 
-const SAVE_PREFIX = "user://save_slot_"
-
-var slot_atual: int = 1
+const SAVE_FILE = "user://autosave.json"
 
 signal confianca_changed(novo_valor: int, delta: int)
 
@@ -26,11 +24,10 @@ var decisoes_fase_1 = {
 
 var decisoes_fase_2 = {}
 
-func get_save_path(slot: int) -> String:
-	return SAVE_PREFIX + str(slot) + ".json"
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_FILE)
 
-func salvar_jogo(slot: int = -1):
-	if slot == -1: slot = slot_atual
+func salvar_jogo():
 	# Captura cena atual automaticamente se for uma cena de jogo
 	if get_tree() and get_tree().current_scene:
 		var scene = get_tree().current_scene
@@ -56,20 +53,18 @@ func salvar_jogo(slot: int = -1):
 		"decisoes_fase_2": decisoes_fase_2
 	}
 	
-	var file = FileAccess.open(get_save_path(slot), FileAccess.WRITE)
+	var file = FileAccess.open(SAVE_FILE, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(save_data))
 		file.close()
-		# Salva o estado do Dialogic no slot correspondente
-		Dialogic.Save.save("slot_" + str(slot))
+		# Salva o estado do Dialogic no slot autosave
+		Dialogic.Save.save("autosave")
 
-func carregar_jogo(slot: int = -1):
-	if slot == -1: slot = slot_atual
-	var path = get_save_path(slot)
-	if not FileAccess.file_exists(path):
+func carregar_jogo():
+	if not has_save():
 		return
 		
-	var file = FileAccess.open(path, FileAccess.READ)
+	var file = FileAccess.open(SAVE_FILE, FileAccess.READ)
 	if file:
 		var content = file.get_as_text()
 		file.close()
@@ -89,12 +84,10 @@ func carregar_jogo(slot: int = -1):
 				if data.has("cena_atual"): cena_atual = data["cena_atual"]
 				if data.has("timeline_atual"): timeline_atual = data["timeline_atual"]
 				
-				# Carrega o estado do Dialogic do slot correspondente
-				Dialogic.Save.load("slot_" + str(slot))
+				# Carrega o estado do Dialogic do slot autosave
+				Dialogic.Save.load("autosave")
 
-func reset_save(slot: int = -1):
-	if slot == -1: slot = slot_atual
-	slot_atual = slot
+func reset_save():
 	reputacao = 0
 	confianca = 0
 	fase_atual = 1
@@ -106,8 +99,10 @@ func reset_save(slot: int = -1):
 	# Reseta o Dialogic para o estado inicial
 	Dialogic.end_timeline()
 	if Dialogic.has_subsystem("VAR"):
-		# Tenta resetar variáveis para os valores padrão do editor
-		Dialogic.VAR.reset_all()
+		if Dialogic.VAR.has_method("reset"):
+			Dialogic.VAR.reset()
+		elif Dialogic.VAR.has_method("reset_variables"):
+			Dialogic.VAR.reset_variables()
 	
 	timeline_atual = ""
-	salvar_jogo(slot)
+	salvar_jogo()

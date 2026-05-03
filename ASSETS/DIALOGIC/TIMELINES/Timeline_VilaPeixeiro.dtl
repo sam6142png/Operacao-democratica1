@@ -181,6 +181,11 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		[wait time="0.5"]
 		ATENA: Ei, calma! Você vai se machucar mais ainda. Usa esse suprimento aqui... deixa eu tentar com a outra
 		update PROTA (Neutro)
+		ATENA: A fechadura girou fácil! Abre aí, Dante
+		leave --All-- [animation="Fade Out" length="0.4" wait="true"]
+		[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Usar a Chave e Abrir o Báu - Cena PeixeiroCasa.png" fade="0.5" transition="Simple Fade" wait="true"]
+		PROTA: Dentro do baú... é o livro!
+		ATENA: Tem outros objetos aqui também. Vou guardar, pode ser útil depois
 	- Chave dourada
 		join ATENA (Falando) right [animation="Slide From Right" length="0.7"]
 		ATENA: A fechadura girou fácil! Abre aí, Dante
@@ -189,10 +194,6 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Usar a Chave e Abrir o Báu - Cena PeixeiroCasa.png" fade="0.5" transition="Simple Fade" wait="true"]
 		PROTA: Dentro do baú... é o livro!
 		ATENA: Tem outros objetos aqui também. Vou guardar, pode ser útil depois
-		PROTA: Finalmente encontramos esse livros, mas pera...
-		PROTA: Olha as páginas do livro parecem adulteradas, vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as adulteradas pelo regime.
-		[signal arg="iniciar_minigame_paginas"]
-		[end_timeline]
 - Quebrar o baú
 	update PROTA (Determinado) [animation="Shake X" length="1.0"]
 	PROTA: Não tenho tempo pra ficar procurando chave. Vou usar esse martelo daqui
@@ -200,15 +201,6 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 	leave --All-- [animation="Fade Out" length="0.3" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Quebrar o báu - Cena PeixeiroCasa.png" fade="0.4" transition="Simple Fade" wait="true"]
 	PROTA: A madeira cedeu. Dentro tem... o livro!
-	[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.0"]
-	join PROTA center
-	join ATENA left
-	join Luis leftmost
-	join PEIXEIRO right
-	PROTA (Falando): Finalmente encontramos esse livros, mas pera...
-	PROTA: Olha as páginas do livro parecem adulteradas, vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as adulteradas pelo regime.
-	[signal arg="iniciar_minigame_paginas"]
-	[end_timeline]
 	[signal arg="escolha_bau_direto"]
 
 leave --All-- [animation="Fade Out" length="0.6" wait="true"]
@@ -227,7 +219,8 @@ update ATENA (Falando)
 ATENA: Eu também percebi. Alguém mexeu nisso
 update PROTA (Confuso_Cabeca)
 PROTA: Preciso falar com o velho. Foi ele que me mandou atrás desse livro... talvez saiba o que tá acontecendo
-leave PEIXEIRO [animation="Fade Out" length="0.7"]
-leave Luis [animation="Slide To Left" length="0.7"]
-leave ATENA [animation="Slide To Left" length="0.7"]
-leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
+update PROTA (Determinado)
+PROTA: Mas olha só as páginas que sobraram... elas parecem adulteradas.
+PROTA: Vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as falsificadas pelo regime.
+[signal arg="iniciar_minigame_paginas"]
+[end_timeline]

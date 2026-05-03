@@ -158,7 +158,7 @@ func _aplicar_tema_vintage() -> void:
 		
 		# Travar o tamanho do container para não esticar a imagem
 		pagina_card.custom_minimum_size = Vector2(700, 480)
-		pagina_card.size = Vector2(700, 480)
+		pagina_card.set_deferred("size", Vector2(700, 480))
 		
 		# Aumentar contraste do texto
 		texto_pagina.add_theme_color_override("font_color", Color("#111111"))
@@ -431,6 +431,7 @@ func _voltar_centro() -> void:
 func _avaliar(escolha: String) -> void:
 	if aguardando_proxima: return
 	aguardando_proxima = true
+	esta_arrastando = false # Previne que a próxima carta seja puxada imediatamente
 	
 	var pagina = paginas_embaralhadas[pagina_atual]
 	var _sucesso = false
@@ -578,4 +579,4 @@ func _finalizar_minigame() -> void:
 		get_tree().root.get_node("MedidorConfianca").visible = true
 		
 	if GameState.fase_atual == 1: GameState.fase_atual = 2
-	get_tree().change_scene_to_file("res://ASSETS/CENAS/game_scene.tscn")
+	FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")
