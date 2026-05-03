@@ -15,6 +15,7 @@ var modal_dimmer: ColorRect
 var painel_opcoes: Panel
 var painel_creditos: Panel
 var painel_sair: Panel
+var painel_saves: Panel
 var painel_ativo: Panel = null
 var rastro_fogo: CPUParticles2D
 var menu_container: MarginContainer
@@ -50,7 +51,8 @@ const TELA_CHEIA_OPCOES = {
 	"fr": ["Activé", "Désactivé"]
 }
 var TR = {
-	"jogar":        {"pt": "Jogar",          "en": "Play",           "es": "Jugar",          "fr": "Jouer"},
+	"jogar":        {"pt": "Novo Jogo",      "en": "New Game",       "es": "Nuevo Juego",    "fr": "Nouveau Jeu"},
+	"continuar":    {"pt": "Continuar",      "en": "Continue",       "es": "Continuar",      "fr": "Continuer"},
 	"opcoes":       {"pt": "Opções",         "en": "Options",        "es": "Opciones",       "fr": "Options"},
 	"creditos":     {"pt": "Créditos",       "en": "Credits",        "es": "Créditos",       "fr": "Crédits"},
 	"sair":         {"pt": "Sair",           "en": "Quit",           "es": "Salir",          "fr": "Quitter"},
@@ -86,7 +88,13 @@ func _t(chave: String) -> String:
 	return chave
 
 func _ready() -> void:
-	botoes = [jogar_botao, opcoes_botao, creditos_botao, sair_botao]
+	# Criar o botão Continuar que agora abre a tela de seleção de slots
+	var btn_continuar = Button.new()
+	btn_continuar.text = "Continuar"
+	btn_continuar.name = "ContinuarBotao"
+	btn_continuar.pressed.connect(_on_continuar_pressed)
+	
+	botoes = [btn_continuar, jogar_botao, opcoes_botao, creditos_botao, sair_botao]
 	Input.set_custom_mouse_cursor(null)
 	
 	_criar_overlay()
@@ -127,14 +135,15 @@ func _alinhar_botoes() -> void:
 	if not menu_container:
 		menu_container = MarginContainer.new()
 		menu_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-		menu_container.add_theme_constant_override("margin_left", 120)
+		menu_container.add_theme_constant_override("margin_left", 90)
+		menu_container.add_theme_constant_override("margin_top", 280) # Espaço para a logo
 		menu_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(menu_container)
 		
 		vbox_botoes = VBoxContainer.new()
-		vbox_botoes.add_theme_constant_override("separation", 30)
+		vbox_botoes.add_theme_constant_override("separation", 20) # Mais respiro
 		vbox_botoes.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		vbox_botoes.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		vbox_botoes.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		menu_container.add_child(vbox_botoes)
 	
 	for btn in botoes:
@@ -142,7 +151,7 @@ func _alinhar_botoes() -> void:
 			if btn.get_parent(): btn.get_parent().remove_child(btn)
 			vbox_botoes.add_child(btn)
 		
-		btn.custom_minimum_size = Vector2(400, 85)
+		btn.custom_minimum_size = Vector2(280, 60)
 		btn.pivot_offset = btn.custom_minimum_size / 2.0
 	
 	if has_node("bg"):
@@ -218,7 +227,7 @@ func _criar_rastro_fogo() -> void:
 
 func _criar_neon_cursor() -> void:
 	neon_cursor = ColorRect.new()
-	neon_cursor.size = Vector2(450, 3) # Mais condizente com o novo tamanho dos botões
+	neon_cursor.size = Vector2(280, 3) 
 	neon_cursor.color = C_NEON_LARANJA
 	neon_cursor.modulate.a = 0.0 # Garantir invisibilidade inicial
 	neon_cursor.z_index = -1
@@ -226,11 +235,14 @@ func _criar_neon_cursor() -> void:
 
 func _configurar_botoes() -> void:
 	for btn in botoes:
-		_aplicar_estilo_principal(btn, C_NEON_LARANJA)
+		if btn.name == "ContinuarBotao":
+			_aplicar_estilo_principal(btn, C_NEON_VERDE)
+		else:
+			_aplicar_estilo_principal(btn, C_NEON_LARANJA)
 
 func _aplicar_estilo_principal(btn: Button, cor_destaque: Color) -> void:
 	btn.add_theme_font_override("font", dogica_font)
-	btn.add_theme_font_size_override("font_size", 34) # Maior impacto visual
+	btn.add_theme_font_size_override("font_size", 24)
 	
 	var estilo_normal = StyleBoxFlat.new()
 	estilo_normal.bg_color = Color(0.02, 0.02, 0.02, 0.85) # Escuro muito limpo
@@ -414,7 +426,7 @@ func _aplicar_todas_configuracoes() -> void:
 		var tela_atual = DisplayServer.window_get_current_screen()
 		var pos_tela = DisplayServer.screen_get_position(tela_atual)
 		var tam_tela = DisplayServer.screen_get_size(tela_atual)
-		get_window().position = pos_tela + (tam_tela / 2) - (res / 2)
+		get_window().position = pos_tela + Vector2i((tam_tela - res) / 2.0)
 
 	# Idioma
 	TranslationServer.set_locale(IDIOMAS_LOCALE[config["idioma"]])
@@ -451,7 +463,7 @@ func _restaurar_padroes() -> void:
 
 # ────────────────────────────────────────────────────────
 
-func _criar_paineis() -> void:
+func _criar_painel_opcoes() -> void:
 	# Painel Base para Modais Centrais
 	var estilo_modal = StyleBoxFlat.new()
 	estilo_modal.bg_color = Color(0.05, 0.05, 0.05, 0.95)
@@ -470,7 +482,6 @@ func _criar_paineis() -> void:
 	
 	var viewport_size = Vector2(1920, 1080)
 	
-	# ===================== MODAL DE OPÇÕES =====================
 	painel_opcoes = Panel.new()
 	painel_opcoes.add_theme_stylebox_override("panel", estilo_modal)
 	painel_opcoes.size = Vector2(850, 700)
@@ -503,25 +514,19 @@ func _criar_paineis() -> void:
 	sep1.custom_minimum_size.y = 20
 	op_vbox.add_child(sep1)
 	
-	# Sliders Funcionais
 	var sl_musica = _criar_slider(op_vbox, "vol_musica", _t("musica"))
 	var sl_sfx = _criar_slider(op_vbox, "vol_sfx", _t("sfx"))
 	tr_refs["lbl_musica"] = sl_musica.get_parent().get_child(0)
 	tr_refs["lbl_sfx"] = sl_sfx.get_parent().get_child(0)
 	
-	# Seletores Funcionais
 	var sel_tela = _criar_seletor(op_vbox, "tela_cheia", _t("tela_cheia"), TELA_CHEIA_OPCOES[IDIOMAS_LOCALE[config["idioma"]]])
 	_criar_seletor(op_vbox, "resolucao", _t("resolucao"), ["2560x1440", "1920x1080", "1600x900", "1366x768", "1280x720", "1024x576", "854x480"])
 	var sel_idioma = _criar_seletor(op_vbox, "idioma", _t("idioma"), IDIOMAS_NOME)
 	
 	tr_refs["lbl_opcoes_titulo"] = lbl_opcoes
 	tr_refs["lbl_tela_cheia"] = sel_tela.get_child(0)
-	tr_refs["lbl_resolucao"] = op_vbox.get_child(op_vbox.get_child_count() - 3).get_child(0) # Pegando o penúltimo seletor (resolucao)
+	tr_refs["lbl_resolucao"] = op_vbox.get_child(6).get_child(0)
 	tr_refs["lbl_idioma"] = sel_idioma.get_child(0)
-	
-	# Corrigindo a referência da resolução pois usei get_child_count
-	# Vamos fazer de forma mais limpa:
-	tr_refs["lbl_resolucao"] = op_vbox.get_child(6).get_child(0) # resolucao é o 7º elemento (índice 6)
 	
 	var sep_bottom = Control.new()
 	sep_bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -546,9 +551,11 @@ func _criar_paineis() -> void:
 	btn_aplicar.pressed.connect(_aplicar_todas_configuracoes)
 	hbox_opcoes_btns.add_child(btn_aplicar)
 	tr_refs["btn_aplicar"] = btn_aplicar
+
+func _criar_painel_creditos() -> void:
+	var estilo_modal = painel_opcoes.get_theme_stylebox("panel").duplicate()
+	var viewport_size = Vector2(1920, 1080)
 	
-	
-	# ===================== MODAL DE CRÉDITOS =====================
 	painel_creditos = Panel.new()
 	painel_creditos.add_theme_stylebox_override("panel", estilo_modal)
 	painel_creditos.size = Vector2(850, 700)
@@ -576,7 +583,6 @@ func _criar_paineis() -> void:
 	lbl_cred.add_theme_color_override("font_color", Color("#FFFFFF"))
 	lbl_cred.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	cr_vbox.add_child(lbl_cred)
-	
 	tr_refs["lbl_cred_titulo"] = lbl_cred
 	
 	var scroll = ScrollContainer.new()
@@ -589,9 +595,6 @@ func _criar_paineis() -> void:
 	rtl.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	rtl.fit_content = true
 	tr_refs["rtl_creditos"] = rtl
-	
-	# ... (texto BBCode será atualizado no _aplicar_idioma)
-	
 	scroll.add_child(rtl)
 	
 	var btn_voltar_cr = _criar_botao_generico(_t("voltar"), C_NEON_LARANJA)
@@ -600,12 +603,15 @@ func _criar_paineis() -> void:
 	cr_vbox.add_child(btn_voltar_cr)
 	tr_refs["btn_voltar_cr"] = btn_voltar_cr
 	
-	# ===================== MODAL DE SAIR =====================
+func _criar_painel_sair() -> void:
+	var viewport_size = Vector2(1920, 1080)
 	painel_sair = Panel.new()
-	var estilo_sair = estilo_modal.duplicate()
+	
+	var estilo_sair = painel_opcoes.get_theme_stylebox("panel").duplicate()
 	estilo_sair.border_color = C_NEON_VERMELHO
 	estilo_sair.shadow_color = C_NEON_VERMELHO
 	painel_sair.add_theme_stylebox_override("panel", estilo_sair)
+	
 	painel_sair.size = Vector2(700, 300)
 	painel_sair.position = (viewport_size - painel_sair.size) / 2.0
 	painel_sair.pivot_offset = painel_sair.size / 2.0
@@ -640,10 +646,10 @@ func _criar_paineis() -> void:
 	hbox_sair.add_child(btn_amarelar)
 	tr_refs["btn_sair_sim"] = btn_amarelar
 	
-	var btn_continuar = _criar_botao_generico(_t("sair_nao"), C_NEON_VERDE)
-	btn_continuar.pressed.connect(_fechar_modal)
-	hbox_sair.add_child(btn_continuar)
-	tr_refs["btn_sair_nao"] = btn_continuar
+	var btn_nao = _criar_botao_generico(_t("sair_nao"), C_NEON_VERDE)
+	btn_nao.pressed.connect(_fechar_modal)
+	hbox_sair.add_child(btn_nao)
+	tr_refs["btn_sair_nao"] = btn_nao
 
 # Utils Visuais de Componentes e Funcionalidade de Settings
 func _criar_slider(pai: Control, chave_config: String, titulo: String) -> HSlider:
@@ -730,6 +736,7 @@ func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: 
 func _aplicar_idioma() -> void:
 	# Botões Principais
 	jogar_botao.text = _t("jogar")
+	if tr_refs.has("btn_continuar"): tr_refs["btn_continuar"].text = _t("continuar")
 	opcoes_botao.text = _t("opcoes")
 	creditos_botao.text = _t("creditos")
 	sair_botao.text = _t("sair")
@@ -822,6 +829,71 @@ func _on_unhover_container_btn(btn: Button) -> void:
 
 
 # Lógica Moderna de Modal Central
+func _criar_painel_saves() -> void:
+	painel_saves = Panel.new()
+	painel_saves.custom_minimum_size = Vector2(700, 500)
+	painel_saves.set_anchors_preset(Control.PRESET_CENTER)
+	painel_saves.position -= painel_saves.custom_minimum_size / 2.0
+	add_child(painel_saves)
+	painel_saves.hide()
+	
+	var estilo = StyleBoxFlat.new()
+	estilo.bg_color = Color(0, 0, 0, 0.92)
+	estilo.border_width_left = 2
+	estilo.border_width_right = 2
+	estilo.border_width_top = 2
+	estilo.border_width_bottom = 2
+	estilo.border_color = C_NEON_VERDE
+	estilo.corner_radius_top_left = 12
+	estilo.corner_radius_top_right = 12
+	estilo.corner_radius_bottom_right = 12
+	estilo.corner_radius_bottom_left = 12
+	painel_saves.add_theme_stylebox_override("panel", estilo)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 20)
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.offset_left = 30
+	vbox.offset_right = -30
+	vbox.offset_top = 20
+	vbox.offset_bottom = -20
+	painel_saves.add_child(vbox)
+	
+	var tit = Label.new()
+	tit.name = "Titulo"
+	tit.text = "SELECIONAR PROGRESSO"
+	tit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tit.add_theme_font_override("font", dogica_font)
+	tit.add_theme_font_size_override("font_size", 28)
+	vbox.add_child(tit)
+	
+	var scroll = ScrollContainer.new()
+	scroll.name = "Scroll"
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	vbox.add_child(scroll)
+	
+	var slot_container = VBoxContainer.new()
+	slot_container.name = "SlotContainer"
+	slot_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slot_container.add_theme_constant_override("separation", 15)
+	scroll.add_child(slot_container)
+	
+	var btn_voltar = Button.new()
+	btn_voltar.text = "CANCELAR"
+	btn_voltar.custom_minimum_size = Vector2(0, 60)
+	_aplicar_estilo_neon(btn_voltar, C_NEON_VERMELHO, true)
+	btn_voltar.pressed.connect(_fechar_modal)
+	vbox.add_child(btn_voltar)
+
+func _criar_paineis() -> void:
+	_criar_painel_opcoes()
+	_criar_painel_creditos()
+	_criar_painel_sair()
+	_criar_painel_saves()
+
 func _abrir_modal(modal: Panel) -> void:
 	if painel_ativo != null: return
 	_tocar_clique()
@@ -865,16 +937,94 @@ func _fechar_modal() -> void:
 	tween.chain().tween_callback(func(): p.hide())
 
 func _on_jogar_pressed() -> void:
+	_abrir_selecao_saves("novo")
+
+func _on_continuar_pressed() -> void:
+	_abrir_selecao_saves("carregar")
+
+func _abrir_selecao_saves(modo: String) -> void:
 	if painel_ativo != null: return
 	_tocar_clique()
+	
+	# Atualizar o conteúdo do painel de saves antes de abrir
+	_atualizar_painel_saves(modo)
+	_abrir_modal(painel_saves)
+
+func _atualizar_painel_saves(modo: String) -> void:
+	# Limpar filhos antigos do container de slots
+	var container = painel_saves.get_node("VBox/Scroll/SlotContainer")
+	for child in container.get_children():
+		child.queue_free()
+	
+	painel_saves.get_node("VBox/Titulo").text = "SELECIONAR SLOT" if modo == "carregar" else "INICIAR EM QUAL SLOT?"
+	
+	for i in range(1, 4):
+		var slot_btn = Button.new()
+		slot_btn.custom_minimum_size = Vector2(500, 100)
+		
+		var info = _obter_info_save(i)
+		if info.vazio:
+			slot_btn.text = "SLOT " + str(i) + " - [ VAZIO ]"
+			if modo == "carregar":
+				slot_btn.disabled = true
+				slot_btn.modulate.a = 0.4
+		else:
+			slot_btn.text = "SLOT " + str(i) + " - " + info.data
+		
+		_aplicar_estilo_neon(slot_btn, C_NEON_VERDE if not info.vazio else C_NEON_LARANJA, true)
+		
+		slot_btn.pressed.connect(func(): _confirmar_slot(i, modo))
+		slot_btn.mouse_entered.connect(func(): _on_hover_container_btn(slot_btn))
+		slot_btn.mouse_exited.connect(func(): _on_unhover_container_btn(slot_btn))
+		
+		container.add_child(slot_btn)
+
+func _obter_info_save(slot: int) -> Dictionary:
+	var path = GameState.get_save_path(slot)
+	if not FileAccess.file_exists(path):
+		return {"vazio": true}
+	
+	var file = FileAccess.open(path, FileAccess.READ)
+	var data_str = "[ DESCONHECIDO ]"
+	if file:
+		var json = JSON.new()
+		if json.parse(file.get_as_text()) == OK:
+			var d = json.get_data()
+			if d.has("data_salvamento"):
+				var dt = d["data_salvamento"].split(" ")[0].split("-")
+				var hr = d["data_salvamento"].split(" ")[1].split(":")
+				data_str = dt[2] + "/" + dt[1] + " às " + hr[0] + ":" + hr[1]
+		file.close()
+	return {"vazio": false, "data": data_str}
+
+func _confirmar_slot(slot: int, modo: String) -> void:
+	_tocar_clique()
+	
+	# 1. Preparar os dados ANTES da transição
+	GameState.slot_atual = slot
+	await TimelineManager.parar_tudo()
+	
+	if modo == "novo":
+		GameState.reset_save(slot)
+	else:
+		GameState.carregar_jogo(slot)
+	
+	# 2. Transição visual
+	_fechar_modal()
 	for btn in botoes:
 		btn.disabled = true
-		
+	
 	var tween = create_tween()
-	tween.tween_property(overlay, "color", Color(0, 0, 0, 1), 1.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(overlay, "color", Color(0, 0, 0, 1), 0.5).set_ease(Tween.EASE_IN_OUT)
 	
 	await tween.finished
-	get_tree().change_scene_to_file(GAME_SCENE)
+	
+	# 3. Mudar de cena (Forçando o caminho correto para Novo Jogo)
+	var cena_para_carregar = "res://ASSETS/CENAS/game_scene.tscn"
+	if modo == "carregar":
+		cena_para_carregar = GameState.cena_atual
+		
+	get_tree().change_scene_to_file(cena_para_carregar)
 
 func _on_opcoes_pressed() -> void:
 	_abrir_modal(painel_opcoes)

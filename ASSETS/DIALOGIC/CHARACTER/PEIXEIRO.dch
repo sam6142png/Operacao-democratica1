@@ -19,7 +19,7 @@
 &"portraits": {
 "Ameaçando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroAmeaçador.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroAmeaçador.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Falando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFalando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFalando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +37,7 @@
 },
 "Falando e Ameaçando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroAmeaçando e falando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroAmeaçando e falando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -46,7 +46,7 @@
 },
 "Feliz": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFeliz.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFeliz.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -55,7 +55,7 @@
 },
 "Feliz e Falando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFeliz e falando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_PeixeiroFeliz e falando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -64,7 +64,7 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_Peixeiro.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Peixeiro/S_Peixeiro.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),

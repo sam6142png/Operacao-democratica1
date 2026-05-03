@@ -1,7 +1,8 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/VilaAcude.png" fade="1.0" transition="Simple Fade" wait="true"]
 join PROTA (Neutro) center [animation="Slide From Left" length="0.8"]
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Entrada do grupo na vila (Ideal: Som de passos em cascalho ou terra)
+audio - [volume="0.0" bus="SFX"]
+# [SOUND] Entrada do grupo na vila
+[wait time="0.8"]
 join ATENA (Neutro) left
 join Luis (Neutro) leftmost
 PROTA (Falando): Então essa é a Vila do Açude Seco... parece que o tempo parou aqui
@@ -10,11 +11,13 @@ update ATENA (Falando)
 ATENA: Faz sentido. Um lugar dominado pelo regime não confia em estranhos facilmente
 PROTA: Tem uma senhora ali, devemos perguntar algo pra ela
 join SENHORA right [animation="Fade In" length="0.7"]
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Aparecimento da Senhora (Ideal: Som de bengala ou passos lentos)
+audio -
+# [SOUND] Senhora aparece
+[wait time="0.8"]
 PROTA (Falando): EI SENHORA! PODERIA NOS AJUDAR?
-audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-# [SOUND] Reação ao grito (Ideal: Pequeno susto ou 'Huh?')
+audio -
+# [SOUND] Reacao ao grito
+[wait time="0.5"]
 SENHORA (Falando): Não precisa gritar comigo, sem juízo! Sou véia mas num sou surda
 SENHORA (Falando): Vocês não parecem daqui.
 PROTA: A senhora tá certa. Estamos procurando um peixeiro que mora aqui nessa vila
@@ -25,41 +28,48 @@ SENHORA (Falando): Talvez eu conheça esse véi, deve ser das banda daqui e foi 
 SENHORA (Falando): Enfim, num quero mais empaiar vocês
 SENHORA (Falando): Ele vive isolado. Mas cuidado com o que vão falar pra ele...
 leave SENHORA [animation="Fade Out" length="0.8" wait="true"]
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Saída da personagem
+audio -
+# [SOUND] Saida sutil
+[wait time="0.5"]
 update PROTA (Pensando)
 PROTA (Pensando): Interessante... será que esse peixeiro é tão desconfiado quanto o velho?
 update Luis (Falando)
 Luis: Ô Dante, olha aqui... tem pegadas frescas no chão
 update PROTA (Surpreso)
-audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-# [SOUND] Descoberta das pegadas (Ideal: Som de 'Aha!' ou descoberta)
+audio -
+# [SOUND] Aha
+[wait time="0.5"]
 PROTA (Apontando): Alguém mora por aqui sim. Vamos seguir essas pegadas
 update PROTA (Determinado) rightmost [animation="Slide To Right" length="0.7"]
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Grupo se movendo
-	leave --All-- [animation="Fade Out" length="0.6" wait="true"]
+audio -
+# [SOUND] Grupo andando
+leave --All-- [animation="Fade Out" length="0.6" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/frente da casa do peixeiropng.png" fade="0.9" transition="Simple Fade"]
-audio "res://ASSETS/SOUNDS/FSX/MenuClose.mp3"
-# [SOUND] Mudança para a casa do peixeiro (Ideal: Som ambiente de beira de rio ou vento)
+audio -
+# [SOUND] Rio ambiente
+[wait time="0.3"]
 join PROTA (Determinado) leftmost [animation="Slide From Left" length="0.7"]
 join ATENA (Neutro) left
 join Luis (Neutro) rightmost
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Grupo parando em frente à casa
+audio -
+# [SOUND] Grupo para
+[wait time="0.8"]
 PROTA (Pensando): Se o livro ainda existir, talvez ainda exista uma faísca de esperança nessa cidade
 update PROTA (Falando)
 PROTA: Certo... chegou a hora. Vou bater na porta
-audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-# [SOUND] Batida na porta (Ideal: Três batidas secas em madeira)
+audio -
+# [SOUND] Bate na porta
+[wait time="0.7"]
 update PROTA (Surpreso) [animation="Heartbeat"]
-audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-# [SOUND] Batimento cardíaco de ansiedade (Ideal: Heartbeat abafado)
+audio -
+# [SOUND] Ansiedade
+[wait time="0.6"]
 PROTA (Pensando): Agora não é só sobre mim. É sobre provar que sabemos o que estamos defendendo
 [wait time="1.2"]
 join PEIXEIRO (Neutro) right [animation="Slide From Right" length="0.9" wait="true"]
-audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-# [SOUND] Porta abrindo e Peixeiro aparecendo (Ideal: Ranger de dobradiça velha)
+audio -
+# [SOUND] Porta rangendo
+[wait time="0.7"]
 PEIXEIRO (Falando e Ameaçando): O que vocês querem?
 - Dizer a verdade
 	update PROTA (Falando)
@@ -99,7 +109,7 @@ update PROTA (Determinado)
 - Quarto
 	jump Quarto_Investigacao
 - Porão
-	leave --All-- [animation="Fade Out" length="0.5" wait="true"]
+	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Porao casa peixeiro.png" fade="0.7" transition="Simple Fade" wait="true"]
 	join PROTA (De fininho) center [animation="Fade In" length="0.8"]
 	PROTA (Falando): Escuro aqui embaixo... mas pode ser um bom esconderijo
@@ -121,7 +131,7 @@ update PROTA (Determinado)
 	jump Quarto_Investigacao
 
 label Quarto_Investigacao
-	leave --All-- [animation="Fade Out" length="0.5" wait="true"]
+leave --All-- [animation="Fade Out" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.7" transition="Simple Fade" wait="true"]
 join PROTA (De fininho) center [animation="Fade In" length="0.7"]
 PROTA (Falando): Quarto simples... móveis velhos... muita poeira...
@@ -129,7 +139,7 @@ update PROTA (Surpreso)
 PROTA (Surpreso): Espera... tem um baú no canto. Vou tentar abrir
 PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 - Procurar a chave
-	leave --All-- [animation="Fade Out" length="0.5" wait="true"]
+	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.6" transition="Simple Fade" wait="true"]
 	join PROTA (Falando) leftmost [animation="Slide From Left" length="0.7"]
 	PROTA: Atena, achou alguma coisa?
@@ -140,10 +150,10 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 	[signal arg="escolha_chave"]
 	
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.4" transition="Simple Fade" wait="true"]
-	join PROTA (Sorrindo) leftmost [animation="Fade In" length="0.5"]
+	join PROTA (Sorrindo) leftmost [animation="Fade In"]
 	PROTA: Perfeito! Acho que são exatamente o que eu preciso
 	
-	leave --All-- [animation="Fade Out" length="0.5" wait="true"]
+	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.6" transition="Simple Fade" wait="true"]
 	join PROTA (Falando) center [animation="Fade In" length="0.7"]
 	PROTA: Tenho duas chaves aqui. Qual eu uso primeiro...
@@ -151,20 +161,24 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		update PROTA (Surpreso) [animation="Shake X" length="0.8"]
 		PROTA: Entra mas não gira... vou forçar um pouco
 		update PROTA (Surpreso) [animation="Heartbeat" length="0.6" wait="true" repeat="2"]
-		audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-		# [SOUND] Batimento cardíaco / Esforço (Ideal: Som de madeira rangendo ou força)
+		audio -
+		# [SOUND] Estalo madeira
 		leave --All-- [animation="Fade Out" length="0.2" wait="true"]
-		[background arg="res://ASSETS/SPRITES/FUNDOS/DanteMachucado.png" fade="0.2" transition="Push Down"]
-		audio "res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"
-		# [SOUND] Impacto / Grito de dor (Ideal: Som de estalo ou baque seco)
+		[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.2" transition="Push Down"]
+		update PROTA (Machucado)
+		audio -
+		# [SOUND] Baque seco
+		[wait time="0.5"]
 		PROTA: Aarrgh! Machuquei a mão...
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.0"]
-		audio "res://ASSETS/SOUNDS/FSX/MenuClose.mp3"
-		# [SOUND] Retorno à visão do quarto
+		audio -
+		# [SOUND] Retorno quarto
+		[wait time="0.5"]
 		join PROTA leftmost
 		join ATENA (Falando) right [animation="Slide From Right" length="0.7"]
-		audio "res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"
-		# [SOUND] Atena chegando para ajudar
+		audio -
+		# [SOUND] Chegada suave
+		[wait time="0.5"]
 		ATENA: Ei, calma! Você vai se machucar mais ainda. Usa esse suprimento aqui... deixa eu tentar com a outra
 		update PROTA (Neutro)
 	- Chave dourada
@@ -175,7 +189,10 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Usar a Chave e Abrir o Báu - Cena PeixeiroCasa.png" fade="0.5" transition="Simple Fade" wait="true"]
 		PROTA: Dentro do baú... é o livro!
 		ATENA: Tem outros objetos aqui também. Vou guardar, pode ser útil depois
+		PROTA: Finalmente encontramos esse livros, mas pera...
+		PROTA: Olha as páginas do livro parecem adulteradas, vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as adulteradas pelo regime.
 		[signal arg="iniciar_minigame_paginas"]
+		[end_timeline]
 - Quebrar o baú
 	update PROTA (Determinado) [animation="Shake X" length="1.0"]
 	PROTA: Não tenho tempo pra ficar procurando chave. Vou usar esse martelo daqui
@@ -183,7 +200,15 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 	leave --All-- [animation="Fade Out" length="0.3" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Quebrar o báu - Cena PeixeiroCasa.png" fade="0.4" transition="Simple Fade" wait="true"]
 	PROTA: A madeira cedeu. Dentro tem... o livro!
+	[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.0"]
+	join PROTA center
+	join ATENA left
+	join Luis leftmost
+	join PEIXEIRO right
+	PROTA (Falando): Finalmente encontramos esse livros, mas pera...
+	PROTA: Olha as páginas do livro parecem adulteradas, vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as adulteradas pelo regime.
 	[signal arg="iniciar_minigame_paginas"]
+	[end_timeline]
 	[signal arg="escolha_bau_direto"]
 
 leave --All-- [animation="Fade Out" length="0.6" wait="true"]

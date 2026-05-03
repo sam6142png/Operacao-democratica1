@@ -19,7 +19,7 @@
 &"portraits": {
 "Assustada c/ placa": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/assustada segurando a placa.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/protestante/assustada segurando a placa.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Protestando Normal": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/protestante.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/protestante/protestante.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +37,7 @@
 },
 "Sendo presa": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/protestante/militar prendendo a protestante.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/protestante/militar prendendo a protestante.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),

@@ -1,0 +1,54 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.8" transition="Simple Fade"]
+join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
+[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
+# [SOUND] Entrada do Dante (Ideal: Passos cautelosos ou 'Whoosh')
+PROTA: Será que isso realmente pode funcionar?
+PROTA (Confuso_Cabeca): E se esse velho só tiver me usando...
+update PROTA center
+PROTA (Determinado): Não! Isso não pode acontecer, vou ter fé que vamos conseguir conter esse governo injusto!
+PROTA (Confuso_Cabeca): Pensando bem... Antes de ir para a Vila do Açude Seco...
+PROTA (Sorrindo): Melhor eu dar uma passadinha na usina, vou ver se o Luis ou a Atena não querem me ajudar
+leave PROTA [animation="Slide To Left" length="0.7"]
+[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
+# [SOUND] Saída rápida (Ideal: Passos apressados sumindo)
+[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Externa.jpeg" fade="0.9" wait="true"]
+[sound path="res://ASSETS/SOUNDS/FSX/MenuClose.mp3"]
+# [SOUND] Transição para exterior (Ideal: Som de vento ou maquinário industrial ao fundo)
+join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="1.1" wait="true"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8"]
+[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
+# [SOUND] Movimento furtivo (Ideal: Tecido roçando ou passos muito leves)
+PROTA (De fininho): Melhor eu ter cuidado para nenhum soldado perceber minha presença
+leave PROTA [animation="Slide To Right" length="2.7" wait="true"]
+[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
+# [SOUND] Personagem saindo de cena furtivamente
+leave MILITAR [animation="Fade Out" length="1.9" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.9"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="1.1"]
+join ATENA (Neutro) left
+join Luis leftmost
+[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
+# [SOUND] Aparecimento surpresa (Ideal: 'Pop' ou interjeição de susto)
+ATENA (Falando): Dante?
+update PROTA (Surpreso) [animation="Heartbeat" length="1.2"]
+[sound path="res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"]
+# [SOUND] Efeito de Susto/Heartbeat (Ideal: Som de susto de desenho ou batida seca)
+PROTA: Aaaah! Que susto Athena!
+update ATENA (Rindo)
+update Luis (Rindo)
+ATENA: Hahahahaha! Você tinha que ver sua cara, ficou parecendo um gato espichado
+update PROTA (Determinado)
+update ATENA (Neutro)
+update Luis (Neutro)
+PROTA: Ha- ha - ha, você tá muito engraçadinha né, senhorita? Mas enfim, queria contar uma novidade para vocês
+ATENA (Falando): Desembucha, Dante! Sabe que eu sou "aperriada"
+PROTA (Falando): Calma, calma. Em resumo\:Encontrei um velho que diz ser conhecido dos meus pais...
+PROTA (Confuso_Cabeca): Agora tenho que ir na Vila do Açude procurar um livro pra ajudar na reconquista da democracia da nossa cidade
+PROTA (Sorrindo): E aí? Vocês vêm comigo?
+ATENA (Falando): Macho... Achei estranho mas não vou te deixar na mão. Tô Dentro!
+PROTA: Obrigado Athenaa! Sabia que vc não ia vacilar. E você, Luis?
+Luis (Falando): Eeee... Eu tô com preguiça, mas vamo lá, não quero vacilar com tu
+PROTA (Confuso_Cabeca): Não era o que eu esperava, maaas...
+PROTA (Sorrindo): Obrigado meu mano Luis!! Você é um caba macho mesmo!
+PROTA (Falando): Então vamo lá galera! Temos um grande caminho pra percorrer!
+update PROTA [animation="Tada" length="1.0" mirrored="true"]

@@ -10,14 +10,14 @@ config_version=5
 
 [application]
 
-config/name="Projeto Operação Democrática - Versão Base"
+config/name="Projeto Operacao Democratica - Versao Base"
 config/name_localized={
 "en_US": "Democratic Operation"
 }
 run/main_scene="uid://dxi1ilkmpyr7w"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 0)
-config/icon="uid://l08sufjcun5m"
+config/icon="uid://bayw2iq8bodes"
 
 [audio]
 
@@ -29,7 +29,8 @@ Dialogic="*uid://ds2q0uclmolvu"
 TimelineManager="*uid://dfbdafrijkfrt"
 GameState="*uid://65ipybngwntw"
 MedidorConfianca="*res://ASSETS/CENAS/MedidorConfianca.tscn"
-MinigamePaginas="*res://ASSETS/CENAS/minigame_paginas.tscn"
+FadeManager="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/FadeManager.gd"
+MenuPausa="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/MenuPausa.gd"
 
 [dialogic]
 
@@ -74,34 +75,34 @@ save/encryption_on_exports_only=true
 text/autopauses={}
 audio/channel_defaults={
 "": {
-"audio_bus": "",
+"audio_bus": "SFX",
 "fade_length": 0.0,
 "loop": false,
 "volume": 0.0
 },
 "music": {
-"audio_bus": "",
+"audio_bus": "Musica",
 "fade_length": 0.0,
 "loop": true,
 "volume": 0.0
 }
 }
 glossary/default_case_sensitive=true
-layout/style_list=["", "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"]
+layout/style_list=["res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"]
 layout/default_style="res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
 glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
+audio/type_sound_bus="SFX"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=2
-window/stretch/mode="viewport"
-window/stretch/aspect="expand"
+window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogic/plugin.cfg")
 
 [input]
 

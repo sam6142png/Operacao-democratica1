@@ -19,7 +19,7 @@
 &"portraits": {
 "Apenas Bravo": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/bravo.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/militar/bravo.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Bravo Falando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/falando bravo e apontando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/militar/falando bravo e apontando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +37,7 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/neutro.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/militar/neutro.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -46,7 +46,7 @@
 },
 "Soldados Aleatórios": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/militar/Soldados conversando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/militar/Soldados conversando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),

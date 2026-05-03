@@ -1,14 +1,11 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.0"]
 join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
-[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
-# [SOUND] Movimento de entrada do personagem (Ideal: Passos leves no asfalto ou 'Whoosh' suave)
+[wait time="0.8"]
 PROTA: Ai ai, mais um dia nessa cidade, mais um dia tendo que aturar aquela ditadura maldita...
 update PROTA (Surpreso)
-[sound path="res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"]
-# [SOUND] Reação de surpresa/tensão (Ideal: Impacto agudo ou 'Stinger' de suspense)
+[wait time="0.6"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg" fade="0.5" transition="Simple Fade"]
-[sound path="res://ASSETS/SOUNDS/FSX/MenuClose.mp3"]
-# [SOUND] Transição de ambiente (Ideal: Ruído de multidão/gritos abafados aumentando)
+[wait time="0.3"]
 PROTA: Meu Deus! Que barulho de gritos são esses que eu tô ouvindo...
 update PROTA (Pensando)
 PROTA (Pensando): Será que devo me aproximar ou observar primeiro?
@@ -31,16 +28,13 @@ PROTA (Falando): E você não tem medo? Os militares podem aparecer a qualquer m
 Protestante: Medo? Medo é o que eles querem que a gente sinta. Enquanto a gente tem medo, eles continuam no poder
 Protestante: Seu pai entendia isso. Uma pena que poucas pessoas ainda lembram do que ele representava pra essa cidade
 update PROTA (Surpreso) [animation="Heartbeat" length="0.7"]
-[sound path="res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"]
-# [SOUND] Batimento cardíaco/Choque emocional (Ideal: Heartbeat duplo grave)
+[wait time="0.6"]
 PROTA (Pensando): Ela conhecia meu pai?
 join MILITAR (Neutro) right [animation="Zoom In" length="2.0" wait="true"]
-[sound path="res://ASSETS/SOUNDS/FSX/SlideMenu.mp3"]
-# [SOUND] Aproximação intimidadora (Ideal: Passos pesados de bota militar ou som metálico)
+[wait time="0.8"]
 PROTA (Falando): Olha, moça... Você não acha que é muito perigoso ficar por a -
 update MILITAR (Bravo Falando) [animation="Shake X" length="0.7"]
-[sound path="res://ASSETS/SOUNDS/FSX/BotoesClick.mp3"]
-# [SOUND] Grito/Interrupção brusca (Ideal: Som de rádio militar ou impacto seco)
+[wait time="0.5"]
 update PROTA (Surpreso) leftmost [animation="Heartbeat" length="1.0" fade="Fade Cross" fade_length="0.6"]
 update Protestante (Assustada c/ placa) left [animation="Heartbeat" mirrored="false" fade="Fade Cross" fade_length="1.0"]
 MILITAR: EI VOCÊS AÍ, SAIAM DAQUI ANTES QUE EU LEVE OS DOIS PARA O XILINDRÓ

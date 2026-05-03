@@ -19,7 +19,7 @@
 &"portraits": {
 "Falando": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Senhora/S_VelhaFalando.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Senhora/S_VelhaFalando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Neutra": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Senhora/S_Velha.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Senhora/S_Velha.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
