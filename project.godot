@@ -47,6 +47,7 @@ directories/dch_directory={
 }
 directories/dtl_directory={
 "Dante_na_usina_Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina_Fase1.dtl",
+"Intro_Narrativa": "res://ASSETS/DIALOGIC/TIMELINES/Intro_Narrativa.dtl",
 "Timeline_VilaPeixeiro": "res://ASSETS/DIALOGIC/TIMELINES/Timeline_VilaPeixeiro.dtl",
 "m01_rua_velho": "res://ASSETS/DIALOGIC/TIMELINES/m01_rua_velho.dtl",
 "timeline_resultado_paginas": "res://ASSETS/DIALOGIC/TIMELINES/timeline_resultado_paginas.dtl"

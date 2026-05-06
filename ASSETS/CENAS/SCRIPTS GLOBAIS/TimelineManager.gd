@@ -5,12 +5,36 @@ signal dialogo_finalizado(nome: String)
 
 var esta_tocando: bool = false
 
+func _ready():
+	# Configura o Dialogic para avançar as falas automaticamente
+	if Dialogic.has_subsystem("Inputs"):
+		var inputs = Dialogic.Inputs
+		if inputs.auto_advance:
+			inputs.auto_advance.enabled_forced = true
+			# Tempo fixo de espera após o texto terminar (em segundos)
+			inputs.auto_advance.fixed_delay = 1.2
+			# Velocidade baseada nos caracteres (opcional, para naturalidade)
+			inputs.auto_advance.per_character_delay = 0.05
+
 func parar_tudo():
 	esta_tocando = false
-	# Encerra qualquer timeline ativa
-	Dialogic.end_timeline()
+	# Encerra qualquer timeline ativa imediatamente ignorando animações de saída
+	Dialogic.end_timeline(true)
 	
-	# Limpa o estado interno para evitar erros de referências órfãs (EncodedObjectAsID)
+	# Limpa todos os subsistemas do Dialogic (incluindo Choices e UI)
+	Dialogic.clear()
+	
+	# Força ocultação do layout se ainda estiver visível
+	if Dialogic.has_subsystem("Styles"):
+		if Dialogic.Styles.has_active_layout_node():
+			var layout = Dialogic.Styles.get_layout_node()
+			if layout:
+				layout.hide()
+				if layout.get_parent():
+					layout.get_parent().remove_child(layout)
+				layout.queue_free()
+	
+	# Limpa o estado interno para evitar erros de referências órfãs
 	if Dialogic.has_subsystem("Portraits"):
 		var portraits = Dialogic.Portraits
 		if portraits.has_method("leave_all_characters"):

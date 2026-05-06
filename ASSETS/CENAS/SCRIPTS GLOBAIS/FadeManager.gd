@@ -22,6 +22,7 @@ var FATOS = [
 var fatos_restantes: Array = []
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 1000  # fica acima de tudo
 	randomize() # Garante aleatoriedade sempre que abrir o jogo
 	_garantir_overlay()
@@ -135,6 +136,7 @@ func carregar_cena(cena_alvo_path: String) -> void:
 	await get_tree().create_timer(3.0).timeout
 	
 	# Troca de cena de forma limpa sem threading (evita crash do Godot 4)
+	get_tree().paused = false
 	get_tree().change_scene_to_file(cena_alvo_path)
 	
 	# Limpeza

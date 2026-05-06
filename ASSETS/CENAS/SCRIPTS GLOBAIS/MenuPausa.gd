@@ -95,8 +95,8 @@ func _criar_interface():
 		_mostrar_feedback_save("Progresso salvo no sistema.")
 	, Color("#FF8C00"))
 	_criar_botao(vbox, "MENU PRINCIPAL", func():
-		get_tree().paused = false
 		painel_pausa.visible = false
+		await TimelineManager.parar_tudo()
 		FadeManager.carregar_cena("res://title_screen.tscn")
 	, Color("#FF8C00"))
 	_criar_botao(vbox, "SAIR PARA O DESKTOP", func(): get_tree().quit(), Color("#FF2222"))

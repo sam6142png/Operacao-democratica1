@@ -81,6 +81,7 @@ var timer_restante: float = 0.0
 var usar_timer: bool = false
 var aguardando_proxima: bool = false
 var minigame_iniciado: bool = false
+var confianca_inicial: int = 0
 
 @onready var texto_pagina: Label        = %TextoPagina
 @onready var pagina_card: PanelContainer = %PaginaCard
@@ -114,6 +115,7 @@ func _ready() -> void:
 	botao_adulterada.pressed.connect(func(): _avaliar("adulterada"))
 	
 	_mostrar_intro()
+	confianca_inicial = GameState.confianca
 
 func _aplicar_tema_vintage() -> void:
 	# Cores base
@@ -536,6 +538,7 @@ func _mostrar_gameover() -> void:
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.pressed.connect(func():
 		painel_outro.visible = false
+		GameState.confianca = confianca_inicial
 		_iniciar_rodada()
 	)
 	painel_outro.get_child(0).add_child(btn)
@@ -578,5 +581,6 @@ func _finalizar_minigame() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = true
 		
+	GameState.acertos_paginas_fase1 = acertos
 	if GameState.fase_atual == 1: GameState.fase_atual = 2
 	FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")

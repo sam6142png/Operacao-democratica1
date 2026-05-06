@@ -1,42 +1,21 @@
 extends Node2D
 
 func _ready() -> void:
-	# Fade in para limpar a transição do menu
-	if has_node("CanvasLayer/Overlay"):
-		var overlay = $CanvasLayer/Overlay
-		overlay.color = Color(0, 0, 0, 1)
-		var tw = create_tween()
-		tw.tween_property(overlay, "color", Color(0, 0, 0, 0), 0.5)
+	# O sistema de carregamento (Continue) agora é gerenciado pelo GameState.continuar_jogo()
+	# para evitar conflitos de sincronização.
 	
 	Dialogic.signal_event.connect(_on_dialogic_signal)
 	
-	# Se existe uma timeline salva para retomar
-	if GameState.timeline_atual != "":
-		var t_retomar = GameState.timeline_atual
-		
-		# Prevenção contra autosave defasado: se a timeline for da fase 1 mas já estamos na fase 2, ignorar
-		if GameState.fase_atual == 2 and t_retomar.contains("VilaPeixeiro"):
-			GameState.timeline_atual = ""
-			t_retomar = ""
-		
-		if t_retomar != "":
-			# Se for um path completo, pega só o nome base (que o Dialogic prefere)
-			if t_retomar.contains("res://"):
-				t_retomar = t_retomar.get_file().replace(".dtl", "")
-			
-			await TimelineManager.tocar_dialogo(t_retomar)
-			
-			# Após terminar a timeline retomada, verifica se deve seguir a sequência
-			if t_retomar == "m01_rua_velho":
-				await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")
-				await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
-			elif t_retomar == "Dante_na_usina_Fase1":
-				await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
-			return
+	# Se estivermos retomando um save, o GameState.continuar_jogo() cuidará de disparar o diálogo.
+	# Aqui só iniciamos a sequência normal se for um NOVO JOGO (timeline_atual vazia)
+	if GameState.timeline_atual == "":
+		iniciar_sequencia_fase()
 
-	# Sequência normal (Novo Jogo ou fim de timeline)
+func iniciar_sequencia_fase():
 	match GameState.fase_atual:
 		1:
+			await TimelineManager.tocar_dialogo("Intro_Narrativa")
+			await FadeManager.transicao_com_dica()
 			await TimelineManager.tocar_dialogo("m01_rua_velho")
 			await FadeManager.transicao_com_dica()
 			await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")

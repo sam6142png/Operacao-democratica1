@@ -1,0 +1,28 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Industrial Velha.png" fade="1.5" transition="Simple Fade" wait="true"]
+[wait time="1.0"]
+... Há 20 anos, Usina Velha era o motor da região.
+A grande usina não trazia apenas fumaça e aço, mas o pão de cada dia e o orgulho de um povo trabalhador.
+[background arg="res://ASSETS/SPRITES/FUNDOS/O Golpe (O Início da Opressão).png" fade="1.2" transition="Simple Fade" wait="true"]
+Mas no "Grande Apagão", as máquinas pararam... e no silêncio da fábrica, surgiu o controle.
+General Valerius prometeu ordem em meio ao caos. O preço? A nossa voz.
+A democracia se tornou uma palavra esquecida, enterrada sob a fuligem de um passado que o regime tenta apagar.
+[background arg="res://ASSETS/SPRITES/FUNDOS/Pais de Dante entregando o livro.png" fade="1.2" transition="Simple Fade" wait="true"]
+[wait time="0.8"]
+Julian e Elara sabiam que a verdade era a única semente que restava.
+Ele, o último prefeito eleito. Ela, a técnica que viu a mão por trás da sabotagem que quebrou a cidade.
+Eles não sobreviveram à purga... mas deixaram um legado.
+Um livro. Uma esperança. Um filho.
+[background arg="res://ASSETS/SPRITES/FUNDOS/Memórias de Dante.png" fade="1.2" transition="Simple Fade" wait="true"]
+As lembranças daquele tempo são como fotografias queimadas nas bordas.
+O cheiro do ferro, o barulho das máquinas... fragmentos de uma vida que o regime tentou apagar da mente de cada cidadão.
+[background arg="res://ASSETS/SPRITES/FUNDOS/A Sombra do Medo (O Trauma de Dante).png" fade="1.5" transition="Simple Fade" wait="true"]
+[wait time="1.2"]
+Dante cresceu sob a sombra de um medo constante, vendo sua infância ser soterrada pelos escombros de um futuro que lhe foi roubado.
+A presença do General era onipresente, uma silhueta escura que cobria qualquer raio de esperança.
+[background arg="res://ASSETS/SPRITES/FUNDOS/A Voz da Verdade (O Controle da Rádio).png" fade="1.2" transition="Simple Fade" wait="true"]
+Nas ruas, a única verdade permitida vinha do eco dos alto-falantes.
+O controle não era apenas físico, era sobre o que as pessoas podiam ouvir, pensar e acreditar.
+[background arg="res://ASSETS/SPRITES/FUNDOS/O Comandante das Ruínas.png" fade="1.5" transition="Simple Fade" wait="true"]
+Hoje, Usina Velha é o reino das ruínas, vigiado de perto por aquele que se alimenta da nossa decadência.
+Mas o passado está começando a bater à porta... e a verdade não pode ser enterrada no entulho para sempre.
+[end_timeline]

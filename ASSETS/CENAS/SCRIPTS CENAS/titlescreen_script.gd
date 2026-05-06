@@ -21,7 +21,7 @@ var menu_container: MarginContainer
 var vbox_botoes: VBoxContainer
 
 # Tipografia Exclusiva para Botões Principais
-var dogica_font = preload("res://ASSETS/FONTES/determination.ttf")
+@onready var dogica_font = preload("res://ArticaPro-Bold.ttf")
 
 # Cores Neon (Premium/Cyberpunk)
 const C_NEON_LARANJA = Color("#FF8C00")
@@ -87,7 +87,7 @@ func _t(chave: String) -> String:
 	return chave
 
 func _ready() -> void:
-	# Criar o botão Continuar que agora abre a tela de seleção de slots
+	# Criar o botão Continuar dinamicamente
 	var btn_continuar = Button.new()
 	btn_continuar.text = "Continuar"
 	btn_continuar.name = "ContinuarBotao"
@@ -96,7 +96,25 @@ func _ready() -> void:
 	if not GameState.has_save():
 		btn_continuar.hide()
 	
+	# Salva a posição original do botão Jogar como referência de ancoragem
+	var pos_ancora = jogar_botao.position
+	
 	botoes = [btn_continuar, jogar_botao, opcoes_botao, creditos_botao, sair_botao]
+	
+	# Criar container organizado para evitar sobreposição
+	menu_container = MarginContainer.new()
+	menu_container.position = pos_ancora
+	menu_container.add_theme_constant_override("margin_top", -100 if GameState.has_save() else 0)
+	add_child(menu_container)
+	
+	vbox_botoes = VBoxContainer.new()
+	vbox_botoes.add_theme_constant_override("separation", 20)
+	menu_container.add_child(vbox_botoes)
+	
+	for btn in botoes:
+		if btn.get_parent(): btn.get_parent().remove_child(btn)
+		vbox_botoes.add_child(btn)
+	
 	Input.set_custom_mouse_cursor(null)
 	
 	_criar_overlay()
@@ -134,29 +152,11 @@ func _iniciar_breathing_background() -> void:
 		bg.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func _alinhar_botoes() -> void:
-	if not menu_container:
-		menu_container = MarginContainer.new()
-		menu_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-		# Movendo para o espaço vazio (posição marcada pelo usuário)
-		menu_container.add_theme_constant_override("margin_left", 320)
-		menu_container.add_theme_constant_override("margin_top", 320) # Começa mais embaixo
-		menu_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(menu_container)
-		
-		vbox_botoes = VBoxContainer.new()
-		vbox_botoes.add_theme_constant_override("separation", 28) # Muito mais respiro entre eles
-		vbox_botoes.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		vbox_botoes.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-		menu_container.add_child(vbox_botoes)
-	
 	for btn in botoes:
-		if btn.get_parent() != vbox_botoes:
-			if btn.get_parent(): btn.get_parent().remove_child(btn)
-			vbox_botoes.add_child(btn)
-		
-		# Proporção Gigante e Chamativa
-		btn.custom_minimum_size = Vector2(420, 65)
-		btn.pivot_offset = btn.custom_minimum_size / 2.0
+		btn.custom_minimum_size = Vector2(400, 70)
+		btn.pivot_offset = Vector2(200, 35)
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.add_theme_constant_override("h_separation", 15)
 	
 	if has_node("bg"):
 		var bg = $bg
@@ -246,7 +246,13 @@ func _configurar_botoes() -> void:
 
 func _aplicar_estilo_principal(btn: Button, cor_destaque: Color) -> void:
 	btn.add_theme_font_override("font", dogica_font)
-	btn.add_theme_font_size_override("font_size", 28) # Maior para acompanhar o botão enorme
+	
+	# Hierarquia Harmônica de Tamanhos
+	var f_size = 38 # Padrão para os principais
+	if btn.name in ["OpçõesBotao", "CréditosBotao"]: f_size = 28
+	if btn.name == "SairBotao": f_size = 22
+	
+	btn.add_theme_font_size_override("font_size", f_size)
 	
 	# === ESTILO NORMAL (Glassmorphism + Achatado) ===
 	var estilo_normal = StyleBoxFlat.new()
@@ -361,6 +367,7 @@ func _on_hover_btn(btn: Button) -> void:
 	# Neon cursor segue a posição GLOBAL Y para ser preciso
 	var tw_cursor = create_tween().set_parallel(true)
 	neon_cursor.color = cor_btn
+	tw_cursor.tween_property(neon_cursor, "size:x", btn.size.x, 0.1)
 	tw_cursor.tween_property(neon_cursor, "global_position:y", cursor_y, 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw_cursor.tween_property(neon_cursor, "global_position:x", vbox_botoes.global_position.x - 25.0, 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw_cursor.tween_property(neon_cursor, "modulate:a", 0.6, 0.15)
@@ -889,7 +896,7 @@ func _on_jogar_pressed() -> void:
 	_iniciar_partida("novo")
 
 func _on_continuar_pressed() -> void:
-	_iniciar_partida("carregar")
+	GameState.continuar_jogo()
 
 func _iniciar_partida(modo: String) -> void:
 	_tocar_clique()
@@ -898,7 +905,7 @@ func _iniciar_partida(modo: String) -> void:
 	await TimelineManager.parar_tudo()
 	
 	if modo == "novo":
-		GameState.reset_save()
+		await GameState.reset_save()
 	else:
 		GameState.carregar_jogo()
 	
