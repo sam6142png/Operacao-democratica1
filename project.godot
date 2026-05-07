@@ -18,7 +18,7 @@ run/main_scene="uid://dxi1ilkmpyr7w"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 0)
 boot_splash/show_image=false
-config/icon="uid://bayw2iq8bodes"
+config/icon="uid://dy47f3hp2c0ug"
 
 [audio]
 
@@ -32,6 +32,7 @@ GameState="*uid://65ipybngwntw"
 MedidorConfianca="*res://ASSETS/CENAS/MedidorConfianca.tscn"
 FadeManager="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/FadeManager.gd"
 MenuPausa="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/MenuPausa.gd"
+ChoiceTimer="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/ChoiceTimer.gd"
 
 [dialogic]
 

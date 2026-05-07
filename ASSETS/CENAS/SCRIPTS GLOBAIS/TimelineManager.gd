@@ -24,6 +24,10 @@ func parar_tudo():
 	# Limpa todos os subsistemas do Dialogic (incluindo Choices e UI)
 	Dialogic.clear()
 	
+	# Força parada do timer visual de escolhas
+	if has_node("/root/ChoiceTimer"):
+		get_node("/root/ChoiceTimer").forcar_parar()
+	
 	# Força ocultação do layout se ainda estiver visível
 	if Dialogic.has_subsystem("Styles"):
 		if Dialogic.Styles.has_active_layout_node():
@@ -67,9 +71,18 @@ func tocar_dialogo(nome: String):
 	
 	if timeline:
 		await Dialogic.timeline_ended
+		
+		# GUARDA CRÍTICA: Se esta_tocando já é false, significa que parar_tudo()
+		# foi chamado (ex: jogador voltou ao menu). NÃO devemos salvar aqui,
+		# pois isso sobrescreveria o save manual do jogador com dados vazios.
+		if not esta_tocando:
+			print("[TimelineManager] Timeline interrompida (menu). Save preservado.")
+			dialogo_finalizado.emit(nome)
+			return
+		
 		esta_tocando = false
-		GameState.salvar_jogo() # Salva no slot_atual por padrão
-		Dialogic.Save.save("autosave") # Salva o estado interno do Dialogic no autosave
+		GameState.salvar_jogo()
+		Dialogic.Save.save("autosave")
 		dialogo_finalizado.emit(nome)
 		print("[TimelineManager] Finalizado e salvo: ", nome)
 	else:

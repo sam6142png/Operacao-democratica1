@@ -359,9 +359,9 @@ func _on_hover_btn(btn: Button) -> void:
 		$SomHover.pitch_scale = randf_range(0.95, 1.05)
 		$SomHover.play()
 	
-	var cor_btn = btn.get_meta("cor_neon")
-	var pos_x_orig = btn.get_meta("pos_original_x")
-	var pos_y_glob = btn.get_meta("pos_global_y")
+	var cor_btn = btn.get_meta("cor_neon") if btn.has_meta("cor_neon") else C_NEON_LARANJA
+	var pos_x_orig = btn.get_meta("pos_original_x") if btn.has_meta("pos_original_x") else btn.position.x
+	var pos_y_glob = btn.get_meta("pos_global_y") if btn.has_meta("pos_global_y") else btn.global_position.y
 	var cursor_y = pos_y_glob + (btn.size.y / 2.0) - 2.0
 	
 	# Neon cursor segue a posição GLOBAL Y para ser preciso

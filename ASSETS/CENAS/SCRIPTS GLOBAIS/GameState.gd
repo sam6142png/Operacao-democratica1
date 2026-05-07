@@ -24,6 +24,13 @@ var decisoes_fase_1 = {
 }
 var decisoes_fase_2 = {}
 
+# Log de escolhas para exibir no menu de pausa
+# Cada entrada: {"texto": "...", "delta": +1 ou -1}
+var log_escolhas: Array = []
+
+func registrar_escolha(texto: String, delta: int):
+	log_escolhas.append({"texto": texto, "delta": delta})
+
 # --- Lógica de Salvamento ---
 
 func has_save() -> bool:
@@ -55,7 +62,8 @@ func salvar_jogo():
 		"cena_atual": cena_atual,
 		"timeline_atual": timeline_atual,
 		"decisoes_fase_1": decisoes_fase_1,
-		"decisoes_fase_2": decisoes_fase_2
+		"decisoes_fase_2": decisoes_fase_2,
+		"log_escolhas": log_escolhas
 	}
 	
 	# 4. Salva o arquivo JSON principal
@@ -87,9 +95,9 @@ func continuar_jogo():
 	await get_tree().process_frame
 	
 	if timeline_atual != "":
-		print("[GameState] Retomando timeline: ", timeline_atual)
-		# Iniciamos a timeline e carregamos o estado salvo pelo Dialogic
-		Dialogic.start(timeline_atual)
+		print("[GameState] Retomando estado preciso do Dialogic...")
+		# Carregamos o estado completo. O Dialogic 2 cuida de reabrir a timeline 
+		# no índice exato (current_event_idx) que foi salvo no state.txt.
 		Dialogic.Save.load("autosave")
 
 func _carregar_dados_json():
@@ -109,6 +117,7 @@ func _carregar_dados_json():
 				adulterada_identificada_fase1 = data.get("adulterada_identificada_fase1", false)
 				decisoes_fase_1 = data.get("decisoes_fase_1", decisoes_fase_1)
 				decisoes_fase_2 = data.get("decisoes_fase_2", decisoes_fase_2)
+				log_escolhas = data.get("log_escolhas", [])
 				cena_atual = data.get("cena_atual", "res://ASSETS/CENAS/game_scene.tscn")
 				timeline_atual = data.get("timeline_atual", "")
 				print("[GameState] Dados JSON carregados na memória.")
@@ -124,6 +133,7 @@ func reset_save():
 	decisoes_fase_2 = {}
 	cena_atual = "res://ASSETS/CENAS/game_scene.tscn"
 	timeline_atual = ""
+	log_escolhas = []
 	
 	# Encerra processos ativos
 	await TimelineManager.parar_tudo()
