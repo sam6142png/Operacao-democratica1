@@ -1,0 +1,27 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/EscolaExterna.png" fade="1.0" transition="Simple Fade"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8" wait="true"]
+PROTA (De fininho): A escola pública de Usina Velha. Faz tempo que não coloco os pés aqui.
+join ATENA (Neutro) left [animation="Slide From Left" length="0.8" wait="true"]
+ATENA (Falando): Faz tempo que ninguém coloca os pés aqui para aprender de verdade, Dante. Olha esses cartazes nos portões.
+PROTA (Pensando): "Obedecer é servir". "O Palácio dita o rumo". Eles transformaram as salas de aula em currais.
+ATENA: Os guardas fazem a patrulha da frente a cada meia hora. Temos que entrar logo.
+PROTA: Ali, a porta de serviço da cantina tá encostada. Vamos.
+leave ATENA [animation="Slide To Left" length="0.6"]
+leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/EscolaInterna.png" fade="1.0" transition="Simple Fade" wait="true"]
+join PROFESSOR (Neutro) rightmost [animation="Fade In" length="0.8" wait="true"]
+join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.8" wait="true"]
+join ATENA (Neutro) left [animation="Slide From Left" length="0.7" wait="true"]
+PROFESSOR (Falando): Dante? Atena? Vocês são doidos?! O que fazem aqui a essa hora? Se a patrulha pegar vocês dentro da escola, vão direto pro xilindró!
+PROTA (Falando): Professor, nós sabemos da "Operação Frequência". Descobrimos que o regime está transmitindo mensagens para a escola.
+PROFESSOR (Neutro): ...Então vocês já sabem. Sim, eles instalaram caixas de som novas. Repetem slogans de hora em hora. É lavagem cerebral.
+ATENA (Falando): Eles recolheram os livros antigos de História. O que estão ensinando agora?
+PROFESSOR (Falando): Mentiras. Reescreveram tudo. Dizem que o regime nos salvou do caos, que a usina explodiu por sabotagem externa, que obedecer é o único dever cívico.
+PROFESSOR (Falando): Eu queria contestar, mas se eu abrir a boca, sou substituído e preso no mesmo dia.
+PROTA (Determinado): E se a gente interceptar os alto-falantes? Se a gente enfiar o sinal da rádio livre na caixa de junção principal deles?
+PROFESSOR (Falando): A caixa de controle elétrico fica aqui no armário dos fundos. Mas é cheia de fusíveis e fios embaralhados. Um erro e o alarme dispara.
+ATENA (Falando): A gente sabe lidar com fiação. Professor, abre a caixa pra nós. É nossa chance de fazer os alunos ouvirem a verdade.
+PROFESSOR (Falando): Está bem. Mas façam rápido. Eu vou vigiar o corredor.
+leave PROFESSOR [animation="Fade Out" length="0.6" wait="true"]
+[signal arg="iniciar_minigame_escola"]
+[end_timeline]

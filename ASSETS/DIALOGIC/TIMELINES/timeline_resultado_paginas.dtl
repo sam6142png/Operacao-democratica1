@@ -1,5 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Porao casa peixeiro.png" fade="0.0"]
 join PROTA (Pensando) center [animation="Fade In" length="0.7" wait="true"]
-PROTA: Então... esses são os direitos e deveres que o regime tentou apagar
-PROTA (Determinado): Mas não conseguiram. Ainda dá pra reconstruir isso
+PROTA: Direitos e deveres... as palavras que o regime queimou, rasgou e enterrou
+PROTA (Determinado): Mas não morreram. Tão aqui. E agora tão nas nossas mãos
 leave PROTA [animation="Fade Out" length="0.5" wait="true"]
 [signal arg="paginas_encerradas"]
+[end_timeline]

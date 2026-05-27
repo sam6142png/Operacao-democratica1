@@ -23,6 +23,8 @@ var decisoes_fase_1 = {
 	"ajudou_vila": false
 }
 var decisoes_fase_2 = {}
+var fase2_passo: String = "inicio"
+var fase3_passo: String = "inicio"
 
 # Log de escolhas para exibir no menu de pausa
 # Cada entrada: {"texto": "...", "delta": +1 ou -1}
@@ -63,6 +65,8 @@ func salvar_jogo():
 		"timeline_atual": timeline_atual,
 		"decisoes_fase_1": decisoes_fase_1,
 		"decisoes_fase_2": decisoes_fase_2,
+		"fase2_passo": fase2_passo,
+		"fase3_passo": fase3_passo,
 		"log_escolhas": log_escolhas
 	}
 	
@@ -117,6 +121,8 @@ func _carregar_dados_json():
 				adulterada_identificada_fase1 = data.get("adulterada_identificada_fase1", false)
 				decisoes_fase_1 = data.get("decisoes_fase_1", decisoes_fase_1)
 				decisoes_fase_2 = data.get("decisoes_fase_2", decisoes_fase_2)
+				fase2_passo = data.get("fase2_passo", "inicio")
+				fase3_passo = data.get("fase3_passo", "inicio")
 				log_escolhas = data.get("log_escolhas", [])
 				cena_atual = data.get("cena_atual", "res://ASSETS/CENAS/game_scene.tscn")
 				timeline_atual = data.get("timeline_atual", "")
@@ -131,6 +137,8 @@ func reset_save():
 	adulterada_identificada_fase1 = false
 	decisoes_fase_1 = {"falou_com_velho": false, "ajudou_vila": false}
 	decisoes_fase_2 = {}
+	fase2_passo = "inicio"
+	fase3_passo = "inicio"
 	cena_atual = "res://ASSETS/CENAS/game_scene.tscn"
 	timeline_atual = ""
 	log_escolhas = []

@@ -1,0 +1,8 @@
+join PROTA (Confuso_Cabeca) center [animation="Fade In" length="0.5" wait="true"]
+PROTA: "VENDA DE PAMONHA NO BAIRRO 3"...?
+update PROTA (Pensando)
+PROTA (Pensando): ... Sério? O regime militar tá criptografando propaganda de PAMONHA?
+PROTA (Confuso_Cabeca): Ou eu sintonizei na frequência do comércio clandestino, ou esses caras perderam completamente a noção
+PROTA (Determinado): Bom, pelo menos uma coisa boa: a cifra funciona. Três letras pra trás e a mensagem abre. Agora preciso achar a frequência de verdade
+leave PROTA [animation="Fade Out" length="0.5" wait="true"]
+[end_timeline]

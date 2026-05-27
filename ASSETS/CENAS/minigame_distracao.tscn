@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://1y0gknavjla5"]
+
+[ext_resource type="Script" uid="uid://cqbntr4kvu8y8" path="res://ASSETS/CENAS/SCRIPTS CENAS/minigame_distracao.gd" id="1_x001"]
+
+[node name="MinigameDistracao" type="Node2D" unique_id=1038542146]
+script = ExtResource("1_x001")

@@ -1,0 +1,19 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua de noite.png" fade="0.9" transition="Simple Fade" wait="true"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8" wait="true"]
+[wait time="0.5"]
+PROTA (Pensando): Silêncio demais. Esse tipo de silêncio não é paz... é emboscada
+[wait time="0.4"]
+join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="0.8" wait="true"]
+[wait time="0.5"]
+MILITAR (Soldados Aleatórios): Operação Frequência tá confirmada pra hoje. O Palácio quer resultado imediato
+MILITAR (Soldados Aleatórios): O alvo principal é a escola. Se aqueles moleques começarem a pensar por conta própria... a gente perde o gado
+MILITAR (Soldados Aleatórios): A rádio tá calibrada. Só falta ligar o sinal
+[wait time="0.4"]
+update PROTA (Pensando)
+PROTA (Pensando): "Operação Frequência"... "perder o gado"... eles tão falando das pessoas como se fossem animais
+PROTA (Pensando): Rádio, escola... preciso falar com o velho. Agora. Mas antes, tenho que sumir da vista desses guardas
+[wait time="0.5"]
+[signal arg="iniciar_distracao"]
+leave MILITAR
+leave PROTA
+[end_timeline]

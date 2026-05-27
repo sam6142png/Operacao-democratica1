@@ -41,6 +41,7 @@ directories/dch_directory={
 "Luis": "res://ASSETS/DIALOGIC/CHARACTER/Luis.dch",
 "MILITAR": "res://ASSETS/DIALOGIC/CHARACTER/MILITAR.dch",
 "PEIXEIRO": "res://ASSETS/DIALOGIC/CHARACTER/PEIXEIRO.dch",
+"PROFESSOR": "res://ASSETS/DIALOGIC/CHARACTER/PROFESSOR.dch",
 "PROTA": "res://ASSETS/DIALOGIC/CHARACTER/PROTA.dch",
 "Protestante": "res://ASSETS/DIALOGIC/CHARACTER/Protestante.dch",
 "SENHORA": "res://ASSETS/DIALOGIC/CHARACTER/SENHORA.dch",
@@ -50,6 +51,13 @@ directories/dtl_directory={
 "Dante_na_usina_Fase1": "res://ASSETS/DIALOGIC/TIMELINES/Dante_na_usina_Fase1.dtl",
 "Intro_Narrativa": "res://ASSETS/DIALOGIC/TIMELINES/Intro_Narrativa.dtl",
 "Timeline_VilaPeixeiro": "res://ASSETS/DIALOGIC/TIMELINES/Timeline_VilaPeixeiro.dtl",
+"fase2_casa_velho": "res://ASSETS/DIALOGIC/TIMELINES/fase2_casa_velho.dtl",
+"fase2_guardas": "res://ASSETS/DIALOGIC/TIMELINES/fase2_guardas.dtl",
+"fase2_reacao_final": "res://ASSETS/DIALOGIC/TIMELINES/fase2_reacao_final.dtl",
+"fase2_reacao_mensagem_1": "res://ASSETS/DIALOGIC/TIMELINES/fase2_reacao_mensagem_1.dtl",
+"fase2_reacao_mensagem_2": "res://ASSETS/DIALOGIC/TIMELINES/fase2_reacao_mensagem_2.dtl",
+"fase3_escola_conclusao": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_conclusao.dtl",
+"fase3_escola_inicio": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_inicio.dtl",
 "m01_rua_velho": "res://ASSETS/DIALOGIC/TIMELINES/m01_rua_velho.dtl",
 "timeline_resultado_paginas": "res://ASSETS/DIALOGIC/TIMELINES/timeline_resultado_paginas.dtl"
 }

@@ -5,41 +5,41 @@ audio - [volume="0.0" bus="SFX"]
 [wait time="0.8"]
 join ATENA (Neutro) left
 join Luis (Neutro) leftmost
-PROTA (Falando): Então essa é a Vila do Açude Seco... parece que o tempo parou aqui
-Luis (Falando): Olha os olhares dessas pessoas... parece que a gente não é bem-vindo
+PROTA (Falando): Vila do Açude Seco... até o nome já avisa que aqui não tem nada de bom
+Luis (Falando): Tu viu os olhares? Parece que a gente tá entrando no terreno de alguém
 update ATENA (Falando)
-ATENA: Faz sentido. Um lugar dominado pelo regime não confia em estranhos facilmente
-PROTA: Tem uma senhora ali, devemos perguntar algo pra ela
+ATENA: Território do regime. Estranho seria se confiassem na gente
+PROTA: Ali tem uma senhora. Bora perguntar, mas com jeito
 join SENHORA right [animation="Fade In" length="0.7"]
 audio -
 # [SOUND] Senhora aparece
 [wait time="0.8"]
-PROTA (Falando): EI SENHORA! PODERIA NOS AJUDAR?
+PROTA (Falando): Com licença, senhora! A gente precisava de uma ajuda, se não for incômodo...
 audio -
 # [SOUND] Reacao ao grito
 [wait time="0.5"]
-SENHORA (Falando): Não precisa gritar comigo, sem juízo! Sou véia mas num sou surda
-SENHORA (Falando): Vocês não parecem daqui.
-PROTA: A senhora tá certa. Estamos procurando um peixeiro que mora aqui nessa vila
-SENHORA: Hum... Eu não deveria dizer isso pra um bando de menino véi sem juízo, mas estou reconhecendo seu rosto
-SENHORA (Falando): Ucê é o fi do antigo prefeito né, menino?
-PROTA (Sorrindo): Sou sim, senhora. É por causa disso que vim aqui, um velho me parou na rua dizendo que conhecia meu pai
-SENHORA (Falando): Talvez eu conheça esse véi, deve ser das banda daqui e foi morar na cidade
-SENHORA (Falando): Enfim, num quero mais empaiar vocês
-SENHORA (Falando): Ele vive isolado. Mas cuidado com o que vão falar pra ele...
+SENHORA (Falando): "Se não for incômodo"... já é incômodo, menino! Que é que vocês querem?
+SENHORA (Falando): Vocês não são daqui, né? Cheira a cidade grande
+PROTA: Tem razão, senhora. Estamos procurando um peixeiro que mora nessa vila
+SENHORA: Hum... eu devia mandar vocês de volta por onde vieram. Mas... tô reconhecendo esse rosto
+SENHORA (Falando): Ucê é o fi do antigo prefeito, né menino? Tem o mesmo olho teimoso que ele
+PROTA (Sorrindo): Sou sim, senhora. Por isso que vim. Um velho me mandou atrás de algo importante
+SENHORA (Falando): Sei qual véi é esse. Das banda daqui, foi morar na cidade e agora anda mandando os outros resolver pepino
+SENHORA (Falando): Enfim, num vou ficar aqui "empaiando" vocês
+SENHORA (Falando): O peixeiro vive isolado. E cuidado com a língua... ele não gosta de conversa fiada
 leave SENHORA [animation="Fade Out" length="0.8" wait="true"]
 audio -
 # [SOUND] Saida sutil
 [wait time="0.5"]
 update PROTA (Pensando)
-PROTA (Pensando): Interessante... será que esse peixeiro é tão desconfiado quanto o velho?
+PROTA (Pensando): "Não gosta de conversa fiada"... ótimo. Mais um desconfiado
 update Luis (Falando)
-Luis: Ô Dante, olha aqui... tem pegadas frescas no chão
+Luis: Ô Dante, olha isso aqui... pegada fresca. Alguém passou há pouco tempo
 update PROTA (Surpreso)
 audio -
 # [SOUND] Aha
 [wait time="0.5"]
-PROTA (Apontando): Alguém mora por aqui sim. Vamos seguir essas pegadas
+PROTA (Apontando): Boa, Luis! Bora seguir antes que o rastro suma
 update PROTA (Determinado) rightmost [animation="Slide To Right" length="0.7"]
 audio -
 # [SOUND] Grupo andando
@@ -54,9 +54,9 @@ join Luis (Neutro) rightmost
 audio -
 # [SOUND] Grupo para
 [wait time="0.8"]
-PROTA (Pensando): Se o livro ainda existir, talvez ainda exista uma faísca de esperança nessa cidade
+PROTA (Pensando): Se esse livro ainda existir... talvez a gente tenha uma chance real
 update PROTA (Falando)
-PROTA: Certo... chegou a hora. Vou bater na porta
+PROTA: É aqui. Bora logo
 audio -
 # [SOUND] Bate na porta
 [wait time="0.7"]
@@ -64,47 +64,47 @@ update PROTA (Surpreso) [animation="Heartbeat"]
 audio -
 # [SOUND] Ansiedade
 [wait time="0.6"]
-PROTA (Pensando): Agora não é só sobre mim. É sobre provar que sabemos o que estamos defendendo
+PROTA (Pensando): Respira, Dante. Isso não é só sobre tu. É sobre provar que essa luta faz sentido
 [wait time="1.2"]
 join PEIXEIRO (Neutro) right [animation="Slide From Right" length="0.9" wait="true"]
 audio -
 # [SOUND] Porta rangendo
 [wait time="0.7"]
-PEIXEIRO (Falando e Ameaçando): O que vocês querem?
+PEIXEIRO (Falando e Ameaçando): Quem mandou vocês aqui? Falem rápido
 - Dizer a verdade
 	update PROTA (Falando)
-	PROTA: Um velho me mandou vir atrás do senhor, é a respeito de um livro
-	PROTA: O senhor sabe quem eu sou?
+	PROTA: Um velho da cidade nos mandou. Tem a ver com um livro. O senhor sabe quem eu sou?
+	PROTA: Meu nome é Dante
 	update PEIXEIRO (Feliz e Falando) [animation="Heartbeat" length="0.8"]
-	PEIXEIRO: Você me parece familiar... espera... você é o Dante, filho do ex-prefeito da Usina Velha, não é?
-	PROTA (Sorrindo): Sou eu mesmo. O senhor pode nos ajudar?
+	PEIXEIRO: Dante... Espera. Tu é o fi do Dantas? Do ex-prefeito?
+	PROTA (Sorrindo): Sou eu. E preciso da sua ajuda
 	[signal arg="escolha_verdade"]
 	update PEIXEIRO (Falando)
-	PEIXEIRO: Claro, meu fi! Tava esperando você
+	PEIXEIRO: Meu Deus... tava esperando esse dia faz tempo, menino!
 - Mentir
 	update PROTA (Falando)
-	PROTA: A gente tá procurando o pai dela... — (aponta para Atena)
+	PROTA: A gente tá procurando o pai dela — (aponta para Atena)
 	update ATENA (Brava) [animation="Shake X" length="0.7"]
-	PROTA (Pensando): Por favor Atena, não estraga isso agora...
-	PEIXEIRO: E por que vocês vieram justamente até mim?
+	PROTA (Pensando): Atena, pelo amor... segura essa cara
+	PEIXEIRO: O pai dela? E por que vieram logo até mim?
 	update ATENA (Falando)
-	ATENA: Fala logo a verdade... ele parece confiável
+	ATENA: Dante, fala a verdade. Ele não é idiota
 	update PROTA (Determinado)
-	PROTA: Tá certo... o senhor tem um livro chamado "Direitos e Deveres Civis"? Sou filho do ex-prefeito da cidade
+	PROTA: Tá certo... senhor, meu nome é Dante. Filho do ex-prefeito. Vim atrás de um livro chamado "Direitos e Deveres Civis"
 	[signal arg="escolha_mentira"]
 	update PEIXEIRO [animation="Heartbeat" length="0.8"]
-	PEIXEIRO: Agora sim faz sentido... eu sabia que te conhecia de algum lugar. Esse livro tá aqui em casa, mas não lembro onde guardei
-	PEIXEIRO (Falando): Pode entrar
+	PEIXEIRO: Sabia que te conhecia de algum lugar... esse livro tá aqui, mas faz tanto tempo que já nem sei onde enfiei
+	PEIXEIRO (Falando): Entra, vai
 	leave --All-- [animation="Fade Out" length="0.6" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.8" transition="Simple Fade" wait="true"]
 join PROTA leftmost [animation="Slide From Left" length="0.8" wait="true"]
 join ATENA left
 join Luis rightmost
-PEIXEIRO (Falando): Só peço uma coisa... me ajudem a procurar. Escondi esse livro há tanto tempo que já nem lembro onde deixei
+PEIXEIRO (Falando): Só peço uma coisa: me ajudem a procurar. Escondi tão bem que enganei até a mim mesmo
 update Luis (Falando)
-Luis: Esse livro pode tá em qualquer canto então
+Luis: Perfeito. Pode tá em qualquer buraco dessa casa
 update ATENA (Falando)
-ATENA: Vamos nos dividir. Assim achamos mais rápido
+ATENA: Cada um pra um lado. Assim é mais rápido
 update PROTA (Determinado)
 - Quarto
 	jump Quarto_Investigacao
@@ -112,7 +112,7 @@ update PROTA (Determinado)
 	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Porao casa peixeiro.png" fade="0.7" transition="Simple Fade" wait="true"]
 	join PROTA (De fininho) center [animation="Fade In" length="0.8"]
-	PROTA (Falando): Escuro aqui embaixo... mas pode ser um bom esconderijo
+	PROTA (Falando): Escuro que só... mas é exatamente o tipo de lugar onde se esconde algo
 	update PROTA (Surpreso) [animation="Shake X" length="0.7" wait="true"]
 	leave --All-- [animation="Fade Out" length="0.3" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Dante caindo no buraco Porão.png" fade="0.0"]
@@ -123,43 +123,43 @@ update PROTA (Determinado)
 	join PROTA (Surpreso) leftmost
 	join PEIXEIRO (Feliz) left
 	join ATENA (Falando) right [animation="Slide From Right" length="0.7"]
-	ATENA: Sério mesmo que você achou que teria algo aqui embaixo? Ainda bem que eu trouxe suprimentos...
+	ATENA: Tu achou MESMO que ia ter algo nesse buraco? Sorte que eu trouxe suprimento...
 	update PROTA (Confuso_Cabeca)
-	PROTA: Não precisava falar assim...
+	PROTA: Podia falar sem o tom de deboche, né...
 	update ATENA (Rindo)
-	ATENA: Vai pro quarto. Acho que você vai ter mais sorte por lá
+	ATENA: Vai pro quarto, desastrado. Acho que tua sorte tá lá
 	jump Quarto_Investigacao
 
 label Quarto_Investigacao
 leave --All-- [animation="Fade Out" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.7" transition="Simple Fade" wait="true"]
 join PROTA (De fininho) center [animation="Fade In" length="0.7"]
-PROTA (Falando): Quarto simples... móveis velhos... muita poeira...
+PROTA (Falando): Móveis velhos, poeira de década... esse quarto tem história
 update PROTA (Surpreso)
-PROTA (Surpreso): Espera... tem um baú no canto. Vou tentar abrir
-PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
+PROTA (Surpreso): Peraí... um baú. Ali no canto. Trancado
+PROTA (Confuso_Cabeca): Preciso de uma chave. Ou de muita força
 - Procurar a chave
 	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.6" transition="Simple Fade" wait="true"]
 	join PROTA (Falando) leftmost [animation="Slide From Left" length="0.7"]
-	PROTA: Atena, achou alguma coisa?
+	PROTA: Atena! Achou alguma coisa útil?
 	
 	leave --All-- [animation="Fade Out" length="0.4" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Athena POV chaves.png" fade="0.0"]
-	ATENA: Nada muito útil... mas achei essas chaves. Guardei, vai que servem pra alguma coisa
+	ATENA: Útil não sei... mas achei essas chaves jogadas numa gaveta. Guardei, vai que serve
 	[signal arg="escolha_chave"]
 	
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.4" transition="Simple Fade" wait="true"]
 	join PROTA (Sorrindo) leftmost [animation="Fade In"]
-	PROTA: Perfeito! Acho que são exatamente o que eu preciso
+	PROTA: É isso! Tem que ser uma dessas!
 	
 	leave --All-- [animation="Fade Out" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.6" transition="Simple Fade" wait="true"]
 	join PROTA (Falando) center [animation="Fade In" length="0.7"]
-	PROTA: Tenho duas chaves aqui. Qual eu uso primeiro...
+	PROTA: Duas chaves. Uma chance. Qual eu tento primeiro...
 	- Chave verde
 		update PROTA (Surpreso) [animation="Shake X" length="0.8"]
-		PROTA: Entra mas não gira... vou forçar um pouco
+		PROTA: Entra, mas não gira... se eu forçar um pouquinho...
 		update PROTA (Surpreso) [animation="Heartbeat" length="0.6" wait="true" repeat="2"]
 		audio -
 		# [SOUND] Estalo madeira
@@ -169,7 +169,7 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		audio -
 		# [SOUND] Baque seco
 		[wait time="0.5"]
-		PROTA: Aarrgh! Machuquei a mão...
+		PROTA: ARRGH! Minha mão!
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Quarto Peixeiro.png" fade="0.0"]
 		audio -
 		# [SOUND] Retorno quarto
@@ -179,48 +179,48 @@ PROTA (Confuso_Cabeca): Trancado. Preciso de uma chave ou forço essa coisa
 		audio -
 		# [SOUND] Chegada suave
 		[wait time="0.5"]
-		ATENA: Ei, calma! Você vai se machucar mais ainda. Usa esse suprimento aqui... deixa eu tentar com a outra
+		ATENA: Ei ei ei! Para de fazer força bruta, animal! Toma esse suprimento... deixa que eu tento com a outra
 		update PROTA (Neutro)
-		ATENA: A fechadura girou fácil! Abre aí, Dante
+		ATENA: Pronto. Girou fácil. Abre aí, machucadinho
 		leave --All-- [animation="Fade Out" length="0.4" wait="true"]
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Usar a Chave e Abrir o Báu - Cena PeixeiroCasa.png" fade="0.5" transition="Simple Fade" wait="true"]
-		PROTA: Dentro do baú... é o livro!
-		ATENA: Tem outros objetos aqui também. Vou guardar, pode ser útil depois
+		PROTA: O livro... tá aqui dentro!
+		ATENA: E não é só o livro. Tem mais coisa. Vou guardar, pode ser útil
 	- Chave dourada
 		join ATENA (Falando) right [animation="Slide From Right" length="0.7"]
-		ATENA: A fechadura girou fácil! Abre aí, Dante
+		ATENA: Girou na primeira! Boa escolha. Abre logo
 		
 		leave --All-- [animation="Fade Out" length="0.4" wait="true"]
 		[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Usar a Chave e Abrir o Báu - Cena PeixeiroCasa.png" fade="0.5" transition="Simple Fade" wait="true"]
-		PROTA: Dentro do baú... é o livro!
-		ATENA: Tem outros objetos aqui também. Vou guardar, pode ser útil depois
+		PROTA: O livro... tá aqui dentro!
+		ATENA: Tem mais coisa junto. Vou guardar, pode ser útil
 - Quebrar o baú
 	update PROTA (Determinado) [animation="Shake X" length="1.0"]
-	PROTA: Não tenho tempo pra ficar procurando chave. Vou usar esse martelo daqui
+	PROTA: Sem tempo pra delicadeza. Esse martelo ali vai resolver
 	
 	leave --All-- [animation="Fade Out" length="0.3" wait="true"]
 	[background arg="res://ASSETS/SPRITES/FUNDOS/Escolha de Quebrar o báu - Cena PeixeiroCasa.png" fade="0.4" transition="Simple Fade" wait="true"]
-	PROTA: A madeira cedeu. Dentro tem... o livro!
+	PROTA: Cedeu! E dentro tem... o livro!
 	[signal arg="escolha_bau_direto"]
 
 leave --All-- [animation="Fade Out" length="0.6" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.8" transition="Simple Fade" wait="true"]
 join PROTA (Sorrindo) leftmost [animation="Fade In" length="0.7"]
 join PEIXEIRO right [animation="Fade In" length="0.7"]
-PROTA: Senhor... é esse o livro?
+PROTA: Senhor... é esse?
 update PEIXEIRO (Falando)
-PEIXEIRO: É ele mesmo. O tempo não perdoou, mas ainda tem muito valor
+PEIXEIRO: É ele. O tempo castigou, mas o que tá dentro... isso ninguém consegue apagar
 update PROTA (Determinado)
-PROTA: Obrigado. Ele vai ser essencial pra gente
+PROTA: Obrigado. Isso aqui vale mais do que o senhor imagina
 join Luis left [animation="Fade In" length="0.7"]
 join ATENA center [animation="Fade In" length="0.7"]
-Luis (Falando): Espera... tem coisa faltando aqui. Várias páginas
+Luis (Falando): Dante... tem um problema. Tá faltando um monte de página
 update ATENA (Falando)
-ATENA: Eu também percebi. Alguém mexeu nisso
+ATENA: Não é só isso. As que sobraram parecem ter sido mexidas. Alguém adulterou
 update PROTA (Confuso_Cabeca)
-PROTA: Preciso falar com o velho. Foi ele que me mandou atrás desse livro... talvez saiba o que tá acontecendo
+PROTA: Adulterado... O regime. Claro que eles iam sujar até isso
 update PROTA (Determinado)
-PROTA: Mas olha só as páginas que sobraram... elas parecem adulteradas.
-PROTA: Vamos analisar uma por uma para ver quais são direitos ou deveres e descartar as falsificadas pelo regime.
+PROTA: Tá. Então a gente não pode confiar cegamente no que tá escrito aqui. Vamos analisar página por página
+PROTA: Se é direito de verdade, fica. Se é propaganda do regime disfarçada... fora
 [signal arg="iniciar_minigame_paginas"]
 [end_timeline]

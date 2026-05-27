@@ -19,8 +19,23 @@ func iniciar_sequencia_fase():
 			await FadeManager.transicao_com_dica()
 			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
 		2:
-			await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
-			FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
+			if GameState.fase2_passo == "inicio":
+				await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
+				await FadeManager.transicao_com_dica()
+				await TimelineManager.tocar_dialogo("fase2_guardas")
+			elif GameState.fase2_passo == "casa_velho":
+				await TimelineManager.tocar_dialogo("fase2_casa_velho")
+			elif GameState.fase2_passo == "radio_concluida":
+				await TimelineManager.tocar_dialogo("fase2_reacao_mensagem_1")
+				await FadeManager.transicao_com_dica()
+				await TimelineManager.tocar_dialogo("fase2_reacao_mensagem_2")
+				await FadeManager.transicao_com_dica()
+				await TimelineManager.tocar_dialogo("fase2_reacao_final")
+		3:
+			if GameState.fase3_passo == "inicio":
+				await TimelineManager.tocar_dialogo("fase3_escola_inicio")
+			elif GameState.fase3_passo == "escola_concluida":
+				await TimelineManager.tocar_dialogo("fase3_escola_conclusao")
 
 # ══════════════════════════════════════════════
 #  TELA DE TUTORIAL (30s auto-close + botão X)
@@ -183,4 +198,35 @@ func _on_dialogic_signal(valor: String) -> void:
 		"iniciar_minigame_paginas":
 			GameState.timeline_atual = ""
 			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
 			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_paginas.tscn")
+		"iniciar_distracao":
+			GameState.timeline_atual = ""
+			GameState.fase2_passo = "casa_velho"
+			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_distracao.tscn")
+		"iniciar_radio":
+			GameState.timeline_atual = ""
+			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_radio.tscn")
+		"iniciar_minigame_escola":
+			GameState.timeline_atual = ""
+			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_escola.tscn")
+		"escolha_escola_expor": _e.call("Expos a doutrinacao abertamente", +2)
+		"escolha_escola_discreto": _e.call("Trocou folhas nos armarios discretamente", +1)
+		"escolha_escola_mobilizar": _e.call("Mobilizou protesto silencioso", +1)
+		"fim_fase_2":
+			GameState.fase_atual = 3
+			GameState.fase3_passo = "inicio"
+			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")
+		"fim_fase_3":
+			GameState.fase_atual = 4
+			GameState.salvar_jogo()
+			await TimelineManager.parar_tudo()
+			FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
