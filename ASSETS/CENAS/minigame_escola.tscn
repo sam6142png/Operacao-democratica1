@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://c83gk771y0gkn"]
 
-[ext_resource type="Script" uid="uid://cqbntr4kvu8s1" path="res://ASSETS/CENAS/SCRIPTS CENAS/minigame_escola.gd" id="1_escola"]
+[ext_resource type="Script" uid="uid://f8bq435hmuoh" path="res://ASSETS/CENAS/SCRIPTS CENAS/minigame_escola.gd" id="1_escola"]
 
-[node name="MinigameEscola" type="Control"]
+[node name="MinigameEscola" type="Control" unique_id=658305985]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

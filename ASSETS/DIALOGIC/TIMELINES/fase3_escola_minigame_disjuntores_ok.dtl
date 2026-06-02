@@ -1,0 +1,8 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
+join ATENA (Neutro) left [animation="Fade In" length="0.2" wait="true"]
+join PROTA (Neutro) leftmost [animation="Fade In" length="0.2" wait="true"]
+PROFESSOR: Os alto-falantes voltaram. A diretoria acha que ainda está tudo no canal oficial.
+ATENA (Falando): Agora vem a parte fina: se errar a frequência, entra a propaganda deles.
+PROTA (Determinado): A Rádio Livre precisa entrar limpa. Bora sintonizar.
+[end_timeline]

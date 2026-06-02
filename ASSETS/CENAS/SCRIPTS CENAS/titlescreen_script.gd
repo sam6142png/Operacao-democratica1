@@ -32,23 +32,16 @@ const BASE_X = 100.0
 
 # === ESTADO DAS CONFIGURAÇÕES ===
 var config = {
-	"tela_cheia": 1, # 1 = Ligado (Fullscreen)
+	"tela_cheia": 0, # 0 = Ligado (Fullscreen), 1 = Desligado (Janela)
 	"resolucao": 1,
-	"idioma": 0, # 0=PT, 1=EN, 2=ES, 3=FR
 	"vol_musica": 50.0,
-	"vol_sfx": 50.0
+	"vol_sfx": 50.0,
+	"vel_dialogos": 1.0, # multiplicador: 1.0 = normal, 2.0 = máximo
 }
 var ui_refs = {}
 
-# === IDIOMAS ===
-const IDIOMAS_NOME = ["Português (BR)", "English", "Español", "Français"]
-const IDIOMAS_LOCALE = ["pt", "en", "es", "fr"]
-const TELA_CHEIA_OPCOES = {
-	"pt": ["Ligado", "Desligado"],
-	"en": ["On", "Off"],
-	"es": ["Activado", "Desactivado"],
-	"fr": ["Activé", "Désactivé"]
-}
+const LOCALE_PADRAO = "pt"
+const TELA_CHEIA_OPCOES = ["Ligado", "Desligado"]
 var TR = {
 	"jogar":        {"pt": "Novo Jogo",      "en": "New Game",       "es": "Nuevo Juego",    "fr": "Nouveau Jeu"},
 	"continuar":    {"pt": "Continuar",      "en": "Continue",       "es": "Continuar",      "fr": "Continuer"},
@@ -60,7 +53,7 @@ var TR = {
 	"sfx":          {"pt": "Efeitos Sonoros","en": "Sound Effects",  "es": "Efectos de Sonido","fr": "Effets Sonores"},
 	"tela_cheia":   {"pt": "Tela Cheia",     "en": "Fullscreen",     "es": "Pantalla Completa","fr": "Plein Écran"},
 	"resolucao":    {"pt": "Resolução",      "en": "Resolution",     "es": "Resolución",     "fr": "Résolution"},
-	"idioma":       {"pt": "Idioma",         "en": "Language",       "es": "Idioma",         "fr": "Langue"},
+	"vel_dialogos": {"pt": "Velocidade dos Diálogos", "en": "Dialogue Speed", "es": "Velocidad de Diálogos", "fr": "Vitesse des Dialogues"},
 	"voltar":       {"pt": "Voltar",         "en": "Back",           "es": "Volver",         "fr": "Retour"},
 	"restaurar":    {"pt": "Restaurar Padrões","en": "Restore Defaults","es": "Restaurar",   "fr": "Par Défaut"},
 	"aplicar":      {"pt": "Aplicar",        "en": "Apply",          "es": "Aplicar",        "fr": "Appliquer"},
@@ -81,9 +74,8 @@ var tr_refs = {} # Refs para labels/botões traduzíveis
 # =================================
 
 func _t(chave: String) -> String:
-	var locale = IDIOMAS_LOCALE[config["idioma"]]
-	if TR.has(chave) and TR[chave].has(locale):
-		return TR[chave][locale]
+	if TR.has(chave) and TR[chave].has(LOCALE_PADRAO):
+		return TR[chave][LOCALE_PADRAO]
 	return chave
 
 func _ready() -> void:
@@ -127,7 +119,7 @@ func _ready() -> void:
 	_conectar_sinais()
 	_criar_paineis()
 	_aplicar_idioma()
-	_aplicar_todas_configuracoes()
+	_aplicar_todas_configuracoes(true)
 
 func _process(_delta: float) -> void:
 	if rastro_fogo:
@@ -415,8 +407,9 @@ func _aplicar_volume(bus_name: String, value: float) -> void:
 		AudioServer.set_bus_mute(bus_index, false)
 		AudioServer.set_bus_volume_db(bus_index, linear_to_db(linear_vol))
 
-func _aplicar_todas_configuracoes() -> void:
-	_tocar_clique()
+func _aplicar_todas_configuracoes(silent: bool = false) -> void:
+	if not silent:
+		_tocar_clique()
 	
 	# Fullscreen
 	if config["tela_cheia"] == 0:
@@ -444,33 +437,36 @@ func _aplicar_todas_configuracoes() -> void:
 		var tam_tela = DisplayServer.screen_get_size(tela_atual)
 		get_window().position = pos_tela + Vector2i((tam_tela - res) / 2.0)
 
-	# Idioma
-	TranslationServer.set_locale(IDIOMAS_LOCALE[config["idioma"]])
+	TranslationServer.set_locale(LOCALE_PADRAO)
 	_aplicar_idioma()
 	
 	# Os volumes já aplicam real-time, mas garantimos aqui
 	_aplicar_volume("Musica", config["vol_musica"])
 	_aplicar_volume("SFX", config["vol_sfx"])
 	
-	_fechar_modal() # Feedback de conclusão
+	# Velocidade dos diálogos
+	TimelineManager.set_velocidade_dialogos(config["vel_dialogos"])
+	
+	if not silent:
+		_fechar_modal() # Feedback de conclusão
 
 func _restaurar_padroes() -> void:
 	_tocar_deslize()
 	config = {
-		"tela_cheia": 0, 
-		"resolucao": 1, 
-		"idioma": 0,
+		"tela_cheia": 0,
+		"resolucao": 1,
 		"vol_musica": 50.0,
-		"vol_sfx": 50.0
+		"vol_sfx": 50.0,
+		"vel_dialogos": 1.0,
 	}
 	
 	# Atualiza Visuais imediatamente
 	ui_refs["vol_musica"].value = 50.0
 	ui_refs["vol_sfx"].value = 50.0
+	ui_refs["vel_dialogos"].value = 1.0
 	
-	ui_refs["tela_cheia"].text = TELA_CHEIA_OPCOES[IDIOMAS_LOCALE[config["idioma"]]][0]
+	ui_refs["tela_cheia"].text = TELA_CHEIA_OPCOES[0]
 	ui_refs["resolucao"].text = "1920x1080"
-	ui_refs["idioma"].text = IDIOMAS_NOME[0]
 	
 	_aplicar_idioma()
 	
@@ -535,14 +531,15 @@ func _criar_painel_opcoes() -> void:
 	tr_refs["lbl_musica"] = sl_musica.get_parent().get_child(0)
 	tr_refs["lbl_sfx"] = sl_sfx.get_parent().get_child(0)
 	
-	var sel_tela = _criar_seletor(op_vbox, "tela_cheia", _t("tela_cheia"), TELA_CHEIA_OPCOES[IDIOMAS_LOCALE[config["idioma"]]])
-	_criar_seletor(op_vbox, "resolucao", _t("resolucao"), ["2560x1440", "1920x1080", "1600x900", "1366x768", "1280x720", "1024x576", "854x480"])
-	var sel_idioma = _criar_seletor(op_vbox, "idioma", _t("idioma"), IDIOMAS_NOME)
+	var sl_vel = _criar_slider_vel_dialogos(op_vbox)
+	tr_refs["lbl_vel_dialogos"] = sl_vel.get_child(0)
+	
+	var sel_tela = _criar_seletor(op_vbox, "tela_cheia", _t("tela_cheia"), TELA_CHEIA_OPCOES)
+	var sel_resolucao = _criar_seletor(op_vbox, "resolucao", _t("resolucao"), ["2560x1440", "1920x1080", "1600x900", "1366x768", "1280x720", "1024x576", "854x480"])
 	
 	tr_refs["lbl_opcoes_titulo"] = lbl_opcoes
 	tr_refs["lbl_tela_cheia"] = sel_tela.get_child(0)
-	tr_refs["lbl_resolucao"] = op_vbox.get_child(6).get_child(0)
-	tr_refs["lbl_idioma"] = sel_idioma.get_child(0)
+	tr_refs["lbl_resolucao"] = sel_resolucao.get_child(0)
 	
 	var sep_bottom = Control.new()
 	sep_bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -668,6 +665,49 @@ func _criar_painel_sair() -> void:
 	tr_refs["btn_sair_nao"] = btn_nao
 
 # Utils Visuais de Componentes e Funcionalidade de Settings
+
+func _criar_slider_vel_dialogos(pai: Control) -> VBoxContainer:
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 5)
+	
+	var lbl = Label.new()
+	lbl.text = _t("vel_dialogos")
+	lbl.add_theme_font_size_override("font_size", 24)
+	lbl.add_theme_color_override("font_color", Color("#CCCCCC"))
+	container.add_child(lbl)
+	
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 12)
+	container.add_child(hbox)
+	
+	var slider = HSlider.new()
+	slider.custom_minimum_size = Vector2(0, 30)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.min_value = 1.0
+	slider.max_value = 2.0
+	slider.step = 0.1
+	slider.value = config["vel_dialogos"]
+	ui_refs["vel_dialogos"] = slider
+	hbox.add_child(slider)
+	
+	var lbl_valor = Label.new()
+	lbl_valor.text = "%.1fx" % config["vel_dialogos"]
+	lbl_valor.add_theme_font_size_override("font_size", 22)
+	lbl_valor.add_theme_color_override("font_color", Color("#FF8C00"))
+	lbl_valor.custom_minimum_size.x = 55
+	lbl_valor.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(lbl_valor)
+	
+	slider.value_changed.connect(func(v: float):
+		config["vel_dialogos"] = v
+		lbl_valor.text = "%.1fx" % v
+		TimelineManager.set_velocidade_dialogos(v)
+	)
+	
+	pai.add_child(container)
+	return container
+
+
 func _criar_slider(pai: Control, chave_config: String, titulo: String) -> HSlider:
 	var container = VBoxContainer.new()
 	container.add_theme_constant_override("separation", 5)
@@ -761,9 +801,9 @@ func _aplicar_idioma() -> void:
 	if tr_refs.has("lbl_opcoes_titulo"): tr_refs["lbl_opcoes_titulo"].text = _t("config_titulo")
 	if tr_refs.has("lbl_musica"): tr_refs["lbl_musica"].text = _t("musica")
 	if tr_refs.has("lbl_sfx"): tr_refs["lbl_sfx"].text = _t("sfx")
+	if tr_refs.has("lbl_vel_dialogos"): tr_refs["lbl_vel_dialogos"].text = _t("vel_dialogos")
 	if tr_refs.has("lbl_tela_cheia"): tr_refs["lbl_tela_cheia"].text = _t("tela_cheia")
 	if tr_refs.has("lbl_resolucao"): tr_refs["lbl_resolucao"].text = _t("resolucao")
-	if tr_refs.has("lbl_idioma"): tr_refs["lbl_idioma"].text = _t("idioma")
 	
 	if tr_refs.has("btn_voltar_op"): tr_refs["btn_voltar_op"].text = _t("voltar")
 	if tr_refs.has("btn_restaurar"): tr_refs["btn_restaurar"].text = _t("restaurar")
@@ -771,7 +811,7 @@ func _aplicar_idioma() -> void:
 	
 	# Atualizar o texto do seletor de tela cheia (Ligado/Desligado)
 	var sel_tela_val = ui_refs["tela_cheia"]
-	sel_tela_val.text = TELA_CHEIA_OPCOES[IDIOMAS_LOCALE[config["idioma"]]][config["tela_cheia"]]
+	sel_tela_val.text = TELA_CHEIA_OPCOES[config["tela_cheia"]]
 	
 	# Créditos
 	if tr_refs.has("lbl_cred_titulo"): tr_refs["lbl_cred_titulo"].text = _t("cred_titulo")

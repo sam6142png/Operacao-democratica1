@@ -1,137 +1,101 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.0"]
-join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
-[wait time="0.8"]
-PROTA: Mais um dia engolindo seco nessa cidade... até o ar tem gosto de ferrugem e obediência
+join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.5"]
+[wait time="0.4"]
+PROTA: Mais um dia engolindo seco... Até o ar cheira a opressão.
 update PROTA (Surpreso)
-[wait time="0.6"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg" fade="0.5" transition="Simple Fade"]
 [wait time="0.3"]
-PROTA: Que diabo de gritaria é essa?!
-update PROTA (Pensando)
-PROTA (Pensando): Manifestação? Aqui? Essas pessoas são loucas ou corajosas demais...
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg" fade="0.4" transition="Simple Fade"]
+[wait time="0.2"]
+PROTA: Espera, que gritaria é essa? Manifestação? Eles enlouqueceram?
 - Investigar discretamente
 	[signal arg="escolha_investigar_discreto"]
 	update PROTA (De fininho)
-	PROTA (Pensando): Calma, Dante. Olho aberto, boca fechada...
-	PROTA (De fininho): Militar pra todo lado. Se me virem no meio disso, era uma vez
-	PROTA (Pensando): Mas preciso ver isso de perto
+	PROTA (Pensando): Olho aberto, boca fechada... Tem guardas em toda parte.
 - Ir direto
 	[signal arg="escolha_ir_direto"]
 	update PROTA (Determinado)
-	PROTA: Dane-se a cautela. Quero ver com meus próprios olhos
-update PROTA (Surpreso) leftmost [animation="Slide To Left" length="1.2" fade="Fade Cross" fade_length="1.1"]
-[wait time="0.5"]
-join Protestante (Protestando Normal) center [animation="Slide From Right" length="1.0"]
-PROTA (Confuso_Cabeca): Ei, moça... o que tá rolando aqui?
-Protestante: Tu é cego ou finge que é? O povo tá na rua! Por liberdade, por democracia, pra derrubar esse governo "fulero" de uma vez!
-PROTA (Falando): Mas os militares... eles podem chegar a qualquer momento
-Protestante: E daí? O dia que a gente parar de ter medo é o dia que eles perdem o poder. Medo é a única arma que eles têm de verdade
-Protestante: Teu pai sabia disso. Uma pena que quase ninguém lembra mais do que ele fez por essa cidade
-update PROTA (Surpreso) [animation="Heartbeat" length="0.7"]
-[wait time="0.6"]
-PROTA (Pensando): Meu pai... de novo. O que tanto ele fez que eu não sei?
-join MILITAR (Neutro) right [animation="Zoom In" length="2.0" wait="true"]
-[wait time="0.8"]
-PROTA (Falando): Moça, sai daqui, pelo amor de -
-update MILITAR (Bravo Falando) [animation="Shake X" length="0.7"]
-[wait time="0.5"]
-update PROTA (Surpreso) leftmost [animation="Heartbeat" length="1.0" fade="Fade Cross" fade_length="0.6"]
-update Protestante (Assustada c/ placa) left [animation="Heartbeat" mirrored="false" fade="Fade Cross" fade_length="1.0"]
-MILITAR: CHEGA DE PALHAÇADA! DISPERSEM AGORA OU VÃO CONHECER O XILINDRÓ POR DENTRO!
+	PROTA: Chega de me esconder. Quero ver de perto.
+update PROTA (Surpreso) leftmost [animation="Slide To Left" length="0.8" fade="Fade Cross" fade_length="0.7"]
+[wait time="0.3"]
+join Protestante (Protestando Normal) center [animation="Slide From Right" length="0.7"]
+PROTA (Confuso_Cabeca): Ei, o que está acontecendo aqui?
+Protestante: O povo acordou! Lutamos por liberdade e democracia contra esse regime!
+PROTA (Falando): Mas os militares estão por toda parte...
+Protestante: O medo é a única arma deles. Seu pai sabia disso — pena que esta cidade esqueceu o legado de Dantas.
+PROTA (Pensando): Meu pai... Por que todos falam dele e eu sei tão pouco?
+join MILITAR (Neutro) right [animation="Zoom In" length="1.2" wait="true"]
+[wait time="0.4"]
+PROTA (Falando): Moça, cuidado!
+update MILITAR (Bravo Falando) [animation="Shake X" length="0.4"]
+[wait time="0.2"]
+update PROTA (Surpreso) leftmost [animation="Heartbeat" length="0.6" fade="Fade Cross" fade_length="0.4"]
+update Protestante (Assustada c/ placa) left [animation="Heartbeat" mirrored="false" fade="Fade Cross" fade_length="0.6"]
+MILITAR: DISPERSEM AGORA OU VÃO TODOS PRESOS!
 update Protestante (Protestando Normal)
-Protestante: PRENDE ENTÃO! PRENDE! CADA UM QUE VOCÊS LEVAM, DOIS APARECEM NO LUGAR!
-update MILITAR (Apenas Bravo) [fade="Fade Cross" fade_length="0.9"]
-MILITAR: Ah é? Vamos testar essa teoria, "cidadã"...
-update PROTA (Pensando)
-PROTA (Pensando): Se eu me meter agora, vou preso junto. Mas se eu ficar parado...
+Protestante: Não temos medo de suas celas, soldado!
+MILITAR: Veremos se continua valente na prisão...
+PROTA (Pensando): Se eu intervir, serei o próximo. Mas posso deixá-la sozinha?
 - Tentar intervir
 	[signal arg="escolha_intervir"]
 	update PROTA (Determinado)
-	PROTA: ESPERA! Ela não tá fazendo nada de errado!
-	update MILITAR (Bravo Falando) [animation="Shake X" length="0.7"]
-	MILITAR: OUTRO HERÓI? TÁ COM SAUDADE DE UMA CELA? VEM COMIGO!
-	update PROTA (Surpreso) [animation="Heartbeat" length="1.0"]
+	PROTA: Solte ela! Ela não cometeu crime nenhum!
+	update MILITAR (Bravo Falando) [animation="Shake X" length="0.4"]
+	MILITAR: Outro rebelde? Venha junto então!
+	update PROTA (Surpreso) [animation="Heartbeat" length="0.6"]
 	PROTA: Corre!
 	update Protestante (Sendo presa) center
-	leave MILITAR [animation="Slide To Right" length="0.6" wait="true"]
-	PROTA (Confuso_Cabeca): Por um fio... quase fui levado também
-	PROTA (Pensando): Tentei. Não adiantou nada, mas... tentei
+	leave MILITAR [animation="Slide To Right" length="0.4" wait="true"]
+	PROTA (Confuso_Cabeca): Quase fui pego... Não adiantou nada intervir.
 - Ficar parado
 	[signal arg="escolha_ficar_parado"]
 	update PROTA (Confuso_Cabeca)
-	PROTA (Pensando): Não posso... não agora. Seria suicídio
+	PROTA (Pensando): Não posso... não agora. Seria suicídio.
 	update MILITAR center
-	leave MILITAR [animation="Fade Out" length="0.9"]
-	update Protestante (Sendo presa) center [animation="Fade In" length="0.7"]
+	leave MILITAR [animation="Fade Out" length="0.5"]
+	update Protestante (Sendo presa) center [animation="Fade In" length="0.4"]
 update Protestante (Sendo presa) center
-Protestante: ARGH... SOLDADO DESGRAÇADO!
-Protestante: EI, GAROTO! TU QUE TÁ AÍ OLHANDO... NÃO FICA SÓ OLHANDO!
-Protestante: LUTA PELO PRESENTE! LUTA PELO FUTURO! E HONRA O PASSADO DE QUEM SANGROU PRA ESSA CIDADE TER DIGNIDADE!
-leave Protestante [animation="Slide To Left" length="0.7" wait="true"]
-[wait time="1.4"]
-PROTA (Confuso_Cabeca): Essa mulher... é louca. Mas é o tipo de loucura que essa cidade precisa
-PROTA (Pensando): Só que algo não bate. Depois de anos de silêncio, por que o povo tá gritando agora?
-PROTA (Falando): Alguma coisa mudou. Alguma coisa tá acontecendo que eu não tô vendo
-join VÉIO rightmost [animation="Fade In" length="1.6" wait="true"]
+Protestante: EI, GAROTO! NÃO FICA SÓ OLHANDO! LUTA PELO FUTURO E HONRA O PASSADO DE QUEM SANGROU PRA ESSA CIDADE TER DIGNIDADE!
+leave Protestante [animation="Slide To Left" length="0.5" wait="true"]
+[wait time="0.6"]
+PROTA (Confuso_Cabeca): Essa mulher... é doida. Mas é o tipo de doido que essa cidade precisa.
+PROTA (Pensando): Algo tá mudando. Algo tá acontecendo que eu num tô vendo.
+join VÉIO rightmost [animation="Fade In" length="0.8" wait="true"]
 VÉIO (Falando): Psiu! Dante! Vem cá, menino, rápido!
-update PROTA (Surpreso) leftmost [animation="Shake X" length="1.2"]
-PROTA: Como raios tu sabe meu nome, velho?!
-VÉIO (Falando): Aqui não, rapaz! Os "hómi" tão de ouvido em pé. Me acompanha que eu te explico tudo, mas num lugar que não tenha parede com ouvido
+update PROTA (Surpreso) leftmost [animation="Shake X" length="0.6"]
+PROTA: Como raios tu sabe meu nome, véio?!
+VÉIO (Falando): Aqui não, rapaz! Os hómi tão de ouvido em pé. Me acompanha que eu te explico.
 update VÉIO [mirrored="true"]
-VÉIO (Falando): Confia em mim. Se eu fosse inimigo, tu já tava de algema
+VÉIO (Falando): Se eu fosse inimigo, tu já tava de algema. Confia em mim.
 - Seguir imediatamente
 	[signal arg="escolha_seguir_velho"]
 	update PROTA (Determinado)
-	PROTA: Tá bom. Mas se tu tentar alguma gracinha, vai se arrepender
+	PROTA: Tá bom. Mas se tu tentar alguma gracinha, vai se arrepender.
 - Hesitar e questionar
 	[signal arg="escolha_hesitar_velho"]
 	update PROTA (Confuso_Cabeca)
-	PROTA: Pera... tu sabe meu nome, sabe dos meus pais, aparece do nada... como eu sei que tu não é do regime?
-	VÉIO (Falando): Menino, se eu fosse do regime, eu não taria sussurrando. Taria gritando ordem. Agora anda logo antes que os "hómi" fechem o cerco!
-	update PROTA (Pensando)
-	PROTA (Pensando): Ele tem razão. Ninguém do regime pede pra confiar
+	PROTA: Pera... tu sabe meu nome, aparece do nada... como eu sei que tu não é do regime?
+	VÉIO (Falando): Menino, se eu fosse do regime, não taria sussurrando. Taria gritando ordem. Anda logo!
 	update PROTA (Determinado)
-	PROTA: Tá bom, velho. Mas eu tô com os olhos bem abertos
-update PROTA (Determinado) center [fade="Fade Cross" fade_length="1.2"]
-update VÉIO (Rindo) [mirrored="true" fade="Fade Cross" fade_length="0.7"]
-VÉIO: Hehehe... igualzinho ao pai. A mesma teimosia. O mesmo fogo no olho
+	PROTA: Tá bom, véio. Mas tô com os olho bem aberto.
+update PROTA (Determinado) center [fade="Fade Cross" fade_length="0.8"]
+update VÉIO (Rindo) [mirrored="true" fade="Fade Cross" fade_length="0.5"]
+VÉIO: Hehehe... igualzinho ao pai. A mesma teimosia. O mesmo fogo no olho.
 leave VÉIO
-update PROTA (Surpreso) [animation="Heartbeat" length="0.7"]
-PROTA: Meu pai... todo mundo parece conhecer ele melhor que eu
-leave PROTA [animation="Slide To Right" length="0.7" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Casa do veio.jpeg" fade="1.1" transition="Simple Fade" wait="true"]
-join VÉIO rightmost [animation="Slide From Left" length="0.7" wait="true"]
-VÉIO (Falando): Entra, meu fi. A casa é pobre mas o coração é grande
-join PROTA leftmost [animation="Slide From Left" length="1.0" wait="true"]
-PROTA (Confuso_Cabeca): Certo, tô aqui. Agora fala: quem é tu e por que sabe tanto sobre minha família?
-VÉIO (Falando): Calma, rapaz! Num aperreia o destino... estrada apressada só leva pra lugar errado
-PROTA (Falando): "Calma" é fácil pra quem não tá com a cabeça a mil
-VÉIO (Falando): Teu pai... Dantas. Era mais que prefeito. Era a consciência dessa cidade. E tua mãe, Isabela, era a prova viva de que a verdade tava do nosso lado
-PROTA (Confuso_Cabeca): Isso eu sei, ou acho que sei. O que eu não sei é como tu entra nessa história
-VÉIO (Falando): Teu pai me confiou pra cuidar de tu, moleque. Fiz uma promessa, e palavra de homem não cai no chão
-PROTA (Sorrindo): Tá bom... velho. Tô ouvindo. O que mais?
-VÉIO (Rindo): Hahaha, tu num achou que seria tão fácil, achou?
-PROTA (Determinado): Arrgh, seu velho safado...
-VÉIO (Bravo e flaando): OLHA O RESPEITO, MENINO VÉI! Tô com as costas lascadas mas ainda dou um "mói" de "peia" em tu!
-VÉIO (Falando): Escuta aqui...
-PROTA (Falando): Tô escu-
-update VÉIO (Bravo e flaando) [animation="Heartbeat" length="0.6"]
-PROTA (Confuso_Cabeca): ...escutando, senhor!
-VÉIO (Falando): Existe um livro. "Direitos e Deveres do Povo." Teu pai escreveu, tua mãe completou. É a verdade que o regime queimou, rasgou e tentou apagar de toda forma
-VÉIO (Falando): É por ele que a gente começa... chamando o povo, abrindo os olho, acendendo essa vontade de justiça que tá adormecida no peito de cada um
-PROTA (Falando): E onde tá esse livro? Saio gritando o nome dele por aí?
-VÉIO (Falando): Tu é gaiato, hein rapaz? Na Vila do Açude Seco tem um camarada meu. O antigo peixeiro
-VÉIO (Falando): Ele pode te ajudar... ou te complicar. Depende da tua lábia
-PROTA (Confuso_Cabeca): Nhe... Complicado, mas não tenho muita escolha, né?
-PROTA (Determinado): Feito. Mas quando eu voltar, tu me conta TUDO. Sem enrolação
-VÉIO (Rindo): Feito, meu rapaz! Palavra dada é dívida sagrada
-update PROTA (Neutro)
-VÉIO (Falando): E apressa o passo. Os militares tão caçando qualquer um que cheire a resistência
+update PROTA (Surpreso) [animation="Heartbeat" length="0.5"]
+PROTA: Meu pai... todo mundo parece conhecer ele melhor que eu.
+leave PROTA [animation="Slide To Right" length="0.5" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Casa do veio.jpeg" fade="0.8" transition="Simple Fade" wait="true"]
+join VÉIO rightmost [animation="Slide From Left" length="0.5" wait="true"]
+VÉIO (Falando): Entra, meu fi. A casa é pobre mas o coração é grande.
+join PROTA leftmost [animation="Slide From Left" length="0.6" wait="true"]
+PROTA (Confuso_Cabeca): Tô aqui. Agora fala: quem é tu e por que sabe tanto da minha família?
+VÉIO (Falando): Teu pai, Dantas, era mais que prefeito. Era a consciência dessa cidade. E tua mãe, Isabela, lutou pela verdade. Eles me confiaram pra cuidar de tu.
+PROTA (Falando): Isso eu sei, ou acho que sei. O que eu não sei é como tu entra nessa história.
+VÉIO (Falando): Existe um livro. "Direitos e Deveres do Povo." Teu pai escreveu, tua mãe completou. É a verdade que o regime queimou e tentou apagar.
+VÉIO (Falando): Na Vila do Açude Seco tem um camarada meu, o antigo peixeiro. Ele pode te ajudar. Mas cuidado.
+PROTA (Determinado): Feito. Mas quando eu voltar, tu me conta TUDO. Sem enrolação.
+VÉIO (Rindo): Feito, meu rapaz! Palavra dada é dívida sagrada.
+VÉIO (Falando): Vai com Deus, menino. E volta inteiro. Os hómi tão caçando qualquer um que cheire a resistência.
 update PROTA [mirrored="true"]
-VÉIO (Falando): Dante!
-update PROTA (Confuso_Cabeca) [mirrored="false"]
-VÉIO (Falando): Teu pai confiô em mim pra te proteger. Num vou deixar essa promessa morrer. Vai com Deus, menino... e volta inteiro
-update VÉIO (Rindo)
-update PROTA [mirrored="true"]
-leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
+leave PROTA [animation="Slide To Left" length="0.5" wait="true"]
 [end_timeline]

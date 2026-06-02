@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cb5gk771y0gkn"]
 
-[ext_resource type="Script" uid="uid://cqbntr4kvu8r9" path="res://ASSETS/CENAS/SCRIPTS CENAS/minigame_radio.gd" id="1_radio"]
+[ext_resource type="Script" uid="uid://b4elawqvygtn8" path="res://ASSETS/CENAS/SCRIPTS CENAS/minigame_radio.gd" id="1_radio"]
 
-[node name="MinigameRadio" type="Control"]
+[node name="MinigameRadio" type="Control" unique_id=771497884]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

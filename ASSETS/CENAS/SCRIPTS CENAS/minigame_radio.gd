@@ -13,7 +13,12 @@ const ENCRYPTED_MSGS = [
 const DECRYPTED_MSGS = [
 	"VENDA DE PAMONHA NO BAIRRO 3",
 	"REUNIAO SECRETA MARCADA",
-	"ESCOLA CONTROLA MENTES"
+	"OPERAÇÃO CONTROLE EDUCACIONAL"
+]
+const DISCOVERY_TIMELINES = [
+	"fase2_reacao_mensagem_1",
+	"fase2_reacao_mensagem_2",
+	"fase2_reacao_final"
 ]
 
 # === ESTADO ===
@@ -24,6 +29,7 @@ var captured_index: int = -1 # -1 se nenhum sinal próximo, 0, 1, 2 se capturado
 var signal_strength: float = 0.0 # 0.0 a 1.0
 var wave_time: float = 0.0
 var finalizado := false
+var dialogo_descoberta_em_execucao := false
 
 # === COMPONENTES DE UI ===
 var layer: CanvasLayer
@@ -308,6 +314,33 @@ func _construir_ui() -> void:
 	btn_right.pressed.connect(func(): _ajustar_shift(1))
 	hbox_cipher.add_child(btn_right)
 	
+	# Botão Cifra Info para auxílio pedagógico
+	var btn_cifra_info = Button.new()
+	btn_cifra_info.text = " CIFRA INFO "
+	btn_cifra_info.custom_minimum_size = Vector2(120, 40)
+	btn_cifra_info.add_theme_font_override("font", FONTE)
+	btn_cifra_info.add_theme_font_size_override("font_size", 18)
+	btn_cifra_info.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	
+	var sb_info = StyleBoxFlat.new()
+	sb_info.bg_color = Color(0.05, 0.2, 0.45, 0.85)
+	sb_info.border_width_left = 2; sb_info.border_width_top = 2
+	sb_info.border_width_right = 2; sb_info.border_width_bottom = 2
+	sb_info.border_color = Color("#00A2FF")
+	sb_info.corner_radius_top_left = 6; sb_info.corner_radius_top_right = 6
+	sb_info.corner_radius_bottom_left = 6; sb_info.corner_radius_bottom_right = 6
+	
+	var sb_info_h = sb_info.duplicate() as StyleBoxFlat
+	sb_info_h.bg_color = Color(0.1, 0.3, 0.65, 0.95)
+	sb_info_h.shadow_size = 8
+	sb_info_h.shadow_color = Color("#00A2FF", 0.3)
+	
+	btn_cifra_info.add_theme_stylebox_override("normal", sb_info)
+	btn_cifra_info.add_theme_stylebox_override("hover", sb_info_h)
+	btn_cifra_info.add_theme_stylebox_override("pressed", sb_info_h)
+	btn_cifra_info.pressed.connect(_on_cifra_info_pressed)
+	hbox_cipher.add_child(btn_cifra_info)
+	
 	# Preview Decifrado
 	lbl_preview_text = Label.new()
 	lbl_preview_text.text = "---"
@@ -529,12 +562,90 @@ func _decodificar_cifra(texto_cifrado: String, shift: int) -> String:
 #  AÇÃO DOS BOTÕES
 # ══════════════════════════════════════════════
 
-func _on_save_signal_pressed() -> void:
-	if captured_index == -1 or shift_atual != -3: return
+func _on_cifra_info_pressed() -> void:
+	# Cria o pop-up explicativo da Cifra de César
+	var popup_bg = ColorRect.new()
+	popup_bg.color = Color(0, 0, 0, 0.75)
+	popup_bg.set_anchors_preset(PRESET_FULL_RECT)
+	layer.add_child(popup_bg)
 	
-	decrypted_states[captured_index] = true
+	var popup_panel = PanelContainer.new()
+	popup_panel.custom_minimum_size = Vector2(620, 430)
+	popup_panel.set_anchors_preset(PRESET_CENTER)
+	popup_panel.grow_horizontal = GROW_DIRECTION_BOTH
+	popup_panel.grow_vertical = GROW_DIRECTION_BOTH
+	
+	var sb_popup = StyleBoxFlat.new()
+	sb_popup.bg_color = Color(0.05, 0.08, 0.14, 0.98)
+	sb_popup.border_width_left = 3; sb_popup.border_width_top = 3
+	sb_popup.border_width_right = 3; sb_popup.border_width_bottom = 3
+	sb_popup.border_color = Color("#00A2FF")
+	sb_popup.corner_radius_top_left = 12
+	sb_popup.corner_radius_top_right = 12
+	sb_popup.corner_radius_bottom_left = 12
+	sb_popup.corner_radius_bottom_right = 12
+	sb_popup.shadow_size = 25
+	sb_popup.shadow_color = Color("#00A2FF", 0.2)
+	popup_panel.add_theme_stylebox_override("panel", sb_popup)
+	popup_bg.add_child(popup_panel)
+	
+	var popup_margin = MarginContainer.new()
+	popup_margin.add_theme_constant_override("margin_top", 25)
+	popup_margin.add_theme_constant_override("margin_bottom", 25)
+	popup_margin.add_theme_constant_override("margin_left", 30)
+	popup_margin.add_theme_constant_override("margin_right", 30)
+	popup_panel.add_child(popup_margin)
+	
+	var popup_vbox = VBoxContainer.new()
+	popup_vbox.add_theme_constant_override("separation", 18)
+	popup_margin.add_child(popup_vbox)
+	
+	var popup_title = Label.new()
+	popup_title.text = "MANUAL TÉCNICO: CIFRA DE CÉSAR"
+	popup_title.add_theme_font_override("font", FONTE)
+	popup_title.add_theme_font_size_override("font_size", 28)
+	popup_title.add_theme_color_override("font_color", Color("#00A2FF"))
+	popup_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	popup_vbox.add_child(popup_title)
+	
+	var popup_desc = RichTextLabel.new()
+	popup_desc.custom_minimum_size = Vector2(0, 240)
+	popup_desc.bbcode_enabled = true
+	popup_desc.text = "[color=#CCCCCC]A [color=#00A2FF][b]Cifra de César[/b][/color] é uma técnica clássica de criptografia por substituição.\n\nCada letra do texto original é [b]substituída[/b] por outra que está um número fixo de posições atrás ou à frente no alfabeto.\n\n[color=#FFAA00]Funcionamento prático com recuo de 3 posições (Deslocamento: -3):[/color]\n• Letra [b]D[/b] recua 3 posições e vira [b]A[/b]\n• Letra [b]E[/b] recua 3 posições e vira [b]B[/b]\n• Letra [b]F[/b] recua 3 posições e vira [b]C[/b]\n\n[color=#00FF66][b]DIRETRIZ DE DESCRIPTOGRAFIA:[/b]\ninterceptações mostram que as mensagens militares estão cifradas com [b]DESLOCAMENTO: -3[/b]. Ajuste os botões '-' e '+' até obter esse valor para que a mensagem de resistência apareça limpa e legível![/color][/color]"
+	popup_desc.add_theme_font_override("normal_font", FONTE)
+	popup_desc.add_theme_font_size_override("normal_font_size", 18)
+	popup_vbox.add_child(popup_desc)
+	
+	var popup_close = Button.new()
+	popup_close.text = "ENTENDIDO"
+	popup_close.custom_minimum_size = Vector2(160, 45)
+	popup_close.size_flags_horizontal = SIZE_SHRINK_CENTER
+	popup_close.add_theme_font_override("font", FONTE)
+	popup_close.add_theme_font_size_override("font_size", 20)
+	popup_close.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	
+	var sb_close = StyleBoxFlat.new()
+	sb_close.bg_color = Color(0.0, 0.4, 0.7, 0.95)
+	sb_close.corner_radius_top_left = 6
+	sb_close.corner_radius_top_right = 6
+	sb_close.corner_radius_bottom_left = 6
+	sb_close.corner_radius_bottom_right = 6
+	popup_close.add_theme_stylebox_override("normal", sb_close)
+	
+	popup_close.pressed.connect(func():
+		popup_bg.queue_free()
+	)
+	popup_vbox.add_child(popup_close)
+
+func _on_save_signal_pressed() -> void:
+	if dialogo_descoberta_em_execucao or captured_index == -1 or shift_atual != -3: return
+	
+	var descoberta_idx := captured_index
+	dialogo_descoberta_em_execucao = true
+	_set_interacao_minigame(false)
+	decrypted_states[descoberta_idx] = true
 	GameState.confianca += 2 # Recompensa por decodificar cada sinal
-	GameState.registrar_escolha("Decodificou canal em " + str(TARGET_FREQS[captured_index]) + " MHz", +2)
+	GameState.registrar_escolha("Decodificou canal em " + str(TARGET_FREQS[descoberta_idx]) + " MHz", +2)
 	
 	# Efeito visual de confirmação (breve piscar verde no painel de decodificação)
 	var tween = create_tween()
@@ -543,6 +654,33 @@ func _on_save_signal_pressed() -> void:
 	tween.tween_property(panel_decode, "modulate", original_mod, 0.3)
 	
 	_atualizar_ui_estado()
+	await tween.finished
+	await _tocar_timeline_descoberta(descoberta_idx)
+
+func _tocar_timeline_descoberta(descoberta_idx: int) -> void:
+	if descoberta_idx < 0 or descoberta_idx >= DISCOVERY_TIMELINES.size():
+		_set_interacao_minigame(true)
+		dialogo_descoberta_em_execucao = false
+		return
+	
+	dialogo_descoberta_em_execucao = true
+	_set_interacao_minigame(false)
+	await TimelineManager.tocar_dialogo(DISCOVERY_TIMELINES[descoberta_idx], false)
+	
+	if descoberta_idx == DISCOVERY_TIMELINES.size() - 1:
+		GameState.fase_atual = 3
+		GameState.fase3_passo = "inicio"
+		GameState.fase2_passo = "radio_concluida"
+		GameState.salvar_jogo(false)
+	
+	_set_interacao_minigame(true)
+	dialogo_descoberta_em_execucao = false
+	_atualizar_ui_estado()
+
+func _set_interacao_minigame(habilitada: bool) -> void:
+	slider_tuner.editable = habilitada
+	btn_save_signal.disabled = not habilitada
+	btn_finish.disabled = not habilitada
 
 func _on_finish_pressed() -> void:
 	if finalizado: return
@@ -552,12 +690,10 @@ func _on_finish_pressed() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = true
 		
-	# Atualiza estado para o fluxo de reações de Dante no game_scene_script
+	GameState.fase_atual = 3
+	GameState.fase3_passo = "inicio"
 	GameState.fase2_passo = "radio_concluida"
-	GameState.salvar_jogo()
-	
-	# Troca de cena para game_scene de volta usando FadeManager
-	FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")
+	await GameState.retornar_para_game_scene_apos_minigame()
 
 # ══════════════════════════════════════════════
 #  DESENHO DO OSCILOSCÓPIO CRT (RETRO WAVE)
@@ -605,12 +741,17 @@ func _on_oscilloscope_draw() -> void:
 		
 	# 4. Desenha a linha da onda em verde fluorescente CRT com sombra brilhosa
 	var wave_color = Color(0.0, 1.0, 0.4, 0.9)
-	var glow_color = Color(0.0, 1.0, 0.4, 0.2)
+	var glow_color = Color(0.0, 1.0, 0.4, 0.25)
 	
 	# Desenha efeito de brilho (glow) com espessura maior por baixo
 	for i in range(points.size() - 1):
-		oscilloscope.draw_line(points[i], points[i+1], glow_color, 4.0)
+		oscilloscope.draw_line(points[i], points[i+1], glow_color, 5.0)
 		
 	# Desenha a linha principal fina por cima
 	for i in range(points.size() - 1):
 		oscilloscope.draw_line(points[i], points[i+1], wave_color, 2.0)
+		
+	# 5. Adiciona scanlines analógicas por cima do osciloscópio (Efeito CRT Analógico)
+	var scanline_color = Color(0.0, 0.04, 0.01, 0.3)
+	for y in range(0, int(size_rect.y), 4):
+		oscilloscope.draw_line(Vector2(0, y), Vector2(size_rect.x, y), scanline_color, 1.5)

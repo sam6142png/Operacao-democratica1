@@ -1,51 +1,33 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.8" transition="Simple Fade"]
-join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.6"]
-[wait time="0.8"]
-PROTA: E se for cilada? Um velho que eu nunca vi na vida me manda buscar um livro no fim do mundo...
-PROTA (Confuso_Cabeca): Isso tem cheiro de armadilha... ou de desespero.
-update PROTA center
-PROTA (Determinado): Não. Chega de ter medo. O medo é a coleira que eles botam na gente.
-PROTA (Confuso_Cabeca): Mas ir sozinho seria burrice...
-PROTA (Sorrindo): A usina. Luis e Atena precisam saber disso.
-leave PROTA [animation="Slide To Left" length="0.7"]
-[wait time="0.8"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Externa.jpeg" fade="0.9" wait="true"]
-[wait time="0.3"]
-join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="1.1" wait="true"]
-join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8"]
-[wait time="0.8"]
-PROTA (De fininho): Quieto, Dante... quieto...
-leave PROTA [animation="Slide To Right" length="2.7" wait="true"]
-leave MILITAR [animation="Fade Out" length="1.9" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.9"]
-join PROTA (De fininho) rightmost [animation="Slide From Right" length="1.1"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua.jpeg" fade="0.5" transition="Simple Fade"]
+join PROTA (Pensando) rightmost [animation="Slide From Right" length="0.5"]
+[wait time="0.4"]
+PROTA: E se for armadilha? Ir sozinho ao fim do mundo atrás de um livro seria burrice.
+PROTA (Determinado): Preciso falar com Atena e Luis. Eles têm que vir comigo.
+leave PROTA [animation="Slide To Left" length="0.5"]
+[wait time="0.4"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Externa.jpeg" fade="0.6" wait="true"]
+[wait time="0.2"]
+join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="0.6" wait="true"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.5"]
+[wait time="0.4"]
+PROTA (De fininho): Quieto, Dante... os guardas estão patrulhando.
+leave PROTA [animation="Slide To Right" length="1.5" wait="true"]
+leave MILITAR [animation="Fade Out" length="1.0" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Interior da usina.png" fade="0.6"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.6"]
 join ATENA (Neutro) left
 join Luis leftmost
-[wait time="0.5"]
+[wait time="0.3"]
 ATENA (Falando): Dante?
-update PROTA (Surpreso) [animation="Heartbeat" length="1.2"]
-[wait time="0.6"]
-PROTA: MISERICÓRDIA, ATENA!
-update ATENA (Rindo)
-update Luis (Rindo)
-ATENA: Hahahahaha! Tu tinha que ver tua cara! Parecia um gato que pisou na água
-update PROTA (Determinado)
-update ATENA (Neutro)
-update Luis (Neutro)
-PROTA: Muito engraçado, senhorita. Mas escuta, que é sério...
-ATENA (Falando): Desembucha! Sabe que sou "aperriada"
-PROTA (Falando): Encontrei um velho na rua. Diz que conhecia meus pais, que tem um livro escondido na Vila do Açude que pode mudar tudo
-PROTA (Confuso_Cabeca): Direitos, deveres... a verdade que o regime apagou. Tá tudo nesse livro
-PROTA (Sorrindo): Só que eu não vou sozinho. Tô pedindo ajuda
-update ATENA (Falando)
-ATENA: Espera. Um velho desconhecido te manda pra uma vila controlada pelo regime buscar um livro proibido... e tu quer ir?
-PROTA (Determinado): Quero. E preciso de vocês
-ATENA (Falando): ...Tá. Se tu for sozinho, capaz de morrer antes de chegar lá. Eu vou
-PROTA: Valeu, Atena! E tu, Luis?
-Luis (Falando): Rapaz... tu sabe que eu detesto confusão, né?
-PROTA (Confuso_Cabeca): Luis...
-Luis (Falando): Mas também detesto ficar parado enquanto os amigos se fodem. Bora logo, antes que eu mude de ideia
-PROTA (Sorrindo): Sabia que tu era "caba macho", Luis!
-PROTA (Falando): Então é agora. Vila do Açude Seco. Sem volta
-update PROTA [animation="Tada" length="1.0" mirrored="true"]
+update PROTA (Surpreso) [animation="Heartbeat" length="0.6"]
+[wait time="0.3"]
+PROTA: Que susto, Atena!
+ATENA: Hahahahaha! Devia ver sua cara de pânico! O que houve?
+PROTA (Falando): Encontrei um amigo dos meus pais. Há um livro proibido escondido na Vila do Açude que revela a verdade que o regime apagou.
+PROTA (Sorrindo): Mas não posso ir sozinho. Preciso da ajuda de vocês.
+ATENA (Falando): Um livro proibido em vila militar? Você é louco. Mas se for sozinho, morre. Eu vou.
+PROTA: Valeu, Atena! E você, Luis?
+Luis (Falando): Detesto confusão, Dante... Mas detesto mais ainda ver vocês se ferrarem sozinhos. Vamos logo, antes que eu desista.
+PROTA (Sorrindo): Sabia que podia contar com vocês. Destino: Vila do Açude Seco. Sem volta!
+update PROTA [animation="Tada" length="0.6" mirrored="true"]
 [end_timeline]

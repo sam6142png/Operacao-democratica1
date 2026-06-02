@@ -5,16 +5,59 @@ signal dialogo_finalizado(nome: String)
 
 var esta_tocando: bool = false
 
-func _ready():
-	# Configura o Dialogic para avançar as falas automaticamente
-	if Dialogic.has_subsystem("Inputs"):
-		var inputs = Dialogic.Inputs
-		if inputs.auto_advance:
-			inputs.auto_advance.enabled_forced = true
-			# Tempo fixo de espera após o texto terminar (em segundos)
-			inputs.auto_advance.fixed_delay = 1.2
-			# Velocidade baseada nos caracteres (opcional, para naturalidade)
-			inputs.auto_advance.per_character_delay = 0.05
+# Tempo base da caixa de diálogo (multiplicado pelo fator de velocidade)
+const AUTO_ADVANCE_FIXED_DELAY_BASE := 2.8
+const AUTO_ADVANCE_PER_CHARACTER_BASE := 0.09
+const TEXT_SPEED_BASE := 1.0
+
+# Timelines onde a velocidade é travada em 1x (cenas de impacto narrativo)
+const TIMELINES_PROTEGIDAS := [
+	"Intro_Narrativa",
+	"fase2_reacao_final",
+	"fase3_escola_conclusao",
+]
+
+var _vel_dialogos: float = 1.0
+var _timeline_atual_nome: String = ""
+
+
+func _ready() -> void:
+	_aplicar_config_auto_advance()
+
+
+## Define o multiplicador de velocidade dos diálogos (1.0 = normal, 2.0 = máximo).
+## Salva para ser reutilizado em cada timeline.
+func set_velocidade_dialogos(vel: float) -> void:
+	_vel_dialogos = clampf(vel, 1.0, 2.0)
+	_aplicar_config_auto_advance()
+
+
+func _timeline_esta_protegida(nome: String) -> bool:
+	for protegida in TIMELINES_PROTEGIDAS:
+		if nome.contains(protegida):
+			return true
+	return false
+
+
+func _aplicar_config_auto_advance() -> void:
+	if not Dialogic.has_subsystem("Inputs"):
+		return
+	var inputs = Dialogic.Inputs
+	if not inputs.auto_advance:
+		return
+	
+	var vel := 1.0 if _timeline_esta_protegida(_timeline_atual_nome) else _vel_dialogos
+	var fator_delay := vel * vel
+	
+	inputs.auto_advance.enabled_forced = true
+	inputs.auto_advance.fixed_delay = AUTO_ADVANCE_FIXED_DELAY_BASE / fator_delay
+	inputs.auto_advance.per_character_delay = AUTO_ADVANCE_PER_CHARACTER_BASE / fator_delay
+	
+	# Acelera também o "typing" do texto para o 2x ficar realmente perceptível.
+	if Dialogic.has_subsystem("Settings"):
+		Dialogic.Settings.text_speed = TEXT_SPEED_BASE / vel
+	if Dialogic.has_subsystem("Text"):
+		Dialogic.Text.update_text_speed()
 
 func parar_tudo():
 	esta_tocando = false
@@ -37,6 +80,8 @@ func parar_tudo():
 				if layout.get_parent():
 					layout.get_parent().remove_child(layout)
 				layout.queue_free()
+		if get_tree().has_meta("dialogic_layout_node"):
+			get_tree().remove_meta("dialogic_layout_node")
 	
 	# Limpa o estado interno para evitar erros de referências órfãs
 	if Dialogic.has_subsystem("Portraits"):
@@ -48,7 +93,7 @@ func parar_tudo():
 	if get_tree():
 		await get_tree().process_frame
 
-func tocar_dialogo(nome: String):
+func tocar_dialogo(nome: String, salvar_ao_final: bool = true):
 	if esta_tocando:
 		push_warning("[TimelineManager] Já existe um diálogo em execução. Aguardando...")
 		await dialogo_finalizado
@@ -60,9 +105,12 @@ func tocar_dialogo(nome: String):
 		await get_tree().process_frame
 	
 	Dialogic.paused = false
+	_aplicar_config_auto_advance()
 	
 	esta_tocando = true
+	_timeline_atual_nome = nome
 	GameState.timeline_atual = nome
+	_aplicar_config_auto_advance()
 	dialogo_iniciado.emit(nome)
 	print("[TimelineManager] Iniciando: ", nome)
 	
@@ -81,12 +129,16 @@ func tocar_dialogo(nome: String):
 			return
 		
 		esta_tocando = false
-		GameState.salvar_jogo()
-		Dialogic.Save.save("autosave")
+		_timeline_atual_nome = ""
+		GameState.limpar_timeline_ativa()
+		if salvar_ao_final:
+			GameState.salvar_jogo()
+			Dialogic.Save.save("autosave")
 		dialogo_finalizado.emit(nome)
-		print("[TimelineManager] Finalizado e salvo: ", nome)
+		print("[TimelineManager] Finalizado", " e salvo: " if salvar_ao_final else ": ", nome)
 	else:
 		esta_tocando = false
+		_timeline_atual_nome = ""
 		dialogo_finalizado.emit(nome)
 		push_error("[TimelineManager] Erro ao carregar: " + nome)
 

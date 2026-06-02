@@ -1,36 +1,35 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/EscolaInterna.png" fade="0.0"]
-join PROTA (Determinado) leftmost [animation="Fade In" length="0.6" wait="true"]
-join ATENA (Neutro) left [animation="Fade In" length="0.6" wait="true"]
-join PROFESSOR (Rindo) rightmost [animation="Slide From Right" length="0.7" wait="true"]
-PROFESSOR: Deu certo! Os alto-falantes estão chiando... o sinal da rádio livre tá entrando!
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Determinado) leftmost [animation="Fade In" length="0.4" wait="true"]
+join ATENA (Neutro) left [animation="Fade In" length="0.4" wait="true"]
+join PROFESSOR (Rindo) rightmost [animation="Slide From Right" length="0.5" wait="true"]
+PROFESSOR: Deu certo! O sinal da rádio livre tá entrando nos alto-falante!
 update PROFESSOR (Falando)
-PROFESSOR: A transmissão do debate de ontem tá tocando nos corredores! Os alunos nos pátios estão parando pra escutar!
-ATENA (Falando): Isso! Agora eles estão ouvindo a história real de Usina Velha, não a cartilha do regime.
-PROFESSOR (Falando): Mas isso vai atrair a repressão. Quando os militares descobrirem, vão fechar o cerco. O que fazemos agora?
+ATENA (Falando): Isso! Agora eles tão ouvindo a história real de Usina Velha, não a cartilha do regime.
+PROFESSOR (Falando): Mas isso vai atrair a repressão. Quando os hómi descobrirem, vão fechar o cerco. O que a gente faz?
 - Expor a manipulação abertamente
 	[signal arg="escolha_escola_expor"]
-	PROTA: Vamos aproveitar o impacto. Murais, panfletagem nas salas. Vamos confrontar a direção e mostrar as mentiras nos livros de História.
-	ATENA (Falando): É arriscado, mas vai inflamar o espírito deles. A juventude precisa ver a prova física da mentira.
+	PROTA: Bora meter mural e panfleto nas sala, confrontar as mentira nos livro de História.
+	ATENA (Falando): É arriscado, mas vai inflamar o espírito deles. A juventude precisa ver a prova.
 	PROFESSOR (Falando): Eu ajudo a distribuir. Se é pra cair, que seja lutando pela verdade.
 - Agir de forma discreta
 	[signal arg="escolha_escola_discreto"]
-	PROTA: Se formos violentos, eles suspendem as aulas e prendem todo mundo. Vamos colocar as páginas originais do livro nos armários dos alunos, às escondidas.
-	ATENA (Neutro): Boa. Eles vão encontrar as provas em segredo, ler e repassar boca a boca. A verdade se espalha sem fuzil na cara.
-	PROFESSOR (Falando): Sensato, Dante. Vou colocar os panfletos nos armários do terceiro ano.
+	PROTA: Bora colocar as página originais nos armário dos aluno, às escondida.
+	ATENA (Neutro): Boa. Eles vão encontrar, ler e repassar boca a boca. Sem fuzil na cara.
+	PROFESSOR (Falando): Sensato, Dante. Vou colocar nos armário do terceiro ano.
 - Mobilizar protesto silencioso
 	[signal arg="escolha_escola_mobilizar"]
-	PROTA: Vamos falar com o grêmio estudantil. Se os alunos se recusarem a assistir às aulas doutrinárias em silêncio, a escola inteira trava.
-	ATENA (Falando): Resistência pacífica. O regime não sabe lidar com quem cruza os braços de forma organizada.
-	PROFESSOR (Falando): Vou falar com os representantes de classe. Eles têm coragem para liderar isso.
+	PROTA: Bora falar com o grêmio. Se os aluno se recusarem a assistir aula doutrinária, a escola inteira trava.
+	ATENA (Falando): Resistência pacífica. O regime num sabe lidar com quem cruza os braço organizado.
+	PROFESSOR (Falando): Vou falar com os representante de classe. Eles têm coragem pra liderar isso.
 update PROTA (Determinado)
 update ATENA (Neutro)
 update PROFESSOR (Neutro)
-[wait time="0.5"]
-PROTA: A semente está plantada. O controle mental deles aqui dentro começou a quebrar.
-ATENA: Rádio, vila, escola... O povo de Usina Velha está acordando, Dante.
-PROTA (Determinado): Então é a hora. A Praça do Palácio é o próximo passo. É lá que vamos dar o golpe final nesse regime.
-leave ATENA [animation="Slide To Left" length="0.7"]
-leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
-leave PROFESSOR [animation="Fade Out" length="0.6" wait="true"]
+[wait time="0.3"]
+PROTA: A semente tá plantada. O controle mental deles começou a quebrar.
+ATENA: Rádio, vila, escola... O povo de Usina Velha tá acordando, Dante.
+PROTA (Determinado): Então é a hora. A Praça do Palácio é o próximo passo. É lá que a gente dá o golpe final nesse regime.
+leave ATENA [animation="Slide To Left" length="0.5"]
+leave PROTA [animation="Slide To Left" length="0.5" wait="true"]
+leave PROFESSOR [animation="Fade Out" length="0.4" wait="true"]
 [signal arg="fim_fase_3"]
 [end_timeline]

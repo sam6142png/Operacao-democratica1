@@ -33,6 +33,7 @@ MedidorConfianca="*res://ASSETS/CENAS/MedidorConfianca.tscn"
 FadeManager="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/FadeManager.gd"
 MenuPausa="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/MenuPausa.gd"
 ChoiceTimer="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/ChoiceTimer.gd"
+AtalhoSecreto="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/AtalhoSecreto.gd"
 
 [dialogic]
 
@@ -58,6 +59,11 @@ directories/dtl_directory={
 "fase2_reacao_mensagem_2": "res://ASSETS/DIALOGIC/TIMELINES/fase2_reacao_mensagem_2.dtl",
 "fase3_escola_conclusao": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_conclusao.dtl",
 "fase3_escola_inicio": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_inicio.dtl",
+"fase3_escola_minigame_derrota": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_derrota.dtl",
+"fase3_escola_minigame_disjuntores_ok": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_disjuntores_ok.dtl",
+"fase3_escola_minigame_fios_ok": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_fios_ok.dtl",
+"fase3_escola_minigame_inicio": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_inicio.dtl",
+"fase3_escola_minigame_sintonia_ok": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_sintonia_ok.dtl",
 "m01_rua_velho": "res://ASSETS/DIALOGIC/TIMELINES/m01_rua_velho.dtl",
 "timeline_resultado_paginas": "res://ASSETS/DIALOGIC/TIMELINES/timeline_resultado_paginas.dtl"
 }
@@ -69,8 +75,8 @@ extensions_folder="res://addons/dialogic_additions"
 text/letter_speed=0.01
 text/initial_text_reveal_skippable=true
 text/text_reveal_skip_delay=0.1
-text/advance_delay=0.1
-text/autoadvance_per_character_delay=0.1
+text/advance_delay=0.25
+text/autoadvance_per_character_delay=0.09
 text/autoadvance_ignored_characters_enabled=true
 animations/join_default_length=0.5
 animations/join_default_wait=true
@@ -103,6 +109,7 @@ layout/style_list=["res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"]
 layout/default_style="res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
 glossary/glossary_files=["uid://b6f6js5mp1oja", "uid://cbfvkr6xhgsw1"]
 audio/type_sound_bus="SFX"
+text/autoadvance_fixed_delay=2.8
 
 [display]
 

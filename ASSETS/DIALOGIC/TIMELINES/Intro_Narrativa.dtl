@@ -1,27 +1,19 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Industrial Velha.png" fade="1.5" transition="Simple Fade" wait="true"]
-[wait time="1.0"]
-... Vinte anos. Era só o que bastava pra apagar uma cidade inteira da memória.
-Usina Velha não era só ferro e fumaça. Era o cheiro do pão saindo do forno, o apito das seis horas, o orgulho no olhar de quem voltava pra casa sujo de graxa e cheio de dignidade.
-[background arg="res://ASSETS/SPRITES/FUNDOS/O Golpe (O Início da Opressão).png" fade="1.2" transition="Simple Fade" wait="true"]
-Aí as máquinas pararam. De uma vez. Como um coração que simplesmente... desiste.
-No silêncio que ficou, uma voz surgiu prometendo ordem. Coronel Antônio. O preço da "salvação" dele? A nossa voz. A nossa escolha. A nossa alma.
-Democracia virou palavra proibida — enterrada sob cinza e medo, como se nunca tivesse existido.
-[background arg="res://ASSETS/SPRITES/FUNDOS/Pais de Dante entregando o livro.png" fade="1.2" transition="Simple Fade" wait="true"]
-[wait time="0.8"]
-Mas nem tudo se apaga. Nem todo fogo morre.
-Dantas, o último prefeito que o povo escolheu. Isabela, a engenheira que descobriu a verdade por trás da sabotagem. Eles sabiam demais. E por isso... não sobreviveram.
-Mas antes de partir, plantaram uma semente. Um livro. Uma verdade. Um filho.
-[background arg="res://ASSETS/SPRITES/FUNDOS/Memórias de Dante.png" fade="1.2" transition="Simple Fade" wait="true"]
-As lembranças chegam em estilhaços. O cheiro de ferro quente. O ronco das engrenagens. A mão do pai segurando a sua — forte, firme, como se dissesse: "Lembra de tudo."
-O regime tentou apagar. Queimou fotos, reescreveu livros, silenciou bocas. Mas a memória... a memória é teimosa.
-[background arg="res://ASSETS/SPRITES/FUNDOS/A Sombra do Medo (O Trauma de Dante).png" fade="1.5" transition="Simple Fade" wait="true"]
-[wait time="1.2"]
-Dante cresceu no escuro. Não o escuro da noite — o escuro de quem cresce sabendo que algo lhe foi roubado, mas sem saber exatamente o quê.
-A sombra do Coronel cobria tudo. Cada esquina. Cada sonho. Cada tentativa de lembrar.
-[background arg="res://ASSETS/SPRITES/FUNDOS/A Voz da Verdade (O Controle da Rádio).png" fade="1.2" transition="Simple Fade" wait="true"]
-Nas ruas, uma única voz. Sempre a mesma. Saindo dos alto-falantes como veneno disfarçado de remédio.
-Não era só controle do corpo. Era controle do pensamento. Do que se podia ouvir, falar... e até sentir.
-[background arg="res://ASSETS/SPRITES/FUNDOS/O Comandante das Ruínas.png" fade="1.5" transition="Simple Fade" wait="true"]
-Hoje, Usina Velha é um cemitério de concreto. Vigiado de perto por quem se alimenta da nossa miséria.
-Mas debaixo do entulho... alguma coisa tá se mexendo. E a verdade tem essa mania irritante de não ficar quieta pra sempre.
+audio "res://ASSETS/SOUNDS/TrilhaSuspense_Menu2.mp3"
+[background arg="res://ASSETS/SPRITES/FUNDOS/Usina Industrial Velha.png" fade="0.8" transition="Simple Fade" wait="true"]
+[wait time="0.5"]
+Vinte anos bastaram para silenciar Usina Velha. Antes um lugar de orgulho e dignidade, agora sob a névoa do esquecimento.
+[background arg="res://ASSETS/SPRITES/FUNDOS/O Golpe (O Início da Opressão).png" fade="0.8" transition="Simple Fade" wait="true"]
+Quando as máquinas pararam de vez, o Coronel Antônio prometeu ordem. O preço da sua "salvação" foi a nossa liberdade e democracia, enterradas sob o medo.
+[background arg="res://ASSETS/SPRITES/FUNDOS/Pais de Dante entregando o livro.png" fade="0.8" transition="Simple Fade" wait="true"]
+[wait time="0.4"]
+Mas a resistência plantou uma semente. Meus pais, Dantas e Isabela, sabiam a verdade e pagaram com a vida, deixando um livro... e seu filho, Dante.
+[background arg="res://ASSETS/SPRITES/FUNDOS/Memórias de Dante.png" fade="0.8" transition="Simple Fade" wait="true"]
+O regime tentou queimar o passado, mas as lembranças resistem. A voz do meu pai ainda ecoa: "Lembra de tudo."
+[background arg="res://ASSETS/SPRITES/FUNDOS/A Sombra do Medo (O Trauma de Dante).png" fade="0.8" transition="Simple Fade" wait="true"]
+[wait time="0.5"]
+Cresci sob a sombra do Coronel, sabendo que algo precioso nos tinha sido roubado.
+[background arg="res://ASSETS/SPRITES/FUNDOS/A Voz da Verdade (O Controle da Rádio).png" fade="0.8" transition="Simple Fade" wait="true"]
+Nas ruas, os alto-falantes controlam tudo. Não apenas os nossos corpos, mas o próprio pensamento do povo.
+[background arg="res://ASSETS/SPRITES/FUNDOS/O Comandante das Ruínas.png" fade="0.8" transition="Simple Fade" wait="true"]
+Hoje, Usina Velha é um cemitério vigiado. Mas sob o entulho, a verdade está prestes a emergir.
 [end_timeline]

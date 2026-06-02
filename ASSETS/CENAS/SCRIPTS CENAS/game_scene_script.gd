@@ -2,14 +2,54 @@ extends Node2D
 
 const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 
+var _sequencia_em_execucao := false
+
 func _ready() -> void:
 	Dialogic.signal_event.connect(_on_dialogic_signal)
-	if GameState.timeline_atual == "":
-		iniciar_sequencia_fase()
+	call_deferred("_tentar_iniciar_sequencia")
+
+
+func _tentar_iniciar_sequencia() -> void:
+	if _sequencia_em_execucao:
+		return
+	if not _deve_iniciar_sequencia_fase():
+		return
+	_sequencia_em_execucao = true
+	if GameState.aguardando_sequencia_fase:
+		GameState.aguardando_sequencia_fase = false
+	GameState.limpar_timeline_ativa()
+	await iniciar_sequencia_fase()
+	_sequencia_em_execucao = false
+
+
+func _deve_iniciar_sequencia_fase() -> bool:
+	if GameState.aguardando_sequencia_fase:
+		return true
+	if GameState.timeline_atual == "" and GameState.cena_atual.ends_with("game_scene.tscn"):
+		return true
+	if GameState.fase_atual >= 2 and _timeline_preso_na_fase_1():
+		GameState.limpar_timeline_ativa()
+		return true
+	return false
+
+
+func _timeline_preso_na_fase_1() -> bool:
+	var tl := GameState.timeline_atual
+	if tl.is_empty():
+		return false
+	var fase1 := [
+		"Intro_Narrativa", "m01_rua_velho", "Dante_na_usina_Fase1",
+		"Timeline_VilaPeixeiro", "res://ASSETS/DIALOGIC/TIMELINES/Timeline_VilaPeixeiro"
+	]
+	for nome in fase1:
+		if tl.contains(nome):
+			return true
+	return false
 
 func iniciar_sequencia_fase():
 	match GameState.fase_atual:
 		1:
+			await FadeManager.mostrar_intro_fase(1, "Um pequeno passo para o homem, um grande passo para a humanidade")
 			await TimelineManager.tocar_dialogo("Intro_Narrativa")
 			await FadeManager.transicao_com_dica()
 			await _mostrar_tutorial()
@@ -20,6 +60,7 @@ func iniciar_sequencia_fase():
 			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
 		2:
 			if GameState.fase2_passo == "inicio":
+				await FadeManager.mostrar_intro_fase(2, "Voz nas Entrelinhas")
 				await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
 				await FadeManager.transicao_com_dica()
 				await TimelineManager.tocar_dialogo("fase2_guardas")
@@ -33,6 +74,7 @@ func iniciar_sequencia_fase():
 				await TimelineManager.tocar_dialogo("fase2_reacao_final")
 		3:
 			if GameState.fase3_passo == "inicio":
+				await FadeManager.mostrar_intro_fase(3, "Mentes em disputa")
 				await TimelineManager.tocar_dialogo("fase3_escola_inicio")
 			elif GameState.fase3_passo == "escola_concluida":
 				await TimelineManager.tocar_dialogo("fase3_escola_conclusao")
@@ -196,37 +238,27 @@ func _on_dialogic_signal(valor: String) -> void:
 		"escolha_entender_peixeiro": _e.call("Entendeu o peixeiro", +1)
 		"escolha_esperar_guardas": _e.call("Esperou os guardas", +1)
 		"iniciar_minigame_paginas":
-			GameState.timeline_atual = ""
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_paginas.tscn")
+			GameState.fase_atual = 2
+			GameState.fase2_passo = "inicio"
+			await _ir_para_minigame("res://ASSETS/CENAS/minigame_paginas.tscn")
 		"iniciar_distracao":
-			GameState.timeline_atual = ""
-			GameState.fase2_passo = "casa_velho"
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_distracao.tscn")
+			await _ir_para_minigame("res://ASSETS/CENAS/minigame_distracao.tscn")
 		"iniciar_radio":
-			GameState.timeline_atual = ""
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_radio.tscn")
+			await _ir_para_minigame("res://ASSETS/CENAS/minigame_radio.tscn")
 		"iniciar_minigame_escola":
-			GameState.timeline_atual = ""
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_escola.tscn")
+			await _ir_para_minigame("res://ASSETS/CENAS/minigame_escola.tscn")
 		"escolha_escola_expor": _e.call("Expos a doutrinacao abertamente", +2)
 		"escolha_escola_discreto": _e.call("Trocou folhas nos armarios discretamente", +1)
 		"escolha_escola_mobilizar": _e.call("Mobilizou protesto silencioso", +1)
 		"fim_fase_2":
 			GameState.fase_atual = 3
 			GameState.fase3_passo = "inicio"
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")
+			await GameState.retornar_para_game_scene_apos_minigame()
 		"fim_fase_3":
 			GameState.fase_atual = 4
-			GameState.salvar_jogo()
-			await TimelineManager.parar_tudo()
-			FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
+			await _ir_para_minigame("res://ASSETS/CENAS/minigame_praca.tscn")
+
+
+func _ir_para_minigame(caminho_cena: String) -> void:
+	await GameState.preparar_transicao_minigame(caminho_cena)
+	await FadeManager.carregar_cena(caminho_cena)

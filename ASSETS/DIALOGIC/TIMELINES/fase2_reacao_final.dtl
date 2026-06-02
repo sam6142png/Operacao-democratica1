@@ -1,20 +1,13 @@
-join PROTA (Surpreso) center [animation="Fade In" length="0.5" wait="true"]
+join PROTA (Surpreso) center [animation="Fade In" length="0.4" wait="true"]
 PROTA: "ESCOLA CONTROLA MENTES"...
-[wait time="0.6"]
-update PROTA (Pensando)
-PROTA (Pensando): Não... não era educação. Nunca foi. Era uma fábrica de obediência
-PROTA (Confuso_Cabeca): Cada aula, cada lição, cada prova... tudo regado com veneno invisível pelo rádio. E ninguém sabia. NINGUÉM!
-PROTA (Determinado): Isso é nojento. Usar criança pra manter o poder... isso passa de qualquer limite
-PROTA (Determinado): A resistência precisa ver isso. Precisa saber o que tá por trás daquela escola. Tenho que sair daqui AGORA
-[wait time="0.5"]
+PROTA (Confuso_Cabeca): Não era educação, era uma fábrica de obediência via rádio! Isso é nojento.
+PROTA (Determinado): Preciso sair daqui e alertar a resistência. Eles têm que saber o que está acontecendo.
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua de noite.png" fade="0.8" transition="Simple Fade" wait="true"]
+[wait time="0.4"]
+join PROTA (Determinado) center [animation="Slide From Right" length="0.5" wait="true"]
+PROTA (Pensando): O dia está amanhecendo. A próxima batalha será dentro daquela escola.
 leave PROTA [animation="Fade Out" length="0.5" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Rua de noite.png" fade="1.2" transition="Simple Fade" wait="true"]
-[wait time="0.8"]
-join PROTA (Determinado) center [animation="Slide From Right" length="0.8" wait="true"]
-PROTA (Pensando): O dia tá nascendo. As aulas vão começar. E agora eu sei o que acontece quando aquele sinal toca
-PROTA (Pensando): Se a resistência quer mudar alguma coisa de verdade... a próxima batalha é dentro daquela escola
-[wait time="1.0"]
-leave PROTA [animation="Fade Out" length="0.8" wait="true"]
-[background arg="" fade="1.0" wait="true"]
+[background arg="" fade="0.6" wait="true"]
 [signal arg="fim_fase_2"]
 [end_timeline]

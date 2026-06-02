@@ -1,0 +1,6 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
+join PROTA (Neutro) leftmost [animation="Fade In" length="0.2" wait="true"]
+ATENA: Recuar! A caixa ficou quente demais. A patrulha percebeu ruído na linha.
+PROTA: A gente tenta de novo antes que eles reforcem a escola.
+[end_timeline]

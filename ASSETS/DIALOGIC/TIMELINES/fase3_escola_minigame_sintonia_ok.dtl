@@ -1,0 +1,8 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Determinado) leftmost [animation="Fade In" length="0.2" wait="true"]
+join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
+PROTA: Entrou! A Voz Livre tá saindo em todas as salas.
+ATENA: Agora eles não controlam mais sozinhos o que a escola escuta.
+PROFESSOR: Que os alunos ouçam, comparem e perguntem. É assim que uma escola respira.
+[end_timeline]

@@ -1,8 +1,6 @@
-join PROTA (Surpreso) center [animation="Fade In" length="0.5" wait="true"]
+join PROTA (Surpreso) center [animation="Fade In" length="0.4" wait="true"]
 PROTA: "REUNIÃO SECRETA MARCADA"...
-update PROTA (Pensando)
-PROTA (Pensando): Reunião secreta. Criptografada. No meio da madrugada. Isso não é brincadeira
-PROTA (Pensando): Os guardas tão se movimentando mais... o cerco tá apertando
-PROTA (Determinado): Uma frequência. Só mais uma. A que controla a escola tem que tá aqui. Antes que descubram que eu invadi esse prédio
-leave PROTA [animation="Fade Out" length="0.5" wait="true"]
+PROTA (Pensando): Criptografada no meio da madrugada. O cerco deles está apertando.
+PROTA (Determinado): Só preciso de mais uma frequência... A que controla a escola tem que estar aqui!
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]
 [end_timeline]

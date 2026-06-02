@@ -187,3 +187,72 @@ func fade_in(duracao: float = 0.8) -> void:
 	var tween = create_tween()
 	tween.tween_property(overlay, "color", Color(0, 0, 0, 0), duracao).set_ease(Tween.EASE_OUT)
 	await tween.finished
+
+
+func mostrar_intro_fase(numero_fase: int, nome_fase: String) -> void:
+	# Painel de fundo semi-transparente
+	var intro_bg = ColorRect.new()
+	intro_bg.color = Color(0.02, 0.02, 0.03, 0.0) # Começa invisível
+	intro_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	intro_bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(intro_bg)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_CENTER)
+	vbox.anchor_left = 0.5; vbox.anchor_right = 0.5
+	vbox.anchor_top = 0.5; vbox.anchor_bottom = 0.5
+	vbox.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	vbox.grow_vertical = Control.GROW_DIRECTION_BOTH
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 24)
+	vbox.modulate.a = 0.0
+	intro_bg.add_child(vbox)
+	
+	# Número da Fase
+	var lbl_num = Label.new()
+	if numero_fase > 0:
+		lbl_num.text = str(numero_fase) + "ª FASE"
+		lbl_num.add_theme_color_override("font_color", Color("#FF8C00")) # Laranja
+	else:
+		lbl_num.text = "MISSAO FINAL"
+		lbl_num.add_theme_color_override("font_color", Color("#ff4b4b")) # Vermelho para a final
+	lbl_num.add_theme_font_override("font", FONTE)
+	lbl_num.add_theme_font_size_override("font_size", 28)
+	lbl_num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_num)
+	
+	# Divisor estético
+	var div = ColorRect.new()
+	div.custom_minimum_size = Vector2(480, 2)
+	div.color = Color("#FF8C00", 0.4) if numero_fase > 0 else Color("#ff4b4b", 0.4)
+	div.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(div)
+	
+	# Nome da Fase
+	var lbl_nome = Label.new()
+	lbl_nome.text = nome_fase
+	lbl_nome.add_theme_font_override("font", FONTE)
+	lbl_nome.add_theme_font_size_override("font_size", 44)
+	lbl_nome.add_theme_color_override("font_color", Color.WHITE)
+	lbl_nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_nome.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_nome.custom_minimum_size = Vector2(1100, 0)
+	vbox.add_child(lbl_nome)
+	
+	# Fade In
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(intro_bg, "color:a", 0.88, 0.45)
+	tw.tween_property(vbox, "modulate:a", 1.0, 0.45)
+	await tw.finished
+	
+	# Aguarda tempo de leitura
+	await get_tree().create_timer(2.4).timeout
+	
+	# Fade Out
+	var tw_out = create_tween().set_parallel(true)
+	tw_out.tween_property(intro_bg, "color:a", 0.0, 0.45)
+	tw_out.tween_property(vbox, "modulate:a", 0.0, 0.45)
+	await tw_out.finished
+	
+	# Limpeza
+	intro_bg.queue_free()

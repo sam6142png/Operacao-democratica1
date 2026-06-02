@@ -1,0 +1,8 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
+join PROTA (Neutro) leftmost [animation="Fade In" length="0.2" wait="true"]
+ATENA: Circuito fechado. Agora o som tem por onde passar sem queimar a sala toda.
+PROFESSOR: Isso também explica muita coisa: eles controlam a escola porque controlam a estrutura.
+PROTA (Determinado): Então vamos tomar a estrutura de volta. Próximo: disjuntores.
+[end_timeline]

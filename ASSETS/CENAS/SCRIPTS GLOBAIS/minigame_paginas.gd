@@ -1,472 +1,625 @@
 extends Control
 
-# === RECURSOS ===
 const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 const TEX_LIVRO = preload("res://ASSETS/SPRITES/PROPS/LivroAberto.png")
 
-# === DADOS ===
-const TODAS_PAGINAS = [
-	{"texto": "Todo cidadão tem direito à educação gratuita e de qualidade.", "resposta": "direito", "adulterada": false, "explicacao": "A educação é um direito fundamental garantido pela Constituição."},
-	{"texto": "É dever do cidadão votar nas eleições e participar da vida política.", "resposta": "dever", "adulterada": false, "explicacao": "Participar da vida política é um dever cívico de todo cidadão."},
-	{"texto": "O governo pode censurar qualquer informação que julgue perigosa para a ordem pública.", "resposta": "adulterada", "adulterada": true, "explicacao": "⚠ VERSÃO ADULTERADA! A liberdade de informação é um direito fundamental."},
-	{"texto": "Todo cidadão tem direito à liberdade de expressão e manifestação pacífica.", "resposta": "direito", "adulterada": false, "explicacao": "A liberdade de expressão é um pilar fundamental da democracia."},
-	{"texto": "É dever do cidadão respeitar e preservar o patrimônio público e comunitário.", "resposta": "dever", "adulterada": false, "explicacao": "Preservar o patrimônio público é responsabilidade de todos os cidadãos."},
-	{"texto": "O Estado tem o dever de garantir saúde, moradia e segurança a todos os cidadãos.", "resposta": "direito", "adulterada": false, "explicacao": "Saúde, moradia e segurança são direitos sociais garantidos pelo Estado."},
-	{"texto": "Cidadãos que discordarem do governo devem ser realocados para zonas de trabalho forçado.", "resposta": "adulterada", "adulterada": true, "explicacao": "⚠ VERSÃO ADULTERADA! Nenhum cidadão pode ser punido por discordar do governo."},
-	{"texto": "É dever do cidadão pagar impostos para financiar serviços públicos coletivos.", "resposta": "dever", "adulterada": false, "explicacao": "O pagamento de impostos é um dever que sustenta os serviços públicos."},
-	{"texto": "Todo cidadão tem direito a um julgamento justo e à presunção de inocência.", "resposta": "direito", "adulterada": false, "explicacao": "O direito a um julgamento justo é garantia fundamental do Estado de Direito."},
-	{"texto": "O regime tem autoridade para suspender eleições em períodos de instabilidade social.", "resposta": "adulterada", "adulterada": true, "explicacao": "⚠ VERSÃO ADULTERADA! Eleições são direito inalienável do povo."}
+const MAX_ERROS: int = 4
+const TEMPO_POR_PAGINA: float = 32.0
+const TOTAL_PAGINAS: int = 10
+
+const COR_FUNDO := Color("#08090d")
+const COR_PAPEL := Color("#f0dfb8")
+const COR_TINTA := Color("#2f2114")
+const COR_BORDA := Color("#a66a2d")
+const COR_DIREITO := Color("#25a9ff")
+const COR_DEVER := Color("#ff9b2f")
+const COR_PROPAGANDA := Color("#b86cff")
+const COR_SUCESSO := Color("#31d67b")
+const COR_ERRO := Color("#e84848")
+
+const TODAS_PAGINAS: Array[Dictionary] = [
+	{
+		"texto": "Todo cidadao tem direito a educacao gratuita e de qualidade.",
+		"resposta": "direito",
+		"adulterada": false,
+		"explicacao": "Educacao e um direito social. O regime tenta apagar isso porque povo instruido questiona."
+	},
+	{
+		"texto": "E dever do cidadao votar, fiscalizar representantes e participar da vida publica.",
+		"resposta": "dever",
+		"adulterada": false,
+		"explicacao": "Participacao politica nao termina no voto. Democracia tambem exige vigilancia cidada."
+	},
+	{
+		"texto": "O governo pode censurar informacoes perigosas para preservar a ordem publica.",
+		"resposta": "adulterada",
+		"adulterada": true,
+		"explicacao": "Versao adulterada. Liberdade de informacao protege o povo contra abusos de poder."
+	},
+	{
+		"texto": "Todo cidadao tem direito a liberdade de expressao e manifestacao pacifica.",
+		"resposta": "direito",
+		"adulterada": false,
+		"explicacao": "Manifestacao pacifica e ferramenta legitima de participacao popular."
+	},
+	{
+		"texto": "E dever do cidadao preservar patrimonio publico e respeitar espacos comunitarios.",
+		"resposta": "dever",
+		"adulterada": false,
+		"explicacao": "O que e publico pertence a todos. Preservar tambem e defender a cidade."
+	},
+	{
+		"texto": "O Estado deve garantir saude, moradia, seguranca e dignidade a populacao.",
+		"resposta": "direito",
+		"adulterada": false,
+		"explicacao": "Direitos sociais existem para impedir que cidadania seja privilegio de poucos."
+	},
+	{
+		"texto": "Cidadaos que discordarem do governo devem ser removidos para trabalho obrigatorio.",
+		"resposta": "adulterada",
+		"adulterada": true,
+		"explicacao": "Versao adulterada. Discordar do governo nao e crime em uma democracia."
+	},
+	{
+		"texto": "E dever do cidadao contribuir com impostos para financiar servicos publicos.",
+		"resposta": "dever",
+		"adulterada": false,
+		"explicacao": "Impostos sustentam servicos coletivos quando usados com transparencia."
+	},
+	{
+		"texto": "Todo cidadao tem direito a julgamento justo e presuncao de inocencia.",
+		"resposta": "direito",
+		"adulterada": false,
+		"explicacao": "Sem julgamento justo, qualquer pessoa pode virar alvo do poder."
+	},
+	{
+		"texto": "O regime pode suspender eleicoes quando a sociedade parecer instavel.",
+		"resposta": "adulterada",
+		"adulterada": true,
+		"explicacao": "Versao adulterada. Eleicoes livres sao base da soberania popular."
+	}
 ]
-const MAX_ERROS = 3
 
-# === CORES ===
-const COR_PAPEL = Color("#F4E4BC")
-const COR_TEXTO = Color("#3A2A1A")
-const COR_BORDA = Color("#8B5A2B")
-const COR_FUNDO = Color("#0A0A0C")
-
-# === ESTADO ===
-var paginas: Array = []
-var idx: int = 0
+var paginas: Array[Dictionary] = []
+var indice: int = 0
 var acertos: int = 0
 var erros: int = 0
-var arrastando := false
-var pos_orig: Vector2
-var timer_seg: float = 0.0
-var aguardando := false
-var ativo := false
-var confianca_ini: int = 0
+var adulteradas_encontradas: int = 0
+var tempo_restante: float = TEMPO_POR_PAGINA
+var aguardando_feedback: bool = false
+var jogo_ativo: bool = false
+var finalizando: bool = false
+var confianca_inicial: int = 0
+var card_pos_original: Vector2 = Vector2.ZERO
+var arrastando: bool = false
 
-# === NÓS (criados por código) ===
-var fundo: ColorRect
-var hud: Panel
-var lbl_erros: Label
+var bg: ColorRect
+var mesa: PanelContainer
+var lbl_titulo: Label
 var lbl_progresso: Label
+var lbl_erros: Label
 var lbl_timer: Label
-var zona_esq: Control
-var zona_dir: Control
-var zona_baixo: Control
-var card_container: Control
-var card: PanelContainer
 var lbl_card: Label
 var lbl_feedback: Label
-var painel_explicacao: PanelContainer
 var lbl_explicacao: Label
+var card_holder: Control
+var card: PanelContainer
 var btn_direito: Button
 var btn_dever: Button
 var btn_adulterada: Button
+var zona_direito: PanelContainer
+var zona_dever: PanelContainer
+var zona_adulterada: PanelContainer
 var painel_overlay: PanelContainer
 
-func _ready():
+
+func _ready() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
-	confianca_ini = GameState.confianca
-	_construir_ui()
+	confianca_inicial = GameState.confianca
+	_montar_ui()
+	call_deferred("_centralizar_card")
 	_mostrar_intro()
 
-# ══════════════════════════════════════════════
-#  CONSTRUÇÃO DA UI (substitui a .tscn)
-# ══════════════════════════════════════════════
 
-func _construir_ui():
-	# Fundo
-	fundo = ColorRect.new()
-	fundo.color = COR_FUNDO
-	fundo.set_anchors_preset(PRESET_FULL_RECT)
-	add_child(fundo)
+func _montar_ui() -> void:
+	bg = ColorRect.new()
+	bg.color = COR_FUNDO
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(bg)
 
-	# HUD superior
-	hud = Panel.new()
-	hud.set_anchors_preset(PRESET_TOP_WIDE)
-	hud.offset_bottom = 90
-	var hud_sb = StyleBoxFlat.new()
-	hud_sb.bg_color = COR_PAPEL
-	hud_sb.border_width_bottom = 4
-	hud_sb.border_color = COR_BORDA
-	hud.add_theme_stylebox_override("panel", hud_sb)
-	add_child(hud)
+	var grade: Control = Control.new()
+	grade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	grade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	grade.draw.connect(func():
+		var size_rect: Vector2 = grade.size
+		for x in range(0, int(size_rect.x), 64):
+			grade.draw_line(Vector2(x, 0), Vector2(x, size_rect.y), Color("#ffffff", 0.025), 1.0)
+		for y in range(0, int(size_rect.y), 64):
+			grade.draw_line(Vector2(0, y), Vector2(size_rect.x, y), Color("#ffffff", 0.025), 1.0)
+	)
+	add_child(grade)
 
-	lbl_erros = _label("ERROS: 0/3", 18, Color("#B22222"))
-	lbl_erros.offset_left = 30; lbl_erros.offset_top = 15
-	lbl_erros.offset_right = 300; lbl_erros.offset_bottom = 50
-	hud.add_child(lbl_erros)
+	var root: MarginContainer = MarginContainer.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_theme_constant_override("margin_left", 70)
+	root.add_theme_constant_override("margin_right", 70)
+	root.add_theme_constant_override("margin_top", 34)
+	root.add_theme_constant_override("margin_bottom", 42)
+	add_child(root)
 
-	lbl_progresso = _label("PÁGINA: 0/10", 16, COR_TEXTO)
-	lbl_progresso.set_anchors_preset(PRESET_CENTER_TOP)
-	lbl_progresso.offset_left = -200; lbl_progresso.offset_right = 200
-	lbl_progresso.offset_top = 10; lbl_progresso.offset_bottom = 40
-	lbl_progresso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hud.add_child(lbl_progresso)
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 18)
+	root.add_child(vbox)
 
-	lbl_timer = _label("", 16, Color("#AA6600"))
-	lbl_timer.set_anchors_preset(PRESET_CENTER_TOP)
-	lbl_timer.offset_left = -200; lbl_timer.offset_right = 200
-	lbl_timer.offset_top = 45; lbl_timer.offset_bottom = 75
-	lbl_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hud.add_child(lbl_timer)
+	var header: HBoxContainer = HBoxContainer.new()
+	header.add_theme_constant_override("separation", 24)
+	vbox.add_child(header)
 
-	# Zonas laterais
-	zona_esq = _criar_zona(0.0, 0.1, "⬅ DIREITO", Color(0, 0.6, 0.9, 0.2))
-	zona_dir = _criar_zona(0.9, 1.0, "DEVER ➡", Color(1, 0.45, 0.1, 0.2))
-	zona_baixo = _criar_zona_baixo()
+	lbl_titulo = _label("ANALISE DO LIVRO CIVIL", 40, Color("#ffd28a"), FONTE)
+	lbl_titulo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(lbl_titulo)
 
-	# Card central
-	card_container = Control.new()
-	card_container.set_anchors_preset(PRESET_CENTER)
-	card_container.offset_left = -350; card_container.offset_right = 350
-	card_container.offset_top = -200; card_container.offset_bottom = 230
-	card_container.grow_horizontal = GROW_DIRECTION_BOTH
-	card_container.grow_vertical = GROW_DIRECTION_BOTH
-	add_child(card_container)
+	var status_box: VBoxContainer = VBoxContainer.new()
+	status_box.custom_minimum_size = Vector2(360, 0)
+	header.add_child(status_box)
+
+	lbl_progresso = _label("PAGINA 0/" + str(TOTAL_PAGINAS), 20, Color("#f5e7cc"), FONTE)
+	lbl_progresso.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	status_box.add_child(lbl_progresso)
+
+	lbl_erros = _label("ERROS 0/" + str(MAX_ERROS), 20, Color("#f5e7cc"), FONTE)
+	lbl_erros.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	status_box.add_child(lbl_erros)
+
+	lbl_timer = _label("TEMPO " + str(int(TEMPO_POR_PAGINA)) + "s", 20, Color("#f5e7cc"), FONTE)
+	lbl_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	status_box.add_child(lbl_timer)
+
+	var corpo: HBoxContainer = HBoxContainer.new()
+	corpo.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	corpo.add_theme_constant_override("separation", 22)
+	vbox.add_child(corpo)
+
+	var esquerda: VBoxContainer = VBoxContainer.new()
+	esquerda.custom_minimum_size = Vector2(300, 0)
+	esquerda.add_theme_constant_override("separation", 16)
+	corpo.add_child(esquerda)
+
+	zona_direito = _zona("DIREITO", COR_DIREITO)
+	zona_dever = _zona("DEVER", COR_DEVER)
+	esquerda.add_child(zona_direito)
+	esquerda.add_child(zona_dever)
+
+	mesa = PanelContainer.new()
+	mesa.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mesa.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mesa.add_theme_stylebox_override("panel", _stylebox(Color("#17100b", 0.82), COR_BORDA, 3, 8))
+	corpo.add_child(mesa)
+
+	var mesa_margin: MarginContainer = _margin(26)
+	mesa.add_child(mesa_margin)
+
+	var mesa_box: VBoxContainer = VBoxContainer.new()
+	mesa_box.add_theme_constant_override("separation", 18)
+	mesa_margin.add_child(mesa_box)
+
+	card_holder = Control.new()
+	card_holder.custom_minimum_size = Vector2(720, 470)
+	card_holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card_holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mesa_box.add_child(card_holder)
 
 	card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(700, 480)
-	card.set_anchors_preset(PRESET_FULL_RECT)
-	var card_sb = StyleBoxTexture.new()
-	card_sb.texture = TEX_LIVRO
-	for prop in ["texture_margin_left","texture_margin_right","texture_margin_top","texture_margin_bottom"]:
-		card_sb.set(prop, 90)
-	card.add_theme_stylebox_override("panel", card_sb)
-	card_container.add_child(card)
+	card.custom_minimum_size = Vector2(690, 430)
+	card.add_theme_stylebox_override("panel", _card_style())
+	card_holder.add_child(card)
 
-	lbl_card = Label.new()
-	lbl_card.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_card = _label("", 28, Color("#101010"), FONTE)
+	lbl_card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_card.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_card.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_card.add_theme_font_override("font", FONTE)
-	lbl_card.add_theme_font_size_override("font_size", 24)
-	lbl_card.add_theme_color_override("font_color", Color("#111111"))
+	lbl_card.set_anchors_preset(Control.PRESET_FULL_RECT)
+	lbl_card.offset_left = 88
+	lbl_card.offset_right = -88
+	lbl_card.offset_top = 70
+	lbl_card.offset_bottom = -78
 	card.add_child(lbl_card)
 
-	# Botões abaixo do card
-	var hbox = HBoxContainer.new()
-	hbox.set_anchors_preset(PRESET_BOTTOM_WIDE)
-	hbox.offset_top = -80
-	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_theme_constant_override("separation", 20)
-	card_container.add_child(hbox)
+	var botoes: HBoxContainer = HBoxContainer.new()
+	botoes.alignment = BoxContainer.ALIGNMENT_CENTER
+	botoes.add_theme_constant_override("separation", 18)
+	mesa_box.add_child(botoes)
 
-	btn_direito = _btn("[DIREITO]", Color(0, 0.6, 0.9))
-	btn_dever = _btn("[DEVER]", Color(1, 0.45, 0))
-	btn_adulterada = _btn("[ REJEITAR ]", Color(0.7, 0.3, 1))
-	btn_adulterada.custom_minimum_size.x = 260
-	hbox.add_child(btn_direito)
-	hbox.add_child(btn_dever)
-	hbox.add_child(btn_adulterada)
+	btn_direito = _botao("DIREITO", COR_DIREITO)
+	btn_dever = _botao("DEVER", COR_DEVER)
+	btn_adulterada = _botao("PROPAGANDA", COR_PROPAGANDA)
 	btn_direito.pressed.connect(func(): _avaliar("direito"))
 	btn_dever.pressed.connect(func(): _avaliar("dever"))
 	btn_adulterada.pressed.connect(func(): _avaliar("adulterada"))
+	botoes.add_child(btn_direito)
+	botoes.add_child(btn_dever)
+	botoes.add_child(btn_adulterada)
 
-	# Feedback
-	lbl_feedback = _label("", 28, COR_PAPEL)
-	lbl_feedback.set_anchors_preset(PRESET_CENTER_TOP)
-	lbl_feedback.offset_left = -400; lbl_feedback.offset_right = 400
-	lbl_feedback.offset_top = 100; lbl_feedback.offset_bottom = 150
+	var direita: VBoxContainer = VBoxContainer.new()
+	direita.custom_minimum_size = Vector2(330, 0)
+	direita.add_theme_constant_override("separation", 16)
+	corpo.add_child(direita)
+
+	zona_adulterada = _zona("PROPAGANDA", COR_PROPAGANDA)
+	direita.add_child(zona_adulterada)
+
+	var painel_info: PanelContainer = PanelContainer.new()
+	painel_info.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	painel_info.add_theme_stylebox_override("panel", _stylebox(Color("#11151f", 0.92), Color("#52627f"), 2, 8))
+	direita.add_child(painel_info)
+
+	var info_margin: MarginContainer = _margin(18)
+	painel_info.add_child(info_margin)
+	var info_box: VBoxContainer = VBoxContainer.new()
+	info_box.add_theme_constant_override("separation", 14)
+	info_margin.add_child(info_box)
+
+	lbl_feedback = _label("", 24, Color("#f5e7cc"), FONTE)
+	lbl_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_feedback.add_theme_color_override("font_outline_color", Color.BLACK)
-	lbl_feedback.add_theme_constant_override("outline_size", 4)
-	add_child(lbl_feedback)
+	info_box.add_child(lbl_feedback)
 
-	# Explicação
-	painel_explicacao = PanelContainer.new()
-	painel_explicacao.visible = false
-	painel_explicacao.set_anchors_preset(PRESET_BOTTOM_WIDE)
-	painel_explicacao.offset_left = 150; painel_explicacao.offset_right = -150
-	painel_explicacao.offset_top = -140; painel_explicacao.offset_bottom = -20
-	var exp_sb = _stylebox(COR_PAPEL, COR_BORDA, 3, 5)
-	painel_explicacao.add_theme_stylebox_override("panel", exp_sb)
-	add_child(painel_explicacao)
-
-	lbl_explicacao = Label.new()
+	lbl_explicacao = _label("", 19, Color("#cbd7e8"), FONTE)
 	lbl_explicacao.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lbl_explicacao.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_explicacao.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_explicacao.add_theme_font_override("font", FONTE)
-	lbl_explicacao.add_theme_font_size_override("font_size", 20)
-	lbl_explicacao.add_theme_color_override("font_color", COR_TEXTO)
-	painel_explicacao.add_child(lbl_explicacao)
+	lbl_explicacao.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	info_box.add_child(lbl_explicacao)
 
-	pos_orig = card_container.position
+	_set_jogo_visivel(false)
 
-# === HELPERS DE UI ===
 
-func _label(txt: String, sz: int, cor: Color) -> Label:
-	var l = Label.new()
-	l.text = txt
-	l.add_theme_font_override("font", FONTE)
-	l.add_theme_font_size_override("font_size", sz)
-	l.add_theme_color_override("font_color", cor)
-	return l
-
-func _btn(txt: String, cor: Color) -> Button:
-	var b = Button.new()
-	b.text = txt
-	b.custom_minimum_size = Vector2(180, 60)
-	b.add_theme_font_override("font", FONTE)
-	b.add_theme_font_size_override("font_size", 20)
-	b.add_theme_color_override("font_color", COR_TEXTO)
-	var sb = _stylebox(Color("#D4C49C"), COR_BORDA, 2, 5)
-	b.add_theme_stylebox_override("normal", sb)
-	var hover = _stylebox(cor, cor, 2, 5)
-	b.add_theme_stylebox_override("hover", hover)
-	b.add_theme_stylebox_override("pressed", hover)
-	b.mouse_default_cursor_shape = CURSOR_POINTING_HAND
-	return b
-
-func _stylebox(bg: Color, border: Color, bw: int, cr: int) -> StyleBoxFlat:
-	var sb = StyleBoxFlat.new()
-	sb.bg_color = bg
-	for p in ["border_width_left","border_width_top","border_width_right","border_width_bottom"]:
-		sb.set(p, bw)
-	sb.border_color = border
-	for p in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:
-		sb.set(p, cr)
-	return sb
-
-func _criar_zona(anchor_l: float, anchor_r: float, txt: String, cor: Color) -> Control:
-	var z = Control.new()
-	z.anchor_left = anchor_l; z.anchor_right = anchor_r
-	z.anchor_top = 0.12; z.anchor_bottom = 0.95
-	z.offset_left = 10; z.offset_right = -10
-	z.modulate = cor
-	add_child(z)
-	var p = Panel.new()
-	p.set_anchors_preset(PRESET_FULL_RECT)
-	z.add_child(p)
-	var lbl = _label(txt, 36, Color.WHITE)
-	lbl.set_anchors_preset(PRESET_CENTER)
-	lbl.offset_left = -100; lbl.offset_right = 100
-	lbl.offset_top = -25; lbl.offset_bottom = 25
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_color_override("font_outline_color", Color.BLACK)
-	lbl.add_theme_constant_override("outline_size", 6)
-	z.add_child(lbl)
-	return z
-
-func _criar_zona_baixo() -> Control:
-	var z = Control.new()
-	z.set_anchors_preset(PRESET_BOTTOM_WIDE)
-	z.offset_top = -250
-	z.modulate = Color(0.8, 0.2, 0.2, 0.0)
-	add_child(z)
-	var lbl = _label("⬇ DESCARTAR FALSO ⬇", 36, Color.WHITE)
-	lbl.set_anchors_preset(PRESET_CENTER_BOTTOM)
-	lbl.offset_bottom = -100
-	lbl.add_theme_color_override("font_outline_color", Color.BLACK)
-	lbl.add_theme_constant_override("outline_size", 6)
-	z.add_child(lbl)
-	return z
-
-func _criar_painel_overlay(titulo_txt: String, cor_titulo: Color) -> PanelContainer:
-	var p = PanelContainer.new()
-	p.custom_minimum_size = Vector2(600, 400)
-	p.set_anchors_preset(PRESET_CENTER)
-	p.grow_horizontal = GROW_DIRECTION_BOTH
-	p.grow_vertical = GROW_DIRECTION_BOTH
-	p.add_theme_stylebox_override("panel", _stylebox(COR_PAPEL, COR_BORDA, 4, 10))
-	var vbox = VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 30)
-	p.add_child(vbox)
-	var t = _label(titulo_txt, 32, cor_titulo)
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(t)
-	add_child(p)
-	return p
-
-# ══════════════════════════════════════════════
-#  LÓGICA DO JOGO
-# ══════════════════════════════════════════════
-
-func _mostrar_intro():
-	card_container.visible = false
-	painel_explicacao.visible = false
-	lbl_feedback.text = ""
-
-	painel_overlay = _criar_painel_overlay("ANÁLISE DE DOCUMENTOS", COR_TEXTO)
-	var vbox = painel_overlay.get_child(0)
-	var desc = _label("Arraste para ESQUERDA os Direitos.\nArraste para DIREITA os Deveres.\nArraste para BAIXO as páginas falsas.\n\nVocê só pode errar 3 vezes.", 20, COR_TEXTO)
+func _mostrar_intro() -> void:
+	painel_overlay = _overlay("LIVRO ADULTERADO", Color("#ffd28a"))
+	var vbox: VBoxContainer = painel_overlay.get_child(0)
+	var desc: Label = _label(
+		"O livro que o peixeiro guardou foi rasgado e reescrito pelo regime.\n\n" +
+		"Classifique cada pagina como direito, dever ou propaganda. A cidade precisa saber o que ainda e verdade.",
+		22,
+		COR_TINTA,
+		FONTE
+	)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(desc)
-	var b = _btn("COMEÇAR ANÁLISE", COR_BORDA)
-	b.size_flags_horizontal = SIZE_SHRINK_CENTER
-	b.pressed.connect(func():
+
+	var botao: Button = _botao("COMEÇAR", COR_BORDA)
+	botao.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	botao.pressed.connect(func():
 		painel_overlay.queue_free()
 		_iniciar_rodada()
 	)
-	vbox.add_child(b)
+	vbox.add_child(botao)
 
-func _iniciar_rodada():
-	card_container.visible = true
-	ativo = true
+
+func _iniciar_rodada() -> void:
+	_set_jogo_visivel(true)
 	paginas = TODAS_PAGINAS.duplicate()
 	paginas.shuffle()
-	idx = 0; acertos = 0; erros = 0; aguardando = false
-	lbl_erros.text = "ERROS: 0/" + str(MAX_ERROS)
-	_carregar_pagina(0)
+	indice = 0
+	acertos = 0
+	erros = 0
+	adulteradas_encontradas = 0
+	aguardando_feedback = false
+	jogo_ativo = true
+	finalizando = false
+	arrastando = false
+	_atualizar_hud()
+	await _centralizar_card()
+	_carregar_pagina()
 
-func _carregar_pagina(i: int):
-	if i >= paginas.size():
+
+func _carregar_pagina() -> void:
+	if indice >= paginas.size():
 		_mostrar_resultado(true)
 		return
-	var p = paginas[i]
-	lbl_card.text = p["texto"]
-	lbl_progresso.text = "PÁGINA: " + str(i + 1) + "/" + str(paginas.size())
-	lbl_erros.text = "ERROS: " + str(erros) + "/" + str(MAX_ERROS)
 
-	card_container.position = pos_orig + Vector2(0, 500)
-	card_container.modulate.a = 0.0
-	card_container.rotation = 0.0
-	card_container.scale = Vector2.ONE
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(card_container, "position", pos_orig, 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(card_container, "modulate:a", 1.0, 0.4)
+	var pagina: Dictionary = paginas[indice]
+	lbl_card.text = String(pagina["texto"])
+	lbl_feedback.text = "Leia como se sua cidade dependesse disso."
+	lbl_feedback.add_theme_color_override("font_color", Color("#f5e7cc"))
+	lbl_explicacao.text = ""
+	aguardando_feedback = false
+	tempo_restante = TEMPO_POR_PAGINA
+	arrastando = false
+	_atualizar_hud()
+	_set_botoes_ativos(true)
+	_resetar_card_visual()
 
-	lbl_feedback.text = "Lendo..."
-	lbl_feedback.add_theme_color_override("font_color", COR_PAPEL)
-	painel_explicacao.visible = false
-	aguardando = false
-	timer_seg = 30.0
-	lbl_timer.visible = true
 
-func _process(delta):
-	if not ativo or aguardando: return
+func _process(delta: float) -> void:
+	if not jogo_ativo or aguardando_feedback:
+		return
 
-	# Timer
-	timer_seg -= delta
-	lbl_timer.text = "TEMPO: " + str(int(timer_seg)) + "s"
-	if timer_seg <= 5.0:
-		var piscar = (Time.get_ticks_msec() % 500) > 250
-		lbl_timer.add_theme_color_override("font_color", Color("#FF3333") if piscar else COR_TEXTO)
-	else:
-		lbl_timer.add_theme_color_override("font_color", Color("#AA6600"))
-	if timer_seg <= 0:
+	tempo_restante -= delta
+	if tempo_restante <= 0.0:
 		_avaliar("timeout")
 		return
+	_atualizar_hud()
+	_processar_arraste()
 
-	# Arrastar
+
+func _processar_arraste() -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		var mp = get_global_mouse_position()
-		if card_container.get_global_rect().has_point(mp) or arrastando:
+		var mouse: Vector2 = get_global_mouse_position()
+		var rect_card: Rect2 = Rect2(card.global_position, card.size)
+		if rect_card.has_point(mouse) or arrastando:
 			arrastando = true
-			card_container.global_position = mp - card_container.size / 2.0
-			var ox = card_container.position.x - pos_orig.x
-			card_container.rotation = lerp(card_container.rotation, deg_to_rad(ox / 15.0), 0.2)
-			var oy = card_container.position.y - pos_orig.y
-			card_container.scale = Vector2.ONE * (1.0 - clamp(oy / 1000.0, 0.0, 0.3)) if oy > 0 else Vector2.ONE
-
-			var centro = card_container.global_position + card_container.size / 2.0
-			zona_esq.modulate.a = 0.6 if zona_esq.get_global_rect().has_point(centro) else 0.2
-			zona_dir.modulate.a = 0.6 if zona_dir.get_global_rect().has_point(centro) else 0.2
-			zona_baixo.modulate.a = 0.6 if zona_baixo.get_global_rect().has_point(centro) else 0.0
+			card.global_position = mouse - card.size * 0.5
+			var delta_x: float = card.global_position.x - card_pos_original.x
+			card.rotation = lerp(card.rotation, deg_to_rad(delta_x / 20.0), 0.18)
+			_realcar_zonas()
 	elif arrastando:
 		arrastando = false
-		var centro = card_container.global_position + card_container.size / 2.0
-		if zona_baixo.get_global_rect().has_point(centro): _avaliar("adulterada")
-		elif zona_esq.get_global_rect().has_point(centro): _avaliar("direito")
-		elif zona_dir.get_global_rect().has_point(centro): _avaliar("dever")
-		else: _voltar_centro()
-		zona_esq.modulate.a = 0.2; zona_dir.modulate.a = 0.2; zona_baixo.modulate.a = 0.0
+		var centro: Vector2 = card.global_position + card.size * 0.5
+		if zona_direito.get_global_rect().has_point(centro):
+			_avaliar("direito")
+		elif zona_dever.get_global_rect().has_point(centro):
+			_avaliar("dever")
+		elif zona_adulterada.get_global_rect().has_point(centro):
+			_avaliar("adulterada")
+		else:
+			_resetar_card_visual()
+		_realcar_zonas(false)
 
-func _voltar_centro():
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(card_container, "position", pos_orig, 0.4).set_trans(Tween.TRANS_SPRING).set_ease(Tween.EASE_OUT)
-	tw.tween_property(card_container, "rotation", 0.0, 0.3)
-	tw.tween_property(card_container, "scale", Vector2.ONE, 0.3)
 
-func _avaliar(escolha: String):
-	if aguardando: return
-	aguardando = true; arrastando = false
-	var p = paginas[idx]
+func _avaliar(escolha: String) -> void:
+	if aguardando_feedback or finalizando:
+		return
 
+	aguardando_feedback = true
+	_set_botoes_ativos(false)
+	_realcar_zonas(false)
+
+	var pagina: Dictionary = paginas[indice]
+	var correta: bool = escolha == String(pagina["resposta"])
 	if escolha == "timeout":
-		erros += 1; GameState.confianca -= 1
-		GameState.registrar_escolha("Timeout na análise", -1)
-		_feedback(false, "TEMPO ESGOTADO!")
-	elif p["adulterada"] and escolha == "adulterada":
-		acertos += 1; GameState.confianca += 2
-		GameState.registrar_escolha("Identificou página falsa", +2)
-		_feedback(true, "DESCARTADO COM SUCESSO")
-	elif not p["adulterada"] and escolha == p["resposta"]:
-		acertos += 1; GameState.confianca += 1
-		GameState.registrar_escolha("Classificou " + escolha, +1)
-		_feedback(true, "CLASSIFICAÇÃO CORRETA")
-	elif p["adulterada"] and escolha != "adulterada":
-		erros += 1; GameState.confianca -= 2
-		GameState.registrar_escolha("Aprovou página falsa!", -2)
-		_feedback(false, "PÁGINA ADULTERADA APROVADA!")
+		correta = false
+
+	if correta:
+		acertos += 1
+		if bool(pagina["adulterada"]):
+			adulteradas_encontradas += 1
+			GameState.adulterada_identificada_fase1 = true
+			GameState.confianca += 2
+			GameState.registrar_escolha("Identificou propaganda no livro", 2)
+		else:
+			GameState.confianca += 1
+			GameState.registrar_escolha("Classificou pagina como " + escolha, 1)
+		_feedback(true, "VERDADE RESTAURADA")
 	else:
-		erros += 1; GameState.confianca -= 1
-		GameState.registrar_escolha("Erro de classificação", -1)
-		_feedback(false, "CLASSIFICAÇÃO INCORRETA")
+		erros += 1
+		GameState.confianca -= 1
+		if escolha == "timeout":
+			GameState.registrar_escolha("Demorou na analise do livro", -1)
+			_feedback(false, "TEMPO ESGOTADO")
+		elif bool(pagina["adulterada"]):
+			GameState.registrar_escolha("Deixou propaganda passar", -1)
+			_feedback(false, "PROPAGANDA PASSOU")
+		else:
+			GameState.registrar_escolha("Classificacao incorreta do livro", -1)
+			_feedback(false, "CLASSIFICACAO INCORRETA")
 
-	painel_explicacao.visible = true
-	lbl_explicacao.text = p["explicacao"]
-	painel_explicacao.modulate.a = 0.0
-	create_tween().tween_property(painel_explicacao, "modulate:a", 1.0, 0.3)
-	lbl_erros.text = "ERROS: " + str(erros) + "/" + str(MAX_ERROS)
-
-	# Animação de saída
-	var offset = Vector2.ZERO; var ang = 0; var sc = 1.0
-	match escolha:
-		"direito": offset = Vector2(-1500, 0); ang = -45
-		"dever": offset = Vector2(1500, 0); ang = 45
-		"adulterada": offset = Vector2(0, 1000); sc = 0.2
-		_: offset = Vector2(0, 1000)
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(card_container, "position", card_container.position + offset, 0.6)
-	tw.tween_property(card_container, "modulate:a", 0.0, 0.5)
-	tw.tween_property(card_container, "rotation", deg_to_rad(ang), 0.6)
-	tw.tween_property(card_container, "scale", Vector2(sc, sc), 0.6)
+	lbl_explicacao.text = String(pagina["explicacao"])
+	_atualizar_hud()
+	await _animar_saida(escolha)
 
 	if erros >= MAX_ERROS:
-		await get_tree().create_timer(1.5).timeout
 		_mostrar_resultado(false)
 		return
-	await get_tree().create_timer(1.2).timeout
-	idx += 1
-	_carregar_pagina(idx)
 
-func _feedback(ok: bool, txt: String):
-	lbl_feedback.text = txt
-	lbl_feedback.add_theme_color_override("font_color", Color("#00FF88") if ok else Color("#FF4444"))
-	if not ok:
-		var p0 = position
-		var tw = create_tween()
-		for i in 6:
-			tw.tween_property(self, "position", p0 + Vector2(randf_range(-10,10), randf_range(-10,10)), 0.05)
-		tw.tween_property(self, "position", p0, 0.05)
+	indice += 1
+	await get_tree().create_timer(0.75).timeout
+	_carregar_pagina()
 
-func _mostrar_resultado(concluiu: bool):
-	ativo = false
-	painel_explicacao.visible = false
-	card_container.visible = false
-	var titulo = "ANÁLISE CONCLUÍDA" if concluiu else "ANÁLISE INTERROMPIDA"
-	var cor = Color("#228B22") if concluiu else Color("#B22222")
-	painel_overlay = _criar_painel_overlay(titulo, cor)
-	var vbox = painel_overlay.get_child(0)
+
+func _mostrar_resultado(concluiu: bool) -> void:
+	jogo_ativo = false
+	_set_botoes_ativos(false)
+	card.visible = false
+	painel_overlay = _overlay("ANALISE CONCLUIDA" if concluiu else "ANALISE FALHOU", COR_SUCESSO if concluiu else COR_ERRO)
+	var vbox: VBoxContainer = painel_overlay.get_child(0)
+
+	var resumo: Label = _label(
+		"Paginas validadas: " + str(acertos) + "/" + str(TOTAL_PAGINAS) +
+		"\nPropagandas encontradas: " + str(adulteradas_encontradas) +
+		"\nErros: " + str(erros) + "/" + str(MAX_ERROS),
+		22,
+		COR_TINTA,
+		FONTE
+	)
+	resumo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(resumo)
+
 	if concluiu:
-		var d = _label("Páginas validadas: " + str(acertos) + "\nErros: " + str(erros) + "\n\nA confiança foi impactada.", 20, COR_TEXTO)
-		d.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		vbox.add_child(d)
-		var b = _btn("CONTINUAR", Color("#228B22"))
-		b.size_flags_horizontal = SIZE_SHRINK_CENTER
-		b.pressed.connect(_finalizar)
-		vbox.add_child(b)
+		var botao: Button = _botao("SEGUIR", COR_SUCESSO)
+		botao.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		botao.pressed.connect(_finalizar)
+		vbox.add_child(botao)
 	else:
-		var b = _btn("TENTAR NOVAMENTE", Color("#B22222"))
-		b.size_flags_horizontal = SIZE_SHRINK_CENTER
-		b.pressed.connect(func():
+		var botao_retry: Button = _botao("TENTAR DE NOVO", COR_ERRO)
+		botao_retry.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		botao_retry.pressed.connect(func():
 			painel_overlay.queue_free()
-			GameState.confianca = confianca_ini
+			GameState.confianca = confianca_inicial
 			_iniciar_rodada()
 		)
-		vbox.add_child(b)
+		vbox.add_child(botao_retry)
 
-func _finalizar():
+
+func _finalizar() -> void:
+	if finalizando:
+		return
+	finalizando = true
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = true
 	GameState.acertos_paginas_fase1 = acertos
-	if GameState.fase_atual == 1: GameState.fase_atual = 2
-	FadeManager.carregar_cena("res://ASSETS/CENAS/game_scene.tscn")
+	GameState.fase_atual = 2
+	GameState.fase2_passo = "inicio"
+	GameState.limpar_timeline_ativa()
+	await GameState.retornar_para_game_scene_apos_minigame()
+
+
+func _atualizar_hud() -> void:
+	lbl_progresso.text = "PAGINA " + str(mini(indice + 1, TOTAL_PAGINAS)) + "/" + str(TOTAL_PAGINAS)
+	lbl_erros.text = "ERROS " + str(erros) + "/" + str(MAX_ERROS)
+	lbl_timer.text = "TEMPO " + str(ceili(tempo_restante)) + "s"
+	lbl_timer.add_theme_color_override("font_color", COR_ERRO if tempo_restante <= 7.0 else Color("#f5e7cc"))
+	lbl_erros.add_theme_color_override("font_color", COR_ERRO if erros >= MAX_ERROS - 1 else Color("#f5e7cc"))
+
+
+func _feedback(ok: bool, texto: String) -> void:
+	lbl_feedback.text = texto
+	lbl_feedback.add_theme_color_override("font_color", COR_SUCESSO if ok else COR_ERRO)
+
+
+func _animar_saida(escolha: String) -> void:
+	var destino: Vector2 = card.position
+	var rotacao: float = 0.0
+	match escolha:
+		"direito":
+			destino += Vector2(-900, -40)
+			rotacao = deg_to_rad(-18.0)
+		"dever":
+			destino += Vector2(-900, 180)
+			rotacao = deg_to_rad(-10.0)
+		"adulterada":
+			destino += Vector2(900, 80)
+			rotacao = deg_to_rad(18.0)
+		_:
+			destino += Vector2(0, 520)
+			rotacao = deg_to_rad(7.0)
+	var tw: Tween = create_tween().set_parallel(true)
+	tw.tween_property(card, "position", destino, 0.35)
+	tw.tween_property(card, "modulate:a", 0.0, 0.28)
+	tw.tween_property(card, "rotation", rotacao, 0.35)
+	await tw.finished
+
+
+func _resetar_card_visual() -> void:
+	card.visible = true
+	card.position = card_pos_original
+	card.rotation = 0.0
+	card.modulate = Color.WHITE
+
+
+func _centralizar_card() -> void:
+	await get_tree().process_frame
+	var area: Vector2 = card_holder.size
+	card_pos_original = (area - card.custom_minimum_size) * 0.5
+	card.position = card_pos_original
+
+
+func _realcar_zonas(ativo_realce: bool = true) -> void:
+	var centro: Vector2 = card.global_position + card.size * 0.5
+	_set_zona_alpha(zona_direito, ativo_realce and zona_direito.get_global_rect().has_point(centro))
+	_set_zona_alpha(zona_dever, ativo_realce and zona_dever.get_global_rect().has_point(centro))
+	_set_zona_alpha(zona_adulterada, ativo_realce and zona_adulterada.get_global_rect().has_point(centro))
+
+
+func _set_zona_alpha(zona: PanelContainer, ativa: bool) -> void:
+	zona.modulate.a = 1.0 if ativa else 0.72
+
+
+func _set_botoes_ativos(ativo_botoes: bool) -> void:
+	btn_direito.disabled = not ativo_botoes
+	btn_dever.disabled = not ativo_botoes
+	btn_adulterada.disabled = not ativo_botoes
+
+
+func _set_jogo_visivel(visivel: bool) -> void:
+	card_holder.visible = visivel
+	zona_direito.visible = visivel
+	zona_dever.visible = visivel
+	zona_adulterada.visible = visivel
+	lbl_feedback.visible = visivel
+	lbl_explicacao.visible = visivel
+
+
+func _zona(titulo: String, cor: Color) -> PanelContainer:
+	var zona: PanelContainer = PanelContainer.new()
+	zona.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	zona.modulate.a = 0.72
+	zona.add_theme_stylebox_override("panel", _stylebox(Color(cor.r, cor.g, cor.b, 0.12), cor, 3, 8))
+	var margin: MarginContainer = _margin(16)
+	zona.add_child(margin)
+	var label: Label = _label(titulo, 32, cor, FONTE)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	margin.add_child(label)
+	return zona
+
+
+func _overlay(titulo: String, cor: Color) -> PanelContainer:
+	var painel: PanelContainer = PanelContainer.new()
+	painel.custom_minimum_size = Vector2(700, 430)
+	painel.set_anchors_preset(Control.PRESET_CENTER)
+	painel.add_theme_stylebox_override("panel", _stylebox(COR_PAPEL, cor, 4, 10))
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 28)
+	painel.add_child(vbox)
+	var label: Label = _label(titulo, 34, COR_TINTA, FONTE)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(label)
+	add_child(painel)
+	return painel
+
+
+func _botao(texto: String, cor: Color) -> Button:
+	var botao: Button = Button.new()
+	botao.text = texto
+	botao.custom_minimum_size = Vector2(190, 58)
+	botao.add_theme_font_override("font", FONTE)
+	botao.add_theme_font_size_override("font_size", 22)
+	botao.add_theme_color_override("font_color", Color("#fff4dd"))
+	botao.add_theme_color_override("font_hover_color", Color("#0b0b0d"))
+	botao.add_theme_stylebox_override("normal", _stylebox(Color("#222029"), cor, 2, 6))
+	botao.add_theme_stylebox_override("hover", _stylebox(cor, cor, 2, 6))
+	botao.add_theme_stylebox_override("pressed", _stylebox(cor.darkened(0.12), cor, 2, 6))
+	botao.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	return botao
+
+
+func _label(texto: String, tamanho: int, cor: Color, fonte: Font) -> Label:
+	var label: Label = Label.new()
+	label.text = texto
+	label.add_theme_font_override("font", fonte)
+	label.add_theme_font_size_override("font_size", tamanho)
+	label.add_theme_color_override("font_color", cor)
+	label.add_theme_color_override("font_shadow_color", Color.BLACK)
+	label.add_theme_constant_override("shadow_offset_x", 2)
+	label.add_theme_constant_override("shadow_offset_y", 2)
+	return label
+
+
+func _card_style() -> StyleBoxTexture:
+	var style: StyleBoxTexture = StyleBoxTexture.new()
+	style.texture = TEX_LIVRO
+	style.texture_margin_left = 90
+	style.texture_margin_right = 90
+	style.texture_margin_top = 90
+	style.texture_margin_bottom = 90
+	return style
+
+
+func _stylebox(bg_color: Color, border: Color, largura: int, raio: int) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = border
+	for prop in ["border_width_left", "border_width_top", "border_width_right", "border_width_bottom"]:
+		style.set(prop, largura)
+	for prop in ["corner_radius_top_left", "corner_radius_top_right", "corner_radius_bottom_left", "corner_radius_bottom_right"]:
+		style.set(prop, raio)
+	return style
+
+
+func _margin(valor: int) -> MarginContainer:
+	var margin: MarginContainer = MarginContainer.new()
+	for prop in ["margin_left", "margin_top", "margin_right", "margin_bottom"]:
+		margin.add_theme_constant_override(prop, valor)
+	return margin

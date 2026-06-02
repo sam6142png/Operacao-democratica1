@@ -1,41 +1,32 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/Casa do veio.jpeg" fade="0.9" transition="Simple Fade" wait="true"]
-join VÉIO (Neutro) rightmost [animation="Fade In" length="0.7" wait="true"]
-join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.8" wait="true"]
-[wait time="0.3"]
-VÉIO (Falando): Dante! Tu é doido, menino?! Andando sozinho a essa hora com os "hómi" varrendo cada esquina!
-PROTA (Falando): Eu sei, tive que rastejar feito cobra pra chegar aqui...
-PROTA (Determinado): Mas escuta. Ouvi os guardas falando. Tem uma "Operação Frequência" — eles vão usar a rádio pra controlar a escola!
+[background arg="res://ASSETS/SPRITES/FUNDOS/Casa do veio (noite).png" fade="0.6" transition="Simple Fade" wait="true"]
+join VÉIO (Neutro) rightmost [animation="Fade In" length="0.5" wait="true"]
+join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.5" wait="true"]
+[wait time="0.2"]
+VÉIO (Falando): Dante! Tu é doido, menino?! Andando a essa hora com os hómi varrendo as esquina!
+PROTA (Determinado): Escuta, véio. Ouvi os guarda falando. Tem uma "Operação Frequência" — eles vão usar a rádio pra controlar a escola!
 update VÉIO (Neutro)
-[wait time="0.5"]
-VÉIO (Falando): Então chegô a hora... teus véio tinham razão
-PROTA (Confuso_Cabeca): Razão sobre o quê? Fala, véio!
-VÉIO (Falando): Teus pais descobriram isso anos atrás, rapaz. O regime num controla só com arma e soldado...
-VÉIO (Falando): Eles enfia mensagem escondida no meio da programação da rádio. Parece propaganda normal, mas tem ordem por trás. Controle silencioso, sem ninguém desconfiar
-PROTA (Surpreso): Mensagem escondida? Tipo... lavagem cerebral pelo rádio?
-VÉIO (Falando): Pior. Ordem direta. Disfarçada. E o povo obedece achando que tá pensando sozinho
-PROTA (Pensando): Por isso ninguém reage... não é covardia. É que nem sabem que tão sendo manipulados
-PROTA (Falando): Tem como ler essas mensagens? Algum jeito de decifrar?
-VÉIO (Falando): Tua mãe descobriu o truque. É cifra de deslocamento, rapaz. Cada letra da mensagem tá empurrada três casa pra frente no alfabeto
-VÉIO (Falando): Tu volta as três casa e a verdade aparece. "D" vira "A". "H" vira "E". Simples assim
-PROTA (Surpreso): Cifra de deslocamento... então dá pra decodificar qualquer transmissão deles!
-VÉIO (Falando): Dá. Mas tu precisa ir até a rádio, sintonizar as frequência certas e descobrir o que eles tão planejando pra escola
-PROTA (Determinado): Eu vou. Chega de ficar no escuro enquanto eles envenenam a cabeça do povo
-VÉIO (Falando): Cuidado, meu rapaz... a verdade certa liberta. A verdade errada enterra. E tu tá mexendo com gente que não perdoa
-leave VÉIO [animation="Fade Out" length="0.6"]
-leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/RadioExterno.png" fade="1.0" transition="Simple Fade" wait="true"]
-join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.8" wait="true"]
-PROTA (De fininho): O prédio da rádio... tá cercado de arame farpado. E tem refletor varrendo o pátio.
-PROTA (Pensando): Um deslize e os guardas me pegam. Preciso achar uma brecha...
-PROTA (De fininho): Ali! A janela dos fundos tá com a trava solta. É agora.
-leave PROTA [animation="Slide To Left" length="0.8" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/RadioInterno.png" fade="1.0" transition="Simple Fade" wait="true"]
-join PROTA (De fininho) center [animation="Fade In" length="0.8" wait="true"]
-PROTA (De fininho): Consegui entrar. O corredor tá silencioso... até demais.
-PROTA (Pensando): A sala de controle deve ser logo ali no final do corredor.
-update PROTA (Surpreso)
-PROTA (Surpreso): Quanta fiação e equipamento... eles investiram pesado nessa infraestrutura.
-PROTA (Determinado): Achei. O painel de sintonização principal. Tenho que decifrar esse sinal antes que a patrulha passe de novo.
-leave PROTA [animation="Fade Out" length="0.6" wait="true"]
+[wait time="0.3"]
+VÉIO (Falando): Então chegou a hora... Teus pais descobriram isso anos atrás. O regime enfia mensagem escondida na programação da rádio. Controle silencioso.
+PROTA (Surpreso): Mensagem escondida? Tipo lavagem cerebral pelo rádio?!
+VÉIO (Falando): Tua mãe descobriu o truque. É cifra de deslocamento. Cada letra tá empurrada três casa pra frente. Tu volta as três casa e a verdade aparece. "D" vira "A". "H" vira "E".
+VÉIO (Falando): Tu precisa ir até a rádio, sintonizar as frequência certa e descobrir o que eles tão planejando.
+PROTA (Determinado): Eu vou. Chega de ficar no escuro enquanto eles envenenam a cabeça do povo.
+VÉIO (Falando): Cuidado, meu rapaz. A verdade certa liberta. A verdade errada enterra. Tu tá mexendo com gente que não perdoa.
+leave VÉIO [animation="Fade Out" length="0.5"]
+leave PROTA [animation="Slide To Left" length="0.5" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/RadioExterno.png" fade="0.6" transition="Simple Fade" wait="true"]
+join PROTA (De fininho) rightmost [animation="Slide From Right" length="0.5" wait="true"]
+PROTA (De fininho): O prédio da rádio tá cercado. Mas ali, a janela dos fundo tá com a trava solta. É agora.
+PROTA (Pensando): O corredor tá silencioso... até demais. A sala de controle deve ser ali no final.
+leave PROTA
+[background arg="res://ASSETS/SPRITES/FUNDOS/janela meio aberta.png" fade="0.0"]
+PROTA: É agora. Entrei.
+PROTA (Pensando): Achei. O painel de sintonização. Quanta fiação e equipamento...
+update PROTA
+[background arg="res://ASSETS/SPRITES/FUNDOS/RadioInterno.png" fade="0.0"]
+PROTA: Achei o painel principal.
+[background arg="res://ASSETS/SPRITES/FUNDOS/RadioPainel.png" fade="0.0"]
+PROTA: Tenho que decifrar esse sinal antes que a patrulha passe de novo!
+leave PROTA [animation="Fade Out" length="0.4" wait="true"]
 [signal arg="iniciar_radio"]
 [end_timeline]
