@@ -110,6 +110,8 @@ func _criar_interface():
 		painel_pausa.visible = false
 		get_tree().paused = false
 		await TimelineManager.parar_tudo()
+		if has_node("/root/MusicManager"):
+			get_node("/root/MusicManager").stop_music(1.0)
 		FadeManager.carregar_cena("res://title_screen.tscn")
 	, Color("#FF8C00"))
 	_criar_botao(vbox, "SAIR PARA O DESKTOP", func(): get_tree().quit(), Color("#FF2222"))

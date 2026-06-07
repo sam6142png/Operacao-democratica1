@@ -1,6 +1,6 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Rua de noite.png" fade="0.6" transition="Simple Fade"]
 join PROTA (De fininho) rightmost [animation="Slide From Right" wait="true"]
-PROTA (De fininho): A escola de Usina Velha... olha quanta propaganda do regime nos muros.
+PROTA (De fininho): A escola onde estudei... os murais históricos foram cobertos por cartazes de culto ao Coronel Antônio.
 join ATENA (Neutro) left [animation="Slide From Left" wait="true"]
 ATENA (Falando): Transformaram as salas em curral, Dante. Bora entrar antes da próxima patrulha.
 PROTA: Ali, a porta da cantina tá encostada. Bora.
@@ -12,7 +12,7 @@ join PROTA (Neutro) leftmost [animation="Slide From Left" wait="true"]
 join ATENA (Neutro) left [animation="Slide From Left" wait="true"]
 PROFESSOR (Falando): Dante? Atena? Vocês são doido?! Se a patrulha pegar vocês aqui, vão direto pro xilindró!
 PROTA (Falando): Professor, a gente sabe da "Operação Frequência". Eles tão enfiando mensagem de controle nas salas!
-PROFESSOR (Neutro): Sim... Instalaram caixa de som nova e reescreveram os livros de história. Se eu abrir a boca, sou preso no mesmo dia.
+PROFESSOR (Neutro): Sim... Substituíram a constituição por diretrizes de obediência cega. Quem falar em liberdade é denunciado por insubordinação cívica.
 PROTA (Determinado): E se a gente interceptar os alto-falantes? Enfiar o sinal da rádio livre na caixa de junção deles!
 PROFESSOR (Falando): A caixa de controle fica no armário dos fundos. Mas é cheia de fusível — um erro e o alarme dispara.
 ATENA (Falando): A gente sabe lidar com fiação. Professor, abre pra nós. É nossa chance.

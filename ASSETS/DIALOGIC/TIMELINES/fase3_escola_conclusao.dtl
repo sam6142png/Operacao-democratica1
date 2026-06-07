@@ -4,11 +4,11 @@ join ATENA (Neutro) left [animation="Fade In" length="0.4" wait="true"]
 join PROFESSOR (Rindo) rightmost [animation="Slide From Right" length="0.5" wait="true"]
 PROFESSOR: Deu certo! O sinal da rádio livre tá entrando nos alto-falante!
 update PROFESSOR (Falando)
-ATENA (Falando): Isso! Agora eles tão ouvindo a história real de Usina Velha, não a cartilha do regime.
-PROFESSOR (Falando): Mas isso vai atrair a repressão. Quando os hómi descobrirem, vão fechar o cerco. O que a gente faz?
+ATENA (Falando): Conseguimos! O jingle da [color=#54d6ff]Rádio Livre[/color] cortou a propaganda. Agora a [color=#ff5c5c]verdade sobre o golpe[/color] e as [color=#ff5c5c]eleições suspensas[/color] ecoa nos pátios!
+PROFESSOR (Falando): Mas isso vai atrair a [color=#ff5c5c]repressão[/color]. Quando os hómi descobrirem, vão fechar o cerco. O que a gente faz?
 - Expor a manipulação abertamente
 	[signal arg="escolha_escola_expor"]
-	PROTA: Bora meter mural e panfleto nas sala, confrontar as mentira nos livro de História.
+	PROTA: Bora meter mural e panfleto nas sala, [color=#62ff86]confrontar as mentira nos livro de História[/color].
 	ATENA (Falando): É arriscado, mas vai inflamar o espírito deles. A juventude precisa ver a prova.
 	PROFESSOR (Falando): Eu ajudo a distribuir. Se é pra cair, que seja lutando pela verdade.
 - Agir de forma discreta
@@ -18,14 +18,14 @@ PROFESSOR (Falando): Mas isso vai atrair a repressão. Quando os hómi descobrir
 	PROFESSOR (Falando): Sensato, Dante. Vou colocar nos armário do terceiro ano.
 - Mobilizar protesto silencioso
 	[signal arg="escolha_escola_mobilizar"]
-	PROTA: Bora falar com o grêmio. Se os aluno se recusarem a assistir aula doutrinária, a escola inteira trava.
-	ATENA (Falando): Resistência pacífica. O regime num sabe lidar com quem cruza os braço organizado.
+	PROTA: Bora falar com o grêmio. Se os aluno se recusarem a assistir [color=#ff5c5c]aula doutrinária[/color], a escola inteira trava.
+	ATENA (Falando): [color=#62ff86]Resistência pacífica[/color]. O regime num sabe lidar com quem cruza os braço organizado.
 	PROFESSOR (Falando): Vou falar com os representante de classe. Eles têm coragem pra liderar isso.
 update PROTA (Determinado)
 update ATENA (Neutro)
 update PROFESSOR (Neutro)
 [wait time="0.3"]
-PROTA: A semente tá plantada. O controle mental deles começou a quebrar.
+PROTA: O [color=#ff5c5c]monopólio da informação[/color] deles quebrou. A escola voltou a ser um espaço de questionamento, [color=#54d6ff]liberdade e cidadania[/color].
 ATENA: Rádio, vila, escola... O povo de Usina Velha tá acordando, Dante.
 PROTA (Determinado): Então é a hora. A Praça do Palácio é o próximo passo. É lá que a gente dá o golpe final nesse regime.
 leave ATENA [animation="Slide To Left" length="0.5"]

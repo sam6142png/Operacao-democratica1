@@ -10,8 +10,10 @@ const VILAO_RAIVA_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/raiva s
 const VILAO_ASSUSTADO_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/assustado sem fundo.png")
 const VILAO_RINDO_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/rindo com um tim meio irônico sem fundo.png")
 const CLICK_SOUND = preload("res://ASSETS/SOUNDS/FSX/BotoesClick.mp3")
+const HOVER_SOUND = preload("res://ASSETS/SOUNDS/FSX/BotoesHover.mp3")
 const HIT_SOUND = preload("res://ASSETS/SOUNDS/FSX/Impacto/impacto_radio_militar.mp3")
 const STINGER_SOUND = preload("res://ASSETS/SOUNDS/FSX/Tensao/stinger_tensao.mp3")
+const HEARTBEAT_ANX = preload("res://ASSETS/SOUNDS/FSX/Tensao/heartbeat_ansiedade.mp3")
 
 const MAX_INFLUENCE: int = 100
 const QTE_TIME: float = 6.0
@@ -119,6 +121,10 @@ var estabilidade_emocional: float = 100.0
 var panic_active: bool = false
 var selected_manipulation: String = ""
 var selected_proof: String = ""
+var golpe_emocional_concluido: bool = false
+var ekg_peak_pos: float = 1.0
+var peak_hit_in_this_cycle: bool = false
+var selected_evidence_id: String = ""
 
 # Variáveis do QTE de Respiração (Heartbeat QTE)
 var qte_pulse_pos: float = 0.0
@@ -140,7 +146,7 @@ var popular_bar: ProgressBar
 var estabilidade_bar: ProgressBar
 
 var lbl_step: Label
-var lbl_vilao: Label
+var lbl_vilao: RichTextLabel
 var lbl_dante: Label
 var lbl_reacao: Label
 var choices_box: VBoxContainer
@@ -151,9 +157,20 @@ var dante_sprite: TextureRect
 var vilao_sprite: TextureRect
 var lbl_feedback: Label
 
+# Audio & Camera Director State
 var sfx_click: AudioStreamPlayer
+var sfx_hover: AudioStreamPlayer
 var sfx_hit: AudioStreamPlayer
 var sfx_stinger: AudioStreamPlayer
+var heartbeat_player: AudioStreamPlayer
+
+var talk_timer: float = 0.0
+var is_dante_talking: bool = false
+var is_vilao_talking: bool = false
+var camera_zoom: float = 1.0
+var camera_offset: Vector2 = Vector2.ZERO
+var ekg_bpm: float = 75.0
+var overlay_vignette: ColorRect
 
 
 func _ready() -> void:
@@ -168,26 +185,47 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	glitch_phase += delta
 	
-	# Sistema de Shake proporcional a shake_intensity
-	if shake_time > 0.0:
-		shake_time = max(0.0, shake_time - delta)
-		var shake_offset = Vector2(randf_range(-shake_intensity, shake_intensity), randf_range(-shake_intensity, shake_intensity))
-		main_panel.position = shake_offset
-		if dante_sprite:
-			dante_sprite.offset_left = 34 + shake_offset.x * 0.4
-			dante_sprite.offset_right = 395 + shake_offset.x * 0.4
-		if vilao_sprite:
-			vilao_sprite.offset_left = -410 + shake_offset.x * 0.7
-			vilao_sprite.offset_right = -34 + shake_offset.x * 0.7
-	else:
-		if main_panel:
-			main_panel.position = Vector2(310, 34)
-		if dante_sprite:
-			dante_sprite.offset_left = 34
-			dante_sprite.offset_right = 395
-		if vilao_sprite:
-			vilao_sprite.offset_left = -410
-			vilao_sprite.offset_right = -34
+	# Interpolação suave do Zoom e Deslocamento da Câmera
+	camera_zoom = lerpf(camera_zoom, 1.0, delta * 3.0)
+	camera_offset = camera_offset.lerp(Vector2.ZERO, delta * 3.0)
+	
+	# Animação labial dos retratos
+	if is_dante_talking or is_vilao_talking:
+		talk_timer += delta * 12.0
+		var mouth_open = int(talk_timer) % 2 == 0
+		if is_dante_talking:
+			dante_sprite.texture = DANTE_FALA_TEX if mouth_open else DANTE_TEX
+		if is_vilao_talking:
+			var base_vilao = VILAO_TEX
+			if act_index == 1:
+				base_vilao = VILAO_RINDO_TEX
+			elif act_index == 2:
+				base_vilao = VILAO_RAIVA_TEX
+			elif act_index == 3:
+				base_vilao = VILAO_RINDO_TEX
+			vilao_sprite.texture = VILAO_RINDO_TEX if mouth_open else base_vilao
+
+	# Sistema de Shake e Diretor de Câmera
+	if main_panel:
+		var base_pos = Vector2(310, 34)
+		var final_pos = base_pos + camera_offset
+		if shake_time > 0.0:
+			shake_time = max(0.0, shake_time - delta)
+			var shake_offset = Vector2(randf_range(-shake_intensity, shake_intensity), randf_range(-shake_intensity, shake_intensity))
+			final_pos += shake_offset
+		main_panel.position = final_pos
+		main_panel.scale = main_panel.scale.lerp(Vector2.ONE * camera_zoom, delta * 6.0)
+		main_panel.pivot_offset = main_panel.size / 2.0
+
+	# Escalonamento dos retratos para acompanhar o Zoom
+	if dante_sprite:
+		var target_scale = Vector2.ONE * (1.0 + (camera_zoom - 1.0) * 0.45)
+		dante_sprite.scale = dante_sprite.scale.lerp(target_scale, delta * 6.0)
+		dante_sprite.pivot_offset = Vector2(dante_sprite.size.x / 2.0, dante_sprite.size.y)
+	if vilao_sprite:
+		var target_scale = Vector2.ONE * (1.0 + (camera_zoom - 1.0) * 0.45)
+		vilao_sprite.scale = vilao_sprite.scale.lerp(target_scale, delta * 6.0)
+		vilao_sprite.pivot_offset = Vector2(vilao_sprite.size.x / 2.0, vilao_sprite.size.y)
 
 	# Tremor do pânico emocional
 	if panic_active:
@@ -196,16 +234,50 @@ func _process(delta: float) -> void:
 		if lbl_dante:
 			lbl_dante.position = Vector2(randf_range(-3.0, 3.0), randf_range(-2.0, 2.0))
 			
-	# Atualiza o QTE de respiração
+	# Atualiza o QTE de respiração (EKG Deslizante)
 	if step == "heartbeat_qte":
-		qte_pulse_pos += delta * 1.8 # Velocidade do batimento cardíaco
-		if qte_pulse_pos > 1.0:
-			qte_pulse_pos = 0.0 # Missed beat
-			estabilidade_emocional = max(0.0, estabilidade_emocional - 10.0)
-			_shake(8.0, 0.25)
+		if heartbeat_player and not heartbeat_player.playing:
+			heartbeat_player.play()
+		if heartbeat_player:
+			var target_pitch = 1.0 + (1.0 - (estabilidade_emocional / 100.0)) * 0.45
+			heartbeat_player.pitch_scale = lerpf(heartbeat_player.pitch_scale, target_pitch, delta * 2.0)
+			var target_vol = -15.0 + (1.0 - (estabilidade_emocional / 100.0)) * 12.0
+			heartbeat_player.volume_db = lerpf(heartbeat_player.volume_db, target_vol, delta * 2.0)
+
+		# Dificuldade do batimento cardíaco (aceleração do QTE com base na perda de estabilidade)
+		var qte_speed = 1.0 + (1.0 - (estabilidade_emocional / 100.0)) * 0.8
+		ekg_peak_pos -= delta * qte_speed
+		
+		# Verifica se a onda passou da janela de acerto sem ser acertada
+		var janela = _obter_janela_qte()
+		if ekg_peak_pos < (janela[0] - 0.02) and not peak_hit_in_this_cycle:
+			# Miss automático por deixar passar!
+			peak_hit_in_this_cycle = true
+			qte_successes = 0
+			estabilidade_emocional = max(0.0, estabilidade_emocional - 12.0)
+			_play(sfx_stinger, 1.0)
+			_shake(12.0, 0.3)
+			_screen_flash(Color(1, 0.2, 0.2, 0.2), 0.3)
+			
+			qte_ripple_radius = 5.0
+			qte_ripple_alpha = 1.0
+			var tw_rip = create_tween()
+			tw_rip.set_parallel(true)
+			tw_rip.tween_property(self, "qte_ripple_radius", 180.0, 0.4).set_ease(Tween.EASE_OUT)
+			tw_rip.tween_property(self, "qte_ripple_alpha", 0.0, 0.4)
 			_atualizar_barras()
+			
+		if ekg_peak_pos < 0.0:
+			ekg_peak_pos = 1.0
+			peak_hit_in_this_cycle = false
+			
 		if qte_draw_control:
 			qte_draw_control.queue_redraw()
+	else:
+		if heartbeat_player and heartbeat_player.playing:
+			heartbeat_player.volume_db = lerpf(heartbeat_player.volume_db, -40.0, delta * 4.0)
+			if heartbeat_player.volume_db <= -38.0:
+				heartbeat_player.stop()
 
 	if fx_layer:
 		fx_layer.queue_redraw()
@@ -217,10 +289,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 	# Tecla ESPAÇO no tempo do EKG
 	if event.is_action_pressed("ui_accept"):
-		# Alvo central do EKG: t entre 0.45 e 0.58
-		if qte_pulse_pos >= 0.45 and qte_pulse_pos <= 0.58:
+		var janela = _obter_janela_qte()
+		if ekg_peak_pos >= janela[0] and ekg_peak_pos <= janela[1] and not peak_hit_in_this_cycle:
 			qte_successes += 1
-			qte_pulse_pos = 0.0 # Reinicia para o próximo batimento
+			peak_hit_in_this_cycle = true
 			_play(sfx_click, 1.25)
 			
 			# Ripple de sucesso verde
@@ -231,13 +303,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			tw_rip.tween_property(self, "qte_ripple_radius", 220.0, 0.45).set_ease(Tween.EASE_OUT)
 			tw_rip.tween_property(self, "qte_ripple_alpha", 0.0, 0.45)
 			
+			# Avança o pico levemente para que passe da janela de acerto
+			ekg_peak_pos = janela[0] - 0.05
+			
 			if qte_successes >= 3:
 				_sucesso_heartbeat()
 		else:
+			# Miss/Double hit/Errado
 			qte_successes = 0 # Reinicia o combo se errar
+			peak_hit_in_this_cycle = true # Impede miss automático redundante neste ciclo
 			estabilidade_emocional = max(0.0, estabilidade_emocional - 15.0)
 			_play(sfx_stinger, 1.0)
 			_shake(15.0, 0.35)
+			_screen_flash(Color(1, 0.2, 0.2, 0.25), 0.35)
 			
 			# Ripple de erro vermelho
 			qte_ripple_radius = 5.0
@@ -247,14 +325,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			tw_rip.tween_property(self, "qte_ripple_radius", 220.0, 0.45).set_ease(Tween.EASE_OUT)
 			tw_rip.tween_property(self, "qte_ripple_alpha", 0.0, 0.45)
 			
-			qte_pulse_pos = 0.0
+			# Se errou, acelera o pico para sair da janela
+			if ekg_peak_pos > janela[0]:
+				ekg_peak_pos = janela[0] - 0.05
+				
 			_atualizar_barras()
 
 
 func _configurar_audio() -> void:
 	sfx_click = _audio(CLICK_SOUND)
+	sfx_hover = _audio(HOVER_SOUND)
 	sfx_hit = _audio(HIT_SOUND)
 	sfx_stinger = _audio(STINGER_SOUND)
+	heartbeat_player = _audio(HEARTBEAT_ANX)
 
 
 func _audio(stream: AudioStream) -> AudioStreamPlayer:
@@ -400,10 +483,13 @@ func _montar_ui() -> void:
 	root.add_child(broadcast)
 	var bm := _margin(16)
 	broadcast.add_child(bm)
-	lbl_vilao = _label("", 26, Color("#fff4d6"), FONTE)
-	lbl_vilao.autowrap_mode = TextServer.AUTOWRAP_WORD
-	lbl_vilao.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_vilao.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl_vilao = RichTextLabel.new()
+	lbl_vilao.bbcode_enabled = true
+	lbl_vilao.custom_minimum_size = Vector2(0, 100)
+	lbl_vilao.add_theme_font_override("normal_font", FONTE)
+	lbl_vilao.add_theme_font_size_override("normal_font_size", 24)
+	lbl_vilao.add_theme_color_override("default_color", Color("#fff4d6"))
+	lbl_vilao.scroll_active = false
 	bm.add_child(lbl_vilao)
 
 	lbl_dante = _label("", 20, Color("#54d6ff"), FONTE)
@@ -557,6 +643,7 @@ func _tutorial_card(number: String, title_text: String, body_text: String, color
 
 func _iniciar_ato() -> void:
 	_limpar(final_box)
+	_limpar(choices_box)
 	qte_panel.visible = false
 	
 	if popular >= MAX_INFLUENCE or regime >= MAX_INFLUENCE or act_index >= ACTS.size():
@@ -564,101 +651,297 @@ func _iniciar_ato() -> void:
 		return
 
 	# Checa se é o momento do Golpe Emocional (Morte dos pais no Ato 4, índice 3)
-	if act_index == 3 and step == "debate":
+	if act_index == 3 and not golpe_emocional_concluido:
 		_iniciar_golpe_emocional()
 		return
 
-	step = "manipulacao"
+	step = "debate"
 	act_score = 0
-	selected_manipulation = ""
-	selected_proof = ""
+	selected_evidence_id = ""
 	
 	var act: Dictionary = ACTS[act_index] as Dictionary
-	lbl_step.text = "DEBATE CIVICO - ATO " + str(act_index + 1) + "/" + str(ACTS.size())
-	lbl_vilao.text = "\"" + str(act["fala"]) + "\""
-	lbl_dante.text = "Exponha a falácia retórica do Coronel na transmissão ao vivo."
-	lbl_reacao.text = "A multidão lá fora assiste com atenção."
+	lbl_step.text = "TRIBUNAL DA VERDADE - ATO " + str(act_index + 1) + "/" + str(ACTS.size())
+	
+	# O Vilão começa falando no debate
+	is_vilao_talking = true
+	is_dante_talking = false
+	camera_zoom = 1.05
+	camera_offset = Vector2(50.0, 0.0)
+	_definir_fala_vilao(str(act["fala"]))
+	
+	lbl_dante.text = "Abra o Dossiê de Evidências para encontrar a prova cívica contra o Coronel."
+	lbl_reacao.text = "A multidão lá fora assiste à transmissão com atenção."
 	
 	dante_sprite.texture = DANTE_TEX
 	vilao_sprite.texture = VILAO_TEX
 	_atualizar_barras()
-	_mostrar_manipulacoes(act)
+	_mostrar_opcoes_debate()
 	_vilao_bounce()
 
 
-func _mostrar_manipulacoes(act: Dictionary) -> void:
+func _mostrar_opcoes_debate() -> void:
 	_limpar(choices_box)
-	for item_data in act["manipulacoes"]:
-		var item: Dictionary = item_data as Dictionary
-		var id: String = str(item["id"])
-		choices_box.add_child(_choice_panel(str(item["nome"]), str(item["texto"]), Color("#ff8066"), func(): _selecionar_manipulacao(id)))
-
-
-func _selecionar_manipulacao(id: String) -> void:
-	_play(sfx_click, 1.0)
-	_dante_bounce()
-	selected_manipulation = id
-	var act: Dictionary = ACTS[act_index] as Dictionary
 	
-	if id == str(act["manipulacao"]):
-		act_score += 1
-		lbl_dante.text = "Você desmascarou o truque dele. Apresente os fatos para provar."
-	else:
-		var penalty = 15.0 if not panic_active else 25.0
-		estabilidade_emocional = max(0.0, estabilidade_emocional - penalty)
-		regime = mini(MAX_INFLUENCE, regime + 8)
-		lbl_dante.text = "Sua retórica falhou. O Coronel Antônio dobra a mentira e abala seu foco."
-		_shake(9.0, 0.3)
+	var btn_dossie := Button.new()
+	btn_dossie.text = " ▸ ABRIR DOSSIÊ DE EVIDÊNCIAS "
+	btn_dossie.custom_minimum_size = Vector2(0, 52)
+	btn_dossie.add_theme_font_override("font", FONTE)
+	btn_dossie.add_theme_font_size_override("font_size", 20)
+	btn_dossie.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	
+	var sb_n = _stylebox(Color("#142238", 0.94), Color("#54d6ff"), 2, 6)
+	var sb_h = _stylebox(Color("#1d3152", 0.98), Color("#54d6ff"), 3, 6)
+	btn_dossie.add_theme_stylebox_override("normal", sb_n)
+	btn_dossie.add_theme_stylebox_override("hover", sb_h)
+	btn_dossie.add_theme_stylebox_override("pressed", sb_h)
+	
+	btn_dossie.mouse_entered.connect(func():
+		if sfx_hover: sfx_hover.play()
+	)
+	btn_dossie.pressed.connect(_on_abrir_dossie_pressed)
+	choices_box.add_child(btn_dossie)
+
+
+func _on_abrir_dossie_pressed() -> void:
+	_play(sfx_click, 1.0)
+	_abrir_dossie()
+
+
+func _abrir_dossie() -> void:
+	selected_evidence_id = ""
+	
+	var overlay = CanvasLayer.new()
+	overlay.layer = 97
+	add_child(overlay)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0, 0, 0, 0.8)
+	bg.set_anchors_preset(PRESET_FULL_RECT)
+	overlay.add_child(bg)
+	
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(960, 620)
+	panel.set_anchors_preset(PRESET_CENTER)
+	panel.grow_horizontal = GROW_DIRECTION_BOTH
+	panel.grow_vertical = GROW_DIRECTION_BOTH
+	
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color(0.08, 0.06, 0.12, 0.99)
+	sb.border_width_left = 3; sb.border_width_top = 3
+	sb.border_width_right = 3; sb.border_width_bottom = 3
+	sb.border_color = Color("#54d6ff")
+	sb.corner_radius_top_left = 12; sb.corner_radius_top_right = 12
+	sb.corner_radius_bottom_left = 12; sb.corner_radius_bottom_right = 12
+	sb.shadow_size = 22
+	sb.shadow_color = Color("#54d6ff", 0.16)
+	panel.add_theme_stylebox_override("panel", sb)
+	bg.add_child(panel)
+	
+	var margin = _margin(20)
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	margin.add_child(vbox)
+	
+	var title = Label.new()
+	title.text = "DOSSIÊ DE EVIDÊNCIAS COLETADAS"
+	title.add_theme_font_override("font", FONTE)
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", Color("#ffe28a"))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+	
+	vbox.add_child(_divisor())
+	
+	var pages_hbox = HBoxContainer.new()
+	pages_hbox.size_flags_vertical = SIZE_EXPAND_FILL
+	pages_hbox.add_theme_constant_override("separation", 20)
+	vbox.add_child(pages_hbox)
+	
+	# Página Esquerda: Lista de Evidências
+	var left_page = VBoxContainer.new()
+	left_page.size_flags_horizontal = SIZE_EXPAND_FILL
+	left_page.add_theme_constant_override("separation", 8)
+	pages_hbox.add_child(left_page)
+	
+	var left_hdr = _label("PROVAS FÍSICAS E DEPOIMENTOS", 12, Color("#a2a8b3"), FONTE_MONO)
+	left_page.add_child(left_hdr)
+	
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	left_page.add_child(scroll)
+	
+	var list_vbox = VBoxContainer.new()
+	list_vbox.add_theme_constant_override("separation", 8)
+	list_vbox.size_flags_horizontal = SIZE_EXPAND_FILL
+	scroll.add_child(list_vbox)
+	
+	# Divisor Central
+	var spine = ColorRect.new()
+	spine.custom_minimum_size = Vector2(2, 0)
+	spine.color = Color("#54d6ff", 0.2)
+	pages_hbox.add_child(spine)
+	
+	# Página Direita: Detalhes da Prova e Ação
+	var right_page = PanelContainer.new()
+	right_page.size_flags_horizontal = SIZE_EXPAND_FILL
+	var sb_right = StyleBoxFlat.new()
+	sb_right.bg_color = Color(0.12, 0.1, 0.16, 0.6)
+	sb_right.corner_radius_top_left = 6; sb_right.corner_radius_top_right = 6
+	sb_right.corner_radius_bottom_left = 6; sb_right.corner_radius_bottom_right = 6
+	sb_right.content_margin_left = 16; sb_right.content_margin_right = 16
+	sb_right.content_margin_top = 16; sb_right.content_margin_bottom = 16
+	right_page.add_theme_stylebox_override("panel", sb_right)
+	pages_hbox.add_child(right_page)
+	
+	var detail_vbox = VBoxContainer.new()
+	detail_vbox.add_theme_constant_override("separation", 12)
+	right_page.add_child(detail_vbox)
+	
+	var lbl_detail_title = _label("SELECIONE UMA PROVA", 18, Color("#ffe28a"), FONTE_MONO)
+	detail_vbox.add_child(lbl_detail_title)
+	
+	var lbl_detail_tag = _label("", 14, Color("#54d6ff"), FONTE_MONO)
+	detail_vbox.add_child(lbl_detail_tag)
+	
+	var lbl_detail_desc = RichTextLabel.new()
+	lbl_detail_desc.bbcode_enabled = true
+	lbl_detail_desc.size_flags_vertical = SIZE_EXPAND_FILL
+	lbl_detail_desc.add_theme_font_override("normal_font", FONTE)
+	lbl_detail_desc.add_theme_font_size_override("normal_font_size", 16)
+	lbl_detail_desc.add_theme_color_override("default_color", Color("#ede6d8"))
+	detail_vbox.add_child(lbl_detail_desc)
+	lbl_detail_desc.text = "Selecione uma evidência da lista à esquerda para analisar seus detalhes e apresentá-la para refutar a alegação do Coronel Antônio."
+	
+	# Botões de Ação na base da página direita
+	var action_hbox = HBoxContainer.new()
+	action_hbox.add_theme_constant_override("separation", 10)
+	detail_vbox.add_child(action_hbox)
+	
+	var btn_present = Button.new()
+	btn_present.text = "APRESENTAR EVIDÊNCIA!"
+	btn_present.custom_minimum_size = Vector2(200, 42)
+	btn_present.size_flags_horizontal = SIZE_EXPAND_FILL
+	btn_present.add_theme_font_override("font", FONTE)
+	btn_present.add_theme_font_size_override("font_size", 18)
+	btn_present.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	btn_present.disabled = true
+	
+	var sb_pres_n = StyleBoxFlat.new()
+	sb_pres_n.bg_color = Color(0.1, 0.45, 0.2, 0.9)
+	sb_pres_n.corner_radius_top_left = 6; sb_pres_n.corner_radius_top_right = 6
+	sb_pres_n.corner_radius_bottom_left = 6; sb_pres_n.corner_radius_bottom_right = 6
+	btn_present.add_theme_stylebox_override("normal", sb_pres_n)
+	action_hbox.add_child(btn_present)
+	
+	# Dados das Provas
+	var provas_dossie = [
+		{
+			"id": "livro",
+			"nome": "Livro de Direitos Civis (Fase 1)",
+			"tag": "[LEGISLAÇÃO / DIREITOS]",
+			"desc": "A constituição histórica e livro de direitos civis recuperado da biblioteca. Prova que em Usina Velha a soberania pertence ao povo, as liberdades de expressão e reunião são invioláveis, e o voto direto é garantido por lei.",
+			"cor": "#ffe28a"
+		},
+		{
+			"id": "radio",
+			"nome": "Gravação da Rádio (Fase 2)",
+			"tag": "[MÍDIA / CENSURA]",
+			"desc": "Fita cassete contendo a transmissão militar de rádio oficial interceptada. Mostra ordens explícitas do Coronel Antônio para censurar notícias regionais, ocultar abusos de poder e propagar falsas narrativas de estabilidade.",
+			"cor": "#ff8066"
+		},
+		{
+			"id": "escola",
+			"nome": "Jornal Clandestino (Fase 3)",
+			"tag": "[DEPOIMENTOS / ESCOLA]",
+			"desc": "A edição impressa do jornal estudantil de oposição. Contém relatos detalhados de alunos e professores documentando a repressão diária, ameaças e as tentativas do regime de substituir o ensino livre por obediência cega.",
+			"cor": "#54d6ff"
+		},
+		{
+			"id": "praca",
+			"nome": "Manifesto da Praça (Fase 2)",
+			"tag": "[DEMOCRACIA / SOBERANIA]",
+			"desc": "O manifesto assinado em conjunto pelos cidadãos de Usina Velha na Praça Central. Demonstra o desejo do povo pela participação cívica pacífica, eleições livres e o fim imediato do autoritarismo.",
+			"cor": "#7bd88f"
+		}
+	]
+	
+	var update_evidence_details = func(idx: int):
+		var prv = provas_dossie[idx]
+		selected_evidence_id = prv["id"]
+		lbl_detail_title.text = prv["nome"].to_upper()
+		lbl_detail_title.add_theme_color_override("font_color", Color(prv["cor"]))
+		lbl_detail_tag.text = prv["tag"]
+		lbl_detail_tag.add_theme_color_override("font_color", Color(prv["cor"]).lightened(0.2))
+		lbl_detail_desc.text = prv["desc"]
+		btn_present.disabled = false
+		_play(sfx_click, 1.1)
+
+	for i in range(provas_dossie.size()):
+		var prv = provas_dossie[i]
+		var btn_prv := Button.new()
+		btn_prv.text = " ▣  " + prv["nome"]
+		btn_prv.custom_minimum_size = Vector2(0, 44)
+		btn_prv.size_flags_horizontal = SIZE_EXPAND_FILL
+		btn_prv.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn_prv.add_theme_font_override("font", FONTE)
+		btn_prv.add_theme_font_size_override("font_size", 16)
+		btn_prv.mouse_default_cursor_shape = CURSOR_POINTING_HAND
 		
-	step = "prova"
-	_atualizar_barras()
-	_mostrar_provas(act)
-
-
-func _mostrar_provas(act: Dictionary) -> void:
-	_limpar(choices_box)
-	for proof_id_data in act["provas"]:
-		var proof_id: String = str(proof_id_data)
-		var proof: Dictionary = PROOFS[proof_id] as Dictionary
-		choices_box.add_child(_choice_panel(str(proof["nome"]), str(proof["texto"]), Color("#54d6ff"), func(): _selecionar_prova(proof_id)))
-
-
-func _selecionar_prova(id: String) -> void:
-	_play(sfx_click, 1.0)
-	_dante_bounce()
-	selected_proof = id
-	var act: Dictionary = ACTS[act_index] as Dictionary
+		var sb_item = StyleBoxFlat.new()
+		sb_item.bg_color = Color(0.12, 0.10, 0.18, 0.8)
+		sb_item.border_width_left = 3
+		sb_item.border_color = Color(prv["cor"])
+		btn_prv.add_theme_stylebox_override("normal", sb_item)
+		
+		var sb_item_h = StyleBoxFlat.new()
+		sb_item_h.bg_color = Color(0.18, 0.15, 0.25, 0.95)
+		sb_item_h.border_width_left = 4
+		sb_item_h.border_color = Color(prv["cor"])
+		btn_prv.add_theme_stylebox_override("hover", sb_item_h)
+		btn_prv.add_theme_stylebox_override("pressed", sb_item_h)
+		
+		btn_prv.mouse_entered.connect(func():
+			if sfx_hover: sfx_hover.play()
+		)
+		btn_prv.pressed.connect(update_evidence_details.bind(i))
+		list_vbox.add_child(btn_prv)
+		
+	# Botão de fechar (voltar ao debate)
+	var btn_close = Button.new()
+	btn_close.text = "FECHAR DOSSIÊ"
+	btn_close.custom_minimum_size = Vector2(160, 42)
+	btn_close.add_theme_font_override("font", FONTE)
+	btn_close.add_theme_font_size_override("font_size", 18)
+	btn_close.mouse_default_cursor_shape = CURSOR_POINTING_HAND
 	
+	var sb_close = StyleBoxFlat.new()
+	sb_close.bg_color = Color(0.35, 0.35, 0.35, 0.8)
+	sb_close.corner_radius_top_left = 6; sb_close.corner_radius_top_right = 6
+	sb_close.corner_radius_bottom_left = 6; sb_close.corner_radius_bottom_right = 6
+	btn_close.add_theme_stylebox_override("normal", sb_close)
+	action_hbox.add_child(btn_close)
+	
+	btn_close.pressed.connect(func():
+		_play(sfx_click, 1.0)
+		overlay.queue_free()
+	)
+	
+	btn_present.pressed.connect(func():
+		_play(sfx_click, 1.2)
+		overlay.queue_free()
+		_apresentar_evidencia(selected_evidence_id)
+	)
+
+
+func _apresentar_evidencia(id: String) -> void:
+	var act: Dictionary = ACTS[act_index] as Dictionary
 	if id == str(act["prova"]):
-		act_score += 1
-		lbl_dante.text = "Fatos estabelecidos. Sustente o argumento com o Princípio Democrático."
+		act_score = 3
 	else:
-		var penalty = 15.0 if not panic_active else 25.0
-		estabilidade_emocional = max(0.0, estabilidade_emocional - penalty)
-		regime = mini(MAX_INFLUENCE, regime + 8)
-		lbl_dante.text = "A prova foi fraca. O Coronel mantém a insolência."
-		_shake(8.0, 0.28)
-		
-	step = "principio"
-	_atualizar_barras()
-	_mostrar_principios(act)
-
-
-func _mostrar_principios(act: Dictionary) -> void:
-	_limpar(choices_box)
-	for principle_id_data in act["principios"]:
-		var principle_id: String = str(principle_id_data)
-		var principle: Dictionary = PRINCIPLES[principle_id] as Dictionary
-		choices_box.add_child(_choice_panel(str(principle["nome"]), str(principle["texto"]), Color("#7bd88f"), func(): _selecionar_principio(principle_id)))
-
-
-func _selecionar_principio(id: String) -> void:
-	_play(sfx_click, 1.0)
-	_dante_bounce()
-	var act: Dictionary = ACTS[act_index] as Dictionary
-	if id == str(act["principio"]):
-		act_score += 1
-		
+		act_score = 0
 	_resolver_ato()
 
 
@@ -677,50 +960,73 @@ func _resolver_ato() -> void:
 		vilao_sprite.texture = VILAO_RAIVA_TEX
 		lbl_dante.text = str(act["resposta"])
 		lbl_reacao.text = str(act["reacao"])
+		
+		is_dante_talking = true
+		is_vilao_talking = false
+		camera_zoom = 1.10
+		camera_offset = Vector2(-70.0, 0.0)
+		
 		_play(sfx_hit, 1.2)
 		_dante_atacar()
 		_vilao_damage() # Tremor forte e piscada vermelha pelo sucesso
-	elif act_score == 2:
-		popular = mini(MAX_INFLUENCE, popular + int(12 * mult))
-		regime = maxi(0, regime - 4)
-		lbl_dante.text = "Dante fez um bom argumento, mas sem fechar todas as brechas cívicas."
-		lbl_reacao.text = "A multidão lá fora está inquieta."
-		_shake(6.0, 0.2)
+		_instanciar_projetil_retorico("REFUTADO!", Color("#62ff86"))
+		_screen_flash(Color(1, 1, 1, 0.4), 0.4)
 	else:
 		popular = maxi(0, popular - 12)
 		regime = mini(MAX_INFLUENCE, regime + 16)
+		estabilidade_emocional = max(0.0, estabilidade_emocional - 20.0)
 		dante_sprite.texture = DANTE_TEX
 		vilao_sprite.texture = VILAO_RINDO_TEX
-		lbl_dante.text = "A lógica falhou inteiramente diante da força repressiva do Coronel."
-		lbl_reacao.text = "Um silêncio tenso toma as ruas."
-		_play(sfx_stinger, 1.0)
 		
-		# Flash azul/vermelho de erro no Dante
+		var falhas = [
+			"Você tenta sustentar suas ideias com jornais clandestinos que ninguém lê, Dante. A realidade da usina não liga para panfletos rasgados.",
+			"Essa fita gravada não muda nada. A transmissão da rádio é o que mantém a população calma e obediente. Quem controla o sinal controla a ordem.",
+			"Esse livro é apenas papel velho de um passado lento. As decisões eficientes de Usina Velha são tomadas com canetas e fuzis, não com páginas antigas.",
+			"Você e seu manifesto não passam de um punhado de rebeldes sem rumo. O progresso econômico exige silêncio, não discussões na praça."
+		]
+		lbl_dante.text = "Sua retórica falhou. O Coronel Antônio dobra a mentira e abala seu foco."
+		lbl_vilao.text = "[center]\"" + falhas[act_index] + "\"[/center]"
+		lbl_reacao.text = "Um silêncio tenso toma as ruas."
+		
+		is_dante_talking = false
+		is_vilao_talking = true
+		camera_zoom = 1.08
+		camera_offset = Vector2(70.0, 0.0)
+		
+		_play(sfx_stinger, 1.0)
+		_shake(12.0, 0.3)
+		_screen_flash(Color(1, 0.2, 0.2, 0.3), 0.4)
+		
+		# Flash vermelho no Dante
 		var tw = create_tween()
 		tw.set_parallel(true)
 		tw.tween_property(dante_sprite, "modulate", Color(5.0, 0.2, 0.2), 0.08)
 		tw.chain().tween_property(dante_sprite, "modulate", Color.WHITE, 0.15)
-		_shake(10.0, 0.3)
-
+		
 	_atualizar_barras()
 	await get_tree().create_timer(4.5).timeout
 	
+	is_dante_talking = false
+	is_vilao_talking = false
 	act_index += 1
 	_iniciar_ato()
 
 
-# ══════════════════════════════════════════════
-#  SISTEMA DE GOLPE EMOCIONAL (PARENTS TRUTH & QTE)
-# ══════════════════════════════════════════════
-
 func _iniciar_golpe_emocional() -> void:
 	step = "heartbeat_qte"
 	qte_successes = 0
-	qte_pulse_pos = 0.0
+	ekg_peak_pos = 1.0
+	peak_hit_in_this_cycle = false
 	
 	lbl_step.text = "GOLPE PSICOLOGICO - MANTER A CALMA!"
-	lbl_vilao.text = "Dante... seu pai era um tolo fraco. Ele preferiu ser um 'mártir' na antiga usina militar a colaborar com a minha paz civica. Eu mesmo ordenei que cortassem a energia dos reatores... com ele preso lá dentro."
-	lbl_dante.text = "Seus batimentos cardíacos estão acelerados! RESPIRE FUNDO. Pressione ESPAÇO no tempo exato do pulso (caixa alvo verde) para se recompor!"
+	
+	is_vilao_talking = true
+	is_dante_talking = false
+	camera_zoom = 1.08
+	camera_offset = Vector2(60.0, 0.0)
+	lbl_vilao.text = "[center]Dante... seu pai era um tolo fraco. Ele preferiu ser um 'mártir' na antiga usina militar a colaborar com a minha paz civica. Eu mesmo ordenei que cortassem a energia dos reatores... com ele preso lá dentro.[/center]"
+	
+	lbl_dante.text = "Seus batimentos cardíacos estão acelerados! RESPIRE FUNDO. Pressione ESPAÇO no tempo exato em que o pico da onda passar pelo retículo neon verde à esquerda!"
 	lbl_reacao.text = "A tensão sobe ao nível máximo no estúdio de transmissão!"
 	
 	vilao_sprite.texture = VILAO_RINDO_TEX
@@ -733,6 +1039,7 @@ func _iniciar_golpe_emocional() -> void:
 
 
 func _sucesso_heartbeat() -> void:
+	golpe_emocional_concluido = true
 	step = "debate"
 	qte_panel.visible = false
 	
@@ -743,66 +1050,115 @@ func _sucesso_heartbeat() -> void:
 	dante_sprite.texture = DANTE_FALA_TEX
 	vilao_sprite.texture = VILAO_ASSUSTADO_TEX
 	
-	lbl_dante.text = "Você se conteve com extrema clareza e altivez moral: 'Você os tirou de mim para tentar calar a cidade. Mas a verdade cívica sobre os seus crimes não morre em um reator. O povo de Usina Velha agora escuta ao vivo!'"
+	is_dante_talking = true
+	is_vilao_talking = false
+	camera_zoom = 1.10
+	camera_offset = Vector2(-75.0, 0.0)
+	
+	lbl_dante.text = "Você se conteve com extrema clareza e altivez moral: 'Você os tirou de mim para tentar calar a cidade. Mas a verdade cívica sobre os seus crimes não morre indevidamente em um reator. O povo de Usina Velha agora escuta ao vivo!'"
 	lbl_reacao.text = "A multidão ruge em aplausos ensurdecedores do lado de fora!"
 	
 	_play(sfx_hit, 1.25)
 	_shake(20.0, 0.5) # Efeito massivo de sucesso de impacto!
+	_screen_flash(Color(1, 1, 1, 0.5), 0.5)
+	_instanciar_projetil_retorico("VERDADE REVELADA!", Color("#62ff86"))
 	_atualizar_barras()
 	
 	await get_tree().create_timer(5.0).timeout
-	act_index += 1
+	
+	is_dante_talking = false
+	is_vilao_talking = false
+	# Do NOT increment act_index here! We want to play Act 4 now!
 	_iniciar_ato()
 
 
 func _desenhar_qte_heartbeat() -> void:
 	var size = qte_draw_control.size
 	
-	# Desenha ripples de acerto/erro
+	# 1. Desenhar a grade do osciloscópio CRT verde neon de fundo
+	var grid_color = Color(0, 0.45, 0.15, 0.08)
+	for x in range(0, int(size.x), 20):
+		qte_draw_control.draw_line(Vector2(x, 0), Vector2(x, size.y), grid_color, 1.0)
+	for y in range(0, int(size.y), 20):
+		qte_draw_control.draw_line(Vector2(0, y), Vector2(size.x, y), grid_color, 1.0)
+	
+	# Desenha ripples de acerto/erro centrados no retículo
 	if qte_ripple_alpha > 0.0:
-		var center_pt = Vector2(size.x * 0.51, size.y * 0.5)
+		var center_pt = Vector2(size.x * 0.25, size.y * 0.5)
 		var rip_color = Color("#00FF66", qte_ripple_alpha * 0.5) if qte_successes > 0 else Color("#ff3333", qte_ripple_alpha * 0.5)
 		qte_draw_control.draw_circle(center_pt, qte_ripple_radius, Color(rip_color, 0.08), true)
 		qte_draw_control.draw_circle(center_pt, qte_ripple_radius, rip_color, false, 3.5)
 		qte_draw_control.draw_circle(center_pt, qte_ripple_radius * 0.6, Color(rip_color, qte_ripple_alpha * 0.2), false, 1.5)
 
-	# Desenha a caixa alvo no centro
-	var target_color = Color(0, 1.0, 0.4, 0.15)
+	# Desenha a caixa alvo ao redor do retículo
+	var janela = _obter_janela_qte()
+	var target_x = janela[0] * size.x
+	var target_w = (janela[1] - janela[0]) * size.x
+	
+	var target_color = Color(0, 1.0, 0.4, 0.12)
 	if int(Time.get_ticks_msec() / 200) % 2 == 0:
-		target_color = Color(0, 1.0, 0.4, 0.3)
-	qte_draw_control.draw_rect(Rect2(size.x * 0.45, 0, size.x * 0.13, size.y), target_color, true)
-	qte_draw_control.draw_rect(Rect2(size.x * 0.45, 0, size.x * 0.13, size.y), Color("#00FF66", 0.6), false, 2.0)
+		target_color = Color(0, 1.0, 0.4, 0.25)
+	qte_draw_control.draw_rect(Rect2(target_x, 0, target_w, size.y), target_color, true)
+	qte_draw_control.draw_rect(Rect2(target_x, 0, target_w, size.y), Color("#00FF66", 0.5), false, 2.0)
+	
+	# Linha do retículo alvo (vertical verde neon brilhante)
+	qte_draw_control.draw_line(Vector2(size.x * 0.25, 0), Vector2(size.x * 0.25, size.y), Color("#00FF66", 0.8), 2.0)
 	
 	# Linha horizontal central
 	qte_draw_control.draw_line(Vector2(0, size.y / 2), Vector2(size.x, size.y / 2), Color(0, 0.6, 0.2, 0.35), 2.0)
 	
 	# Desenha a onda EKG de batimento cardíaco verde fluorescente dinâmica
 	var points = PackedVector2Array()
-	var steps = 80
+	var steps = 120
 	for i in range(steps):
 		var t = float(i) / (steps - 1)
 		var x = t * size.x
 		var y = size.y / 2.0
 		
-		# O Spike fica fixo no centro do alvo (t=0.51) para o jogador alinhar visualmente
-		var dist_to_center = abs(t - 0.51)
-		if dist_to_center < 0.06:
-			y -= sin((t - 0.45) * PI / 0.12) * size.y * 0.42
+		# CRT noise grain
+		y += randf_range(-0.6, 0.6)
+		
+		var dist_to_peak = t - ekg_peak_pos
+		if abs(dist_to_peak) < 0.08:
+			var amp_factor = 0.4 + (1.0 - (estabilidade_emocional / 100.0)) * 0.2
+			if dist_to_peak < -0.04:
+				var local_t = (dist_to_peak + 0.08) / 0.04
+				y += sin(local_t * PI) * size.y * 0.08
+			elif dist_to_peak < 0.04:
+				var local_t = (dist_to_peak + 0.04) / 0.08
+				y -= sin(local_t * PI) * size.y * amp_factor
+			else:
+				var local_t = (dist_to_peak - 0.04) / 0.04
+				y += sin(local_t * PI) * size.y * 0.08
+				
 		points.append(Vector2(x, y))
 		
 	for i in range(points.size() - 1):
-		# Efeito Neon duplo
 		qte_draw_control.draw_line(points[i], points[i+1], Color("#00FF66", 0.18), 6.0)
 		qte_draw_control.draw_line(points[i], points[i+1], Color("#00FF66", 0.8), 2.5)
 		qte_draw_control.draw_line(points[i], points[i+1], Color.WHITE, 1.0)
 		
-	# Linha do cursor vermelho móvel
-	var cursor_x = qte_pulse_pos * size.x
-	qte_draw_control.draw_line(Vector2(cursor_x, 0), Vector2(cursor_x, size.y), Color("#ff3333", 0.8), 3.0)
+	# Indicador de acertos e BPM
+	ekg_bpm = lerpf(ekg_bpm, 72.0 + (100.0 - estabilidade_emocional) * 1.1 + randf_range(-2, 2), 0.1)
+	var success_txt = "COMPOSURA: " + str(qte_successes) + "/3 BATIMENTOS ESTAVEIS"
+	var bpm_txt = "FREQ. CARD: " + str(int(ekg_bpm)) + " BPM"
+	var bpm_col = Color("#00FF66") if estabilidade_emocional > 40.0 else Color("#ff3333")
 	
-	# Indicador de acertos
-	var success_txt = "ESTABILIDADE DO RITMO CARDIACO: " + str(qte_successes) + "/3 ACERTOS (ESPACO NO ALVO)"
 	qte_draw_control.draw_string(FONTE_MONO, Vector2(20, size.y - 12), success_txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#00FF66"))
+	qte_draw_control.draw_string(FONTE_MONO, Vector2(size.x - 220, size.y - 12), bpm_txt, HORIZONTAL_ALIGNMENT_RIGHT, -1, 14, bpm_col)
+
+
+func _screen_flash(color: Color, duration: float) -> void:
+	var flash := ColorRect.new()
+	flash.color = color
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(flash)
+	
+	var tw = flash.create_tween()
+	tw.tween_property(flash, "color:a", 0.0, duration).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(flash.queue_free)
+
 
 # ══════════════════════════════════════════════
 #  HELPERS VISUAIS DE COMBATE DE PORTRAITS
@@ -849,7 +1205,7 @@ func _finalizar_confronto() -> void:
 	
 	if popular >= regime:
 		lbl_step.text = "A CIDADE RECONHECEU A MANIPULAÇÃO"
-		lbl_vilao.text = "\"Isso... isso não pode estar acontecendo...\""
+		lbl_vilao.text = "[center]\"Isso... isso não pode estar acontecendo...\"[/center]"
 		vilao_sprite.texture = VILAO_ASSUSTADO_TEX
 		dante_sprite.texture = DANTE_FALA_TEX
 		lbl_dante.text = "A multidão cercou as portas do Palácio Municipal e exige uma decisão sobre o ditador desarmado."
@@ -857,7 +1213,7 @@ func _finalizar_confronto() -> void:
 		_mostrar_escolha_final()
 	else:
 		lbl_step.text = "O REGIME MANTEVE O CONTROLE DA MENTE"
-		lbl_vilao.text = "\"A ordem cívica prevalece sob qualquer desobediência pacífica.\""
+		lbl_vilao.text = "[center]\"A ordem cívica prevalece sob qualquer desobediência pacífica.\"[/center]"
 		vilao_sprite.texture = VILAO_RINDO_TEX
 		lbl_dante.text = "Dante recua para a antiga usina industrial. A resistência civil sobrevive sob as cinzas de Usina Velha."
 		lbl_reacao.text = "Final fraco desbloqueado. O medo ainda governa a praça."
@@ -1002,13 +1358,13 @@ func _on_dicionario_pressed() -> void:
 	overlay.add_child(bg)
 	
 	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(760, 580)
+	panel.custom_minimum_size = Vector2(880, 620)
 	panel.set_anchors_preset(PRESET_CENTER)
 	panel.grow_horizontal = GROW_DIRECTION_BOTH
 	panel.grow_vertical = GROW_DIRECTION_BOTH
 	
 	var sb = StyleBoxFlat.new()
-	sb.bg_color = Color(0.06, 0.05, 0.1, 0.98)
+	sb.bg_color = Color(0.05, 0.04, 0.08, 0.99)
 	sb.border_width_left = 3; sb.border_width_top = 3
 	sb.border_width_right = 3; sb.border_width_bottom = 3
 	sb.border_color = Color("#54d6ff")
@@ -1019,73 +1375,141 @@ func _on_dicionario_pressed() -> void:
 	panel.add_theme_stylebox_override("panel", sb)
 	bg.add_child(panel)
 	
-	var margin = _margin(24)
+	var margin = _margin(20)
 	panel.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 14)
+	vbox.add_theme_constant_override("separation", 10)
 	margin.add_child(vbox)
 	
+	# Cabeçalho do Livro
 	var title = Label.new()
-	title.text = "DICIONARIO DE FALACIAS RETORICAS"
+	title.text = "MANUAL DE DEFESA RETÓRICA CÍVICA"
 	title.add_theme_font_override("font", FONTE)
-	title.add_theme_font_size_override("font_size", 28)
-	title.add_theme_color_override("font_color", Color("#54d6ff"))
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", Color("#ffe28a"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
+	
+	# Separador
+	vbox.add_child(_divisor())
+	
+	# Layout de duas páginas (Livro Aberto)
+	var pages_hbox = HBoxContainer.new()
+	pages_hbox.size_flags_vertical = SIZE_EXPAND_FILL
+	pages_hbox.add_theme_constant_override("separation", 20)
+	vbox.add_child(pages_hbox)
+	
+	# --- PÁGINA ESQUERDA: LISTA ---
+	var left_page = VBoxContainer.new()
+	left_page.size_flags_horizontal = SIZE_EXPAND_FILL
+	left_page.add_theme_constant_override("separation", 8)
+	pages_hbox.add_child(left_page)
+	
+	var left_hdr = _label("ÍNDICE DE TÁTICAS DE CONTROLE", 12, Color("#a2a8b3"), FONTE_MONO)
+	left_page.add_child(left_hdr)
 	
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_vertical = SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	vbox.add_child(scroll)
+	left_page.add_child(scroll)
 	
 	var list_vbox = VBoxContainer.new()
-	list_vbox.add_theme_constant_override("separation", 12)
+	list_vbox.add_theme_constant_override("separation", 6)
 	list_vbox.size_flags_horizontal = SIZE_EXPAND_FILL
 	scroll.add_child(list_vbox)
 	
+	# --- DIVISOR CENTRAL (COLUNA DO LIVRO) ---
+	var spine = ColorRect.new()
+	spine.custom_minimum_size = Vector2(2, 0)
+	spine.color = Color("#54d6ff", 0.2)
+	pages_hbox.add_child(spine)
+	
+	# --- PÁGINA DIREITA: DETALHE ---
+	var right_page = PanelContainer.new()
+	right_page.size_flags_horizontal = SIZE_EXPAND_FILL
+	var sb_right = StyleBoxFlat.new()
+	sb_right.bg_color = Color(0.08, 0.07, 0.12, 0.6)
+	sb_right.corner_radius_top_left = 6; sb_right.corner_radius_top_right = 6
+	sb_right.corner_radius_bottom_left = 6; sb_right.corner_radius_bottom_right = 6
+	sb_right.content_margin_left = 16; sb_right.content_margin_right = 16
+	sb_right.content_margin_top = 16; sb_right.content_margin_bottom = 16
+	right_page.add_theme_stylebox_override("panel", sb_right)
+	pages_hbox.add_child(right_page)
+	
+	var detail_vbox = VBoxContainer.new()
+	detail_vbox.add_theme_constant_override("separation", 12)
+	right_page.add_child(detail_vbox)
+	
+	var lbl_detail_title = _label("SELECIONE UMA FALÁCIA", 18, Color("#ffe28a"), FONTE_MONO)
+	detail_vbox.add_child(lbl_detail_title)
+	
+	var lbl_detail_desc = RichTextLabel.new()
+	lbl_detail_desc.bbcode_enabled = true
+	lbl_detail_desc.size_flags_vertical = SIZE_EXPAND_FILL
+	lbl_detail_desc.add_theme_font_override("normal_font", FONTE)
+	lbl_detail_desc.add_theme_font_size_override("normal_font_size", 16)
+	lbl_detail_desc.add_theme_color_override("default_color", Color("#ede6d8"))
+	detail_vbox.add_child(lbl_detail_desc)
+	lbl_detail_desc.text = "Clique em qualquer uma das falácias políticas na página esquerda para estudar seu mecanismo de controle, exemplos e os princípios democráticos para combatê-la."
+	
+	# Dados das Falácias
 	var falacias = [
-		{"nome": "Paternalismo Autoritario", "desc": "Tratar o povo como incapaz ou imaturo para justificar que o lider tome todas as decisoes e mantenha o controle absoluto.", "cor": "#ff8066"},
-		{"nome": "Censura (Ordem Disfarcada)", "desc": "Silenciar informacoes ou meios de comunicacao alternativos sob o pretexto de 'proteger a paz' ou 'manter a estabilidade social'.", "cor": "#ff8066"},
-		{"nome": "Concentracao de Poder", "desc": "Alegar que um lider forte deve decidir sozinho, dispensando contrapesos, leis ou julgamentos para ter mais 'eficiencia'.", "cor": "#ffa240"},
-		{"nome": "Criminalizacao da Participacao", "desc": "Rotular manifestacoes civicas legitimas, protestos organizados ou ativismo pacifico como 'desordem' ou 'crime contra a patria'.", "cor": "#ff4b4b"},
-		{"nome": "Criacao de Inimigo Interno", "desc": "Dividir a sociedade entre obedientes (cidadãos corretos) e traidores (quem discorda), para desviar a atencao de problemas reais.", "cor": "#ff2d2d"},
-		{"nome": "Vitimismo do Poder", "desc": "Fazer com que o regime ou governante autoritario se coloque como o verdadeiro 'perseguido' ou 'martir' para anular criticas.", "cor": "#ff4ba0"},
-		{"nome": "Falsa Escolha (Falso Dilema)", "desc": "Apresentar a discussao como se existissem apenas duas opcoes extremas (Ex: 'ou o meu governo, ou o caos absoluto'), omitindo outras vias democráticas.", "cor": "#bda6ff"},
-		{"nome": "Apelo ao Medo (Ad Baculum)", "desc": "Instigar panico ou exagerar ameacas catastróficas para que a populacao prefira abrir mao de direitos basicos em troca de protecao.", "cor": "#ffd447"},
-		{"nome": "Ridicularizacao (Sarcasmo)", "desc": "Atacar a pessoa do oponente com insultos ou piadas ironicas para desviar o foco e evitar responder com fatos e argumentos.", "cor": "#a2a8b3"}
+		{"nome": "Paternalismo Autoritário", "desc": "Tratar o povo como incapaz ou imaturo para justificar que o líder tome todas as decisões e mantenha o controle absoluto.", "ex": "\"O povo não sabe discernir sobre economia, deixe que eu decido por vocês.\"", "defesa": "Pensamento Crítico, Educação Cívica e Participação Popular.", "cor": "#ff8066"},
+		{"nome": "Censura (Ordem Disfarçada)", "desc": "Silenciar informações ou meios de comunicação alternativos sob o pretexto de 'proteger a paz' ou 'manter a estabilidade social'.", "ex": "\"As transmissões alternativas criam discórdia desnecessária em nossa cidade pacífica.\"", "defesa": "Liberdade de Expressão e Imprensa Independente.", "cor": "#ff8066"},
+		{"nome": "Concentração de Poder", "desc": "Alegar que um líder forte deve decidir sozinho, dispensando contrapesos, leis ou julgamentos para ter mais 'eficiência'.", "ex": "\"A justiça comum é muito lenta; um bom governante deve ter o controle de tudo para agir.\"", "defesa": "Divisão de Poderes e Constituição Cívica.", "cor": "#ffa240"},
+		{"nome": "Criminalização da Participação", "desc": "Rotular manifestações cívicas legítimas, protestos organizados ou ativismo pacífico como 'desordem' ou 'crime contra a pátria'.", "ex": "\"Quem caminha na praça é baderneiro e inimigo do progresso.\"", "defesa": "Direito de Reunião e Devido Processo.", "cor": "#ff4b4b"},
+		{"nome": "Falso Dilema", "desc": "Apresentar a discussão como se existissem apenas duas opções extremas (Ex: ou meu governo autoritário, ou o caos absoluto), omitindo outras vias democráticas.", "ex": "\"Ou vocês aceitam o meu comando rigoroso, ou a anarquia destruirá Usina Velha.\"", "defesa": "Pluralismo Político e Debate de Alternativas.", "cor": "#bda6ff"},
+		{"nome": "Apelo ao Medo (Ad Baculum)", "desc": "Instigar pânico ou exagerar ameaças catastróficas para que a população prefira abrir mão de direitos básicos em troca de proteção.", "ex": "\"A usina explodirá se permitirem que comitês civis interfiram na nossa operação militar.\"", "defesa": "Transparência Pública e Dignidade Humana.", "cor": "#ffd447"}
 	]
 	
-	for fal in falacias:
-		var item_panel = PanelContainer.new()
+	var update_details = func(idx: int):
+		var fal = falacias[idx]
+		lbl_detail_title.text = fal["nome"].to_upper()
+		lbl_detail_title.add_theme_color_override("font_color", Color(fal["cor"]))
+		
+		var body_txt = "[color=#a2a8b3]DEFINIÇÃO:[/color]\n" + fal["desc"] + "\n\n"
+		body_txt += "[color=#ff9c40]EXEMPLO PRÁTICO DO OPRESSOR:[/color]\n[i]" + fal["ex"] + "[/i]\n\n"
+		body_txt += "[color=#62ff86]PILAR DE RESISTÊNCIA CÍVICA:[/color]\n" + fal["defesa"]
+		lbl_detail_desc.text = body_txt
+		_play(sfx_click, 1.1)
+
+	for i in range(falacias.size()):
+		var fal = falacias[i]
+		var btn_fal := Button.new()
+		btn_fal.text = " ▸  " + fal["nome"]
+		btn_fal.custom_minimum_size = Vector2(0, 40)
+		btn_fal.size_flags_horizontal = SIZE_EXPAND_FILL
+		btn_fal.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn_fal.add_theme_font_override("font", FONTE)
+		btn_fal.add_theme_font_size_override("font_size", 16)
+		btn_fal.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+		
 		var sb_item = StyleBoxFlat.new()
-		sb_item.bg_color = Color(0.11, 0.09, 0.15, 0.95)
+		sb_item.bg_color = Color(0.10, 0.08, 0.15, 0.8)
 		sb_item.border_width_left = 3
 		sb_item.border_color = Color(fal["cor"])
-		sb_item.corner_radius_top_right = 6; sb_item.corner_radius_bottom_right = 6
-		sb_item.content_margin_left = 12; sb_item.content_margin_right = 12
-		sb_item.content_margin_top = 8; sb_item.content_margin_bottom = 8
-		item_panel.add_theme_stylebox_override("panel", sb_item)
-		list_vbox.add_child(item_panel)
+		btn_fal.add_theme_stylebox_override("normal", sb_item)
 		
-		var item_vbox = VBoxContainer.new()
-		item_vbox.add_theme_constant_override("separation", 4)
-		item_panel.add_child(item_vbox)
+		var sb_item_h = StyleBoxFlat.new()
+		sb_item_h.bg_color = Color(0.16, 0.13, 0.22, 0.95)
+		sb_item_h.border_width_left = 4
+		sb_item_h.border_color = Color(fal["cor"])
+		btn_fal.add_theme_stylebox_override("hover", sb_item_h)
+		btn_fal.add_theme_stylebox_override("pressed", sb_item_h)
 		
-		var lbl_name = _label(fal["nome"].to_upper(), 18, Color(fal["cor"]), FONTE_MONO)
-		item_vbox.add_child(lbl_name)
+		btn_fal.mouse_entered.connect(func():
+			if sfx_hover: sfx_hover.play()
+		)
 		
-		var lbl_desc = Label.new()
-		lbl_desc.text = fal["desc"]
-		lbl_desc.add_theme_font_override("font", FONTE)
-		lbl_desc.add_theme_font_size_override("font_size", 16)
-		lbl_desc.add_theme_color_override("font_color", Color("#ede6d8"))
-		lbl_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-		item_vbox.add_child(lbl_desc)
+		# Conecta clique para atualizar os detalhes da página direita
+		btn_fal.pressed.connect(update_details.bind(i))
+		list_vbox.add_child(btn_fal)
 		
+	# Botão de Voltar
 	var btn_close = Button.new()
-	btn_close.text = "VOLTAR AO CONFRONTO"
-	btn_close.custom_minimum_size = Vector2(220, 45)
+	btn_close.text = "VOLTAR AO DEBATE"
+	btn_close.custom_minimum_size = Vector2(220, 42)
 	btn_close.size_flags_horizontal = SIZE_SHRINK_CENTER
 	btn_close.add_theme_font_override("font", FONTE)
 	btn_close.add_theme_font_size_override("font_size", 20)
@@ -1096,6 +1520,11 @@ func _on_dicionario_pressed() -> void:
 	sb_close.corner_radius_top_left = 6; sb_close.corner_radius_top_right = 6
 	sb_close.corner_radius_bottom_left = 6; sb_close.corner_radius_bottom_right = 6
 	btn_close.add_theme_stylebox_override("normal", sb_close)
+	
+	btn_close.mouse_entered.connect(func():
+		if sfx_hover: sfx_hover.play()
+	)
+	
 	btn_close.pressed.connect(func():
 		_play(sfx_click, 1.0)
 		overlay.queue_free()
@@ -1136,6 +1565,12 @@ func _choice_panel(nome: String, desc: String, borda: Color, callback: Callable)
 	btn.add_theme_stylebox_override("normal", sb_btn)
 	btn.add_theme_stylebox_override("hover", sb_btn_h)
 	btn.add_theme_stylebox_override("pressed", sb_btn_h)
+	
+	btn.mouse_entered.connect(func():
+		if sfx_hover:
+			sfx_hover.play()
+	)
+	
 	hbox.add_child(btn)
 	
 	return panel
@@ -1155,6 +1590,11 @@ func _botao_final(texto_btn: String) -> Button:
 	btn.add_theme_stylebox_override("normal", sb_n)
 	btn.add_theme_stylebox_override("hover", sb_h)
 	btn.add_theme_stylebox_override("pressed", sb_h)
+	
+	btn.mouse_entered.connect(func():
+		if sfx_hover:
+			sfx_hover.play()
+	)
 	
 	btn.pressed.connect(func():
 		_play(sfx_click, 1.0)
@@ -1191,6 +1631,11 @@ func _button(texto_btn: String, cor: Color, tamanho: int) -> Button:
 	btn.add_theme_stylebox_override("normal", _stylebox(cor, Color("#2b2118"), 2, 6))
 	btn.add_theme_stylebox_override("hover", _stylebox(cor.lightened(0.18), Color("#fff4d6"), 2, 6))
 	btn.add_theme_stylebox_override("pressed", _stylebox(cor.darkened(0.16), Color("#fff4d6"), 2, 6))
+	
+	btn.mouse_entered.connect(func():
+		if sfx_hover:
+			sfx_hover.play()
+	)
 	return btn
 
 
@@ -1244,3 +1689,62 @@ func _stylebox(bg: Color, border: Color, border_width: int, radius: int) -> Styl
 	sb.content_margin_top = 8
 	sb.content_margin_bottom = 8
 	return sb
+
+
+# === AAA HELPERS ===
+
+func _obter_janela_qte() -> Array[float]:
+	var centro = 0.25
+	var base_metade_largura = 0.065
+	var metade_largura = base_metade_largura * (0.4 + 0.6 * (estabilidade_emocional / 100.0))
+	return [centro - metade_largura, centro + metade_largura]
+
+
+func _instanciar_projetil_retorico(texto_proj: String, cor_proj: Color) -> void:
+	var proj := Label.new()
+	proj.text = texto_proj
+	proj.add_theme_font_override("font", FONTE)
+	proj.add_theme_font_size_override("font_size", 28)
+	proj.add_theme_color_override("font_color", cor_proj)
+	proj.add_theme_color_override("font_shadow_color", Color.BLACK)
+	proj.add_theme_constant_override("shadow_offset_x", 3)
+	proj.add_theme_constant_override("shadow_offset_y", 3)
+	
+	var start_pos = Vector2(240, 360)
+	var end_pos = Vector2(get_viewport_rect().size.x - 240, 320)
+	proj.position = start_pos
+	proj.scale = Vector2(0.2, 0.2)
+	proj.pivot_offset = Vector2(100, 15)
+	layer.add_child(proj)
+	
+	var tw = proj.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(proj, "position", end_pos, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(proj, "scale", Vector2(1.5, 1.5), 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.chain().tween_property(proj, "scale", Vector2(0.1, 0.1), 0.2).set_delay(0.1)
+	tw.chain().tween_callback(proj.queue_free)
+
+
+func _definir_fala_vilao(txt: String) -> void:
+	var final_txt = txt
+	if act_index == 0:
+		final_txt = final_txt.replace("incapaz", "[color=#ff5c5c]incapaz[/color]")
+		final_txt = final_txt.replace("decido por todos", "[color=#ff9c40]decido por todos[/color]")
+	elif act_index == 1:
+		final_txt = final_txt.replace("imprensa livre", "[color=#ff5c5c]imprensa livre[/color]")
+		final_txt = final_txt.replace("controle da rádio", "[color=#ff9c40]controle da rádio[/color]")
+	elif act_index == 2:
+		final_txt = final_txt.replace("leis antigas", "[color=#ff5c5c]leis antigas[/color]")
+		final_txt = final_txt.replace("decidir sozinho", "[color=#ff9c40]decidir sozinho[/color]")
+	elif act_index == 3:
+		final_txt = final_txt.replace("vandalismo", "[color=#ff5c5c]vandalismo[/color]")
+		final_txt = final_txt.replace("inimigo do progresso", "[color=#ff9c40]inimigo do progresso[/color]")
+	
+	lbl_vilao.text = "[center]" + final_txt + "[/center]"
+
+
+func _divisor() -> ColorRect:
+	var div = ColorRect.new()
+	div.color = Color("#ffe28a", 0.2)
+	div.custom_minimum_size = Vector2(0, 2)
+	return div

@@ -278,3 +278,42 @@ func _apply_sounds_settings() -> void:
 	type_sounds.pitch_variance = typing_sounds_pitch_variance
 	type_sounds.volume_variance = typing_sounds_volume_variance
 	type_sounds.ignore_characters = typing_sounds_ignore_characters
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
+	if dialog_text:
+		dialog_text.started_revealing_text.connect(_on_dialog_started_revealing)
+
+
+func _on_dialog_started_revealing() -> void:
+	var name_label: DialogicNode_NameLabel = %DialogicNode_NameLabel
+	var type_sounds: DialogicNode_TypeSounds = %DialogicNode_TypeSounds
+	if name_label and type_sounds:
+		var speaker_name = name_label.text.to_lower()
+		
+		# Ajusta o pitch do som de digitação dependendo do personagem ativo (beeps)
+		if "coronel" in speaker_name or "antônio" in speaker_name:
+			type_sounds.base_pitch = 0.65
+			type_sounds.pitch_variance = 0.04
+		elif "dante" in speaker_name or "prota" in speaker_name:
+			type_sounds.base_pitch = 1.05
+			type_sounds.pitch_variance = 0.05
+		elif "atena" in speaker_name:
+			type_sounds.base_pitch = 1.30
+			type_sounds.pitch_variance = 0.06
+		elif "luis" in speaker_name:
+			type_sounds.base_pitch = 0.90
+			type_sounds.pitch_variance = 0.04
+		elif "véio" in speaker_name or "velho" in speaker_name:
+			type_sounds.base_pitch = 0.80
+			type_sounds.pitch_variance = 0.05
+		elif "professor" in speaker_name:
+			type_sounds.base_pitch = 1.00
+			type_sounds.pitch_variance = 0.05
+		else:
+			type_sounds.base_pitch = 1.00
+			type_sounds.pitch_variance = 0.05
+

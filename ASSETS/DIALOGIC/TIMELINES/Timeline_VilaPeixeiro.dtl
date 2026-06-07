@@ -4,7 +4,7 @@ audio - [volume="0.0" bus="SFX"]
 [wait time="0.4"]
 join ATENA (Neutro) left
 join Luis (Neutro) leftmost
-PROTA (Falando): Vila do Açude Seco... Clima tenso por aqui.
+PROTA (Falando): Vila do Açude Seco... As patrulhas militares vigiam de perto quem tenta falar com o peixeiro.
 Luis (Falando): Todo mundo olhando torto. Parece que estamos invadindo.
 update ATENA (Falando)
 ATENA: Território do regime, Luis. Natural desconfiarem.
@@ -163,6 +163,6 @@ Luis (Falando): Dante... tem um problema. Tá faltando um monte de página.
 update ATENA (Falando)
 ATENA: Não é só isso. As que sobraram parecem ter sido mexidas. Alguém adulterou.
 update PROTA (Confuso_Cabeca)
-PROTA: O regime... claro que eles iam sujar até isso. Tá, então a gente analisa página por página. Se é direito de verdade, fica. Se é propaganda disfarçada... fora.
+PROTA: Eles adulteraram o livro para legitimar o autoritarismo como dever cívico! Vamos analisar página por página e separar nossos direitos da propaganda deles.
 [signal arg="iniciar_minigame_paginas"]
 [end_timeline]

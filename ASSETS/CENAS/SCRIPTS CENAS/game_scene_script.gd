@@ -7,6 +7,12 @@ var _sequencia_em_execucao := false
 func _ready() -> void:
 	Dialogic.signal_event.connect(_on_dialogic_signal)
 	call_deferred("_tentar_iniciar_sequencia")
+	
+	# Inicia a música de fundo se não estiver na intro
+	if has_node("/root/MusicManager"):
+		var music_mgr = get_node("/root/MusicManager")
+		if not (GameState.fase_atual == 1 and (GameState.timeline_atual == "" or GameState.timeline_atual == "Intro_Narrativa")):
+			music_mgr.play_default_music()
 
 
 func _tentar_iniciar_sequencia() -> void:
@@ -51,6 +57,8 @@ func iniciar_sequencia_fase():
 		1:
 			await FadeManager.mostrar_intro_fase(1, "Um pequeno passo para o homem, um grande passo para a humanidade")
 			await TimelineManager.tocar_dialogo("Intro_Narrativa")
+			if has_node("/root/MusicManager"):
+				get_node("/root/MusicManager").play_default_music()
 			await FadeManager.transicao_com_dica()
 			await _mostrar_tutorial()
 			await TimelineManager.tocar_dialogo("m01_rua_velho")
@@ -60,6 +68,12 @@ func iniciar_sequencia_fase():
 			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
 		2:
 			if GameState.fase2_passo == "inicio":
+				await GameState.mostrar_resumo_transicao_fase(1, {
+					"titulo_fase": "FASE 1 CONCLUÍDA: A BUSCA PELO LIVRO",
+					"aprendido": "Localizamos o livro proibido 'Direitos e Deveres Civis' na Vila do Açude Seco e removemos as mentiras e propagandas que o regime tentou impor.\n\nLição: Conhecer os direitos constitucionais e combater a desinformação oficial é o primeiro passo de qualquer resistência cívica.",
+					"titulo_proximo": "PRÓXIMO NÍVEL: VOZ NAS ENTRELINHAS",
+					"objetivos": "• Despistar as patrulhas militares das ruas de Usina Velha.\n• Invadir o prédio da Rádio sob o controle do regime.\n• Decifrar as transmissões criptografadas da 'Operação Frequência'.\n\nLição: Compreender a importância do livre fluxo de informação no combate ao autoritarismo estatal."
+				})
 				await FadeManager.mostrar_intro_fase(2, "Voz nas Entrelinhas")
 				await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
 				await FadeManager.transicao_com_dica()
@@ -74,6 +88,12 @@ func iniciar_sequencia_fase():
 				await TimelineManager.tocar_dialogo("fase2_reacao_final")
 		3:
 			if GameState.fase3_passo == "inicio":
+				await GameState.mostrar_resumo_transicao_fase(2, {
+					"titulo_fase": "FASE 2 CONCLUÍDA: VOZ NAS ENTRELINHAS",
+					"aprendido": "Distraímos as patrulhas nas ruas, invadimos o centro de transmissões da rádio estatal e deciframos as comunicações da 'Operação Frequência'.\n\nLição: A lógica e a persistência cívica superam a censura técnica. A informação livre é a maior ameaça à propaganda.",
+					"titulo_proximo": "PRÓXIMO NÍVEL: MENTES EM DISPUTA",
+					"objetivos": "• Infiltrar a Escola de Usina Velha sob vigilância das patrulhas.\n• Conectar o sinal da rádio livre na caixa de controle de alto-falantes.\n• Distribuir cartilhas históricas corretas aos estudantes.\n\nLição: Defender a educação livre e o pensamento crítico é garantir a memória e a consciência democrática."
+				})
 				await FadeManager.mostrar_intro_fase(3, "Mentes em disputa")
 				await TimelineManager.tocar_dialogo("fase3_escola_inicio")
 			elif GameState.fase3_passo == "escola_concluida":
@@ -256,6 +276,12 @@ func _on_dialogic_signal(valor: String) -> void:
 			await GameState.retornar_para_game_scene_apos_minigame()
 		"fim_fase_3":
 			GameState.fase_atual = 4
+			await GameState.mostrar_resumo_transicao_fase(3, {
+				"titulo_fase": "FASE 3 CONCLUÍDA: MENTES EM DISPUTA",
+				"aprendido": "Restabelecemos a Rádio Livre nos alto-falantes da escola e alertamos os estudantes sobre a doutrinação oficial nas salas.\n\nLição: A circulação livre de ideias na escola quebra as correntes do medo e do silêncio. A juventude organizada é imparável.",
+				"titulo_proximo": "PRÓXIMO NÍVEL: PRAÇA DA LIBERDADE",
+				"objetivos": "• Liderar a marcha dos cidadãos de Usina Velha na Praça do Palácio.\n• Equilibrar mobilização, segurança e organização sob forte tensão militar.\n• Desafiar os portões do regime pacificamente com o poder do povo.\n\nLição: A desobediência civil organizada e pacífica é a maior força moral contra a opressão armada."
+			})
 			await _ir_para_minigame("res://ASSETS/CENAS/minigame_praca.tscn")
 
 

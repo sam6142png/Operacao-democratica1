@@ -70,6 +70,138 @@ func mostrar_registro_democratico(registro: Dictionary) -> void:
 	await _mostrar_painel_registro_democratico(registro)
 
 
+func mostrar_resumo_transicao_fase(fase_anterior: int, dados: Dictionary) -> void:
+	var overlay := CanvasLayer.new()
+	overlay.layer = 120
+	get_tree().root.add_child(overlay)
+
+	# Reprodução de estática de rádio analógica em loop (estilo transmissão clandestina)
+	var sfx_static := AudioStreamPlayer.new()
+	sfx_static.stream = load("res://ASSETS/SOUNDS/radio_antena.mp3")
+	sfx_static.volume_db = -8.0
+	overlay.add_child(sfx_static)
+	sfx_static.play()
+	sfx_static.finished.connect(sfx_static.play)
+
+	var bg := ColorRect.new()
+	bg.color = Color(0.0, 0.0, 0.0, 0.88)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(bg)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(1000, 600)
+	panel.add_theme_stylebox_override("panel", _registro_stylebox(Color("#0d1014", 0.98), Color("#FF8C00"), 3, 10, 20, Color("#FF8C00", 0.12)))
+	center.add_child(panel)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 30)
+	margin.add_theme_constant_override("margin_bottom", 30)
+	margin.add_theme_constant_override("margin_left", 40)
+	margin.add_theme_constant_override("margin_right", 40)
+	panel.add_child(margin)
+
+	var root := VBoxContainer.new()
+	root.alignment = BoxContainer.ALIGNMENT_CENTER
+	root.add_theme_constant_override("separation", 20)
+	margin.add_child(root)
+
+	var title := _registro_label("CONSOLIDAÇÃO DA MISSÃO", 32, Color("#FF8C00"))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(title)
+
+	root.add_child(_registro_linha())
+
+	var columns := HBoxContainer.new()
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	columns.add_theme_constant_override("separation", 30)
+	root.add_child(columns)
+
+	# Coluna Esquerda: O que foi feito/aprendido
+	var col_left := VBoxContainer.new()
+	col_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_left.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	col_left.add_theme_constant_override("separation", 12)
+	columns.add_child(col_left)
+
+	var left_title := _registro_label(str(dados.get("titulo_fase", "RESUMO DA FASE")).to_upper(), 20, Color("#62ff86"))
+	left_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col_left.add_child(left_title)
+
+	var left_panel := PanelContainer.new()
+	left_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_panel.add_theme_stylebox_override("panel", _registro_stylebox(Color("#151820", 0.94), Color("#62ff86"), 2, 8))
+	col_left.add_child(left_panel)
+
+	var left_margin := MarginContainer.new()
+	left_margin.add_theme_constant_override("margin_top", 14)
+	left_margin.add_theme_constant_override("margin_bottom", 14)
+	left_margin.add_theme_constant_override("margin_left", 16)
+	left_margin.add_theme_constant_override("margin_right", 16)
+	left_panel.add_child(left_margin)
+
+	var left_text := _registro_label(str(dados.get("aprendido", "")), 18, Color("#f5ead7"))
+	left_text.autowrap_mode = TextServer.AUTOWRAP_WORD
+	left_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_margin.add_child(left_text)
+
+	# Coluna Direita: Próximo nível, objetivos e lições
+	var col_right := VBoxContainer.new()
+	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_right.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	col_right.add_theme_constant_override("separation", 12)
+	columns.add_child(col_right)
+
+	var right_title := _registro_label(str(dados.get("titulo_proximo", "PRÓXIMO NÍVEL")).to_upper(), 20, Color("#54d6ff"))
+	right_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col_right.add_child(right_title)
+
+	var right_panel := PanelContainer.new()
+	right_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_panel.add_theme_stylebox_override("panel", _registro_stylebox(Color("#151820", 0.94), Color("#54d6ff"), 2, 8))
+	col_right.add_child(right_panel)
+
+	var right_margin := MarginContainer.new()
+	right_margin.add_theme_constant_override("margin_top", 14)
+	right_margin.add_theme_constant_override("margin_bottom", 14)
+	right_margin.add_theme_constant_override("margin_left", 16)
+	right_margin.add_theme_constant_override("margin_right", 16)
+	right_panel.add_child(right_margin)
+
+	var right_text := _registro_label(str(dados.get("objetivos", "")), 18, Color("#f5ead7"))
+	right_text.autowrap_mode = TextServer.AUTOWRAP_WORD
+	right_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_margin.add_child(right_text)
+
+	var btn := Button.new()
+	btn.text = "AVANÇAR PARA A PRÓXIMA FASE"
+	btn.custom_minimum_size = Vector2(360, 54)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.add_theme_font_size_override("font_size", 20)
+	btn.add_theme_color_override("font_color", Color("#21180f"))
+	btn.add_theme_stylebox_override("normal", _registro_stylebox(Color("#FF8C00"), Color("#2b2118"), 2, 6))
+	btn.add_theme_stylebox_override("hover", _registro_stylebox(Color("#ffb04f"), Color("#FF8C00"), 2, 6))
+	root.add_child(btn)
+
+	panel.modulate.a = 0.0
+	panel.scale = Vector2(0.96, 0.96)
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.22)
+	tw.tween_property(panel, "scale", Vector2.ONE, 0.22).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+	await btn.pressed
+	var tw_fade := create_tween().set_parallel(true)
+	tw_fade.tween_property(sfx_static, "volume_db", -80.0, 0.4)
+	tw_fade.tween_property(panel, "modulate:a", 0.0, 0.3)
+	await tw_fade.finished
+	overlay.queue_free()
+
+
+
 func _mostrar_painel_registro_democratico(registro: Dictionary) -> void:
 	var overlay := CanvasLayer.new()
 	overlay.layer = 120
@@ -272,6 +404,8 @@ func preparar_transicao_minigame(caminho_cena: String) -> void:
 	limpar_save_dialogic()
 	cena_atual = caminho_cena
 	salvar_jogo(false)
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").stop_music(1.2)
 
 
 ## Encerra Dialogic, marca retorno à game_scene e troca de cena (fluxo pós-minigame).
@@ -283,6 +417,8 @@ func retornar_para_game_scene_apos_minigame() -> void:
 	Dialogic.paused = false
 	cena_atual = "res://ASSETS/CENAS/game_scene.tscn"
 	salvar_jogo(false)
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
 	await FadeManager.carregar_cena(cena_atual)
 	await get_tree().process_frame
 	_garantir_sequencia_fase_na_cena_atual()

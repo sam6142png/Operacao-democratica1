@@ -3,12 +3,12 @@ join VÉIO (Neutro) rightmost [animation="Fade In" length="0.5" wait="true"]
 join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.5" wait="true"]
 [wait time="0.2"]
 VÉIO (Falando): Dante! Tu é doido, menino?! Andando a essa hora com os hómi varrendo as esquina!
-PROTA (Determinado): Escuta, véio. Ouvi os guarda falando. Tem uma "Operação Frequência" — eles vão usar a rádio pra controlar a escola!
+PROTA (Determinado): Escuta, véio. Ouvi os guarda falando sobre a 'Operação Frequência' — eles vão usar a rádio estatal para forçar a doutrinação dos jovens na escola!
 update VÉIO (Neutro)
 [wait time="0.3"]
-VÉIO (Falando): Então chegou a hora... Teus pais descobriram isso anos atrás. O regime enfia mensagem escondida na programação da rádio. Controle silencioso.
+VÉIO (Falando): Teus pais já sabiam disso. O regime esconde mensagens na rádio oficial para impor um controle cognitivo e manipular a opinião pública.
 PROTA (Surpreso): Mensagem escondida? Tipo lavagem cerebral pelo rádio?!
-VÉIO (Falando): Tua mãe descobriu o truque. É cifra de deslocamento. Cada letra tá empurrada três casa pra frente. Tu volta as três casa e a verdade aparece. "D" vira "A". "H" vira "E".
+VÉIO (Falando): Tua mãe mapeou a cifra de deslocamento de 3 posições que eles usam nas mensagens secretas da rádio. Recue 3 letras e a verdade aparece\: 'D' vira 'A', 'H' vira 'E'.
 VÉIO (Falando): Tu precisa ir até a rádio, sintonizar as frequência certa e descobrir o que eles tão planejando.
 PROTA (Determinado): Eu vou. Chega de ficar no escuro enquanto eles envenenam a cabeça do povo.
 VÉIO (Falando): Cuidado, meu rapaz. A verdade certa liberta. A verdade errada enterra. Tu tá mexendo com gente que não perdoa.

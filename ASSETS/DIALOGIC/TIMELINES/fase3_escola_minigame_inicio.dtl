@@ -2,7 +2,7 @@
 join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.3" wait="true"]
 join ATENA (Neutro) left [animation="Slide From Left" length="0.3" wait="true"]
 join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.3" wait="true"]
-PROFESSOR: A caixa fica aqui. Fio solto, disjuntor travado e a frequência do regime presa no painel.
-ATENA (Falando): Primeiro a gente fecha o circuito. Depois arma os disjuntores sem sobrecarregar.
-PROTA (Determinado): E por último sintoniza a Rádio Livre. Se isso tocar nos alto-falantes, a escola inteira acorda.
+PROFESSOR: A caixa de junção fica aqui. Os canais MIC, TX, ANT e AMP estão dessincronizados e o regime está bloqueando a frequência livre.
+ATENA (Falando): Para burlar o bloqueio, precisamos repetir e memorizar a sequência exata de picos de sinal de cada canal no painel de sintonização.
+PROTA (Determinado): Se conseguirmos replicar a sequência sem errar, estabilizaremos a frequência da Rádio Livre nos alto-falantes da escola!
 [end_timeline]

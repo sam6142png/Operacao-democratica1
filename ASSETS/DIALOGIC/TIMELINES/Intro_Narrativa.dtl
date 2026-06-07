@@ -1,19 +1,19 @@
-audio "res://ASSETS/SOUNDS/TrilhaSuspense_Menu2.mp3"
+audio "res://ASSETS/SOUNDS/TrilhaDrama_ Intro.mp3"
 [background arg="res://ASSETS/SPRITES/FUNDOS/Usina Industrial Velha.png" fade="0.8" transition="Simple Fade" wait="true"]
 [wait time="0.5"]
 Vinte anos bastaram para silenciar Usina Velha. Antes um lugar de orgulho e dignidade, agora sob a névoa do esquecimento.
 [background arg="res://ASSETS/SPRITES/FUNDOS/O Golpe (O Início da Opressão).png" fade="0.8" transition="Simple Fade" wait="true"]
-Quando as máquinas pararam de vez, o Coronel Antônio prometeu ordem. O preço da sua "salvação" foi a nossa liberdade e democracia, enterradas sob o medo.
+Quando as máquinas pararam de vez, o Coronel Antônio prometeu ordem. O preço da sua "salvação" foi a nossa [color=#54d6ff]liberdade e democracia[/color], enterradas sob o medo.
 [background arg="res://ASSETS/SPRITES/FUNDOS/Pais de Dante entregando o livro.png" fade="0.8" transition="Simple Fade" wait="true"]
 [wait time="0.4"]
-Mas a resistência plantou uma semente. Meus pais, Dantas e Isabela, sabiam a verdade e pagaram com a vida, deixando um livro... e seu filho, Dante.
+Mas a [color=#62ff86]resistência[/color] plantou uma semente. Meus pais, Dantas e Isabela, sabiam a verdade e pagaram com a vida, deixando um livro... e seu filho, Dante.
 [background arg="res://ASSETS/SPRITES/FUNDOS/Memórias de Dante.png" fade="0.8" transition="Simple Fade" wait="true"]
-O regime tentou queimar o passado, mas as lembranças resistem. A voz do meu pai ainda ecoa: "Lembra de tudo."
+O regime tentou apagar a história do último prefeito eleito, mas a voz do meu pai ainda ecoa\: "Não deixe que eles destruam a [color=#54d6ff]constituição[/color]."
 [background arg="res://ASSETS/SPRITES/FUNDOS/A Sombra do Medo (O Trauma de Dante).png" fade="0.8" transition="Simple Fade" wait="true"]
 [wait time="0.5"]
 Cresci sob a sombra do Coronel, sabendo que algo precioso nos tinha sido roubado.
 [background arg="res://ASSETS/SPRITES/FUNDOS/A Voz da Verdade (O Controle da Rádio).png" fade="0.8" transition="Simple Fade" wait="true"]
-Nas ruas, os alto-falantes controlam tudo. Não apenas os nossos corpos, mas o próprio pensamento do povo.
+Nas ruas, a [color=#ff5c5c]propaganda oficial[/color] nos alto-falantes dita a versão do regime, impedindo o povo de questionar os [color=#ff5c5c]abusos de poder[/color].
 [background arg="res://ASSETS/SPRITES/FUNDOS/O Comandante das Ruínas.png" fade="0.8" transition="Simple Fade" wait="true"]
 Hoje, Usina Velha é um cemitério vigiado. Mas sob o entulho, a verdade está prestes a emergir.
 [end_timeline]

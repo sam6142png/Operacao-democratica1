@@ -5,7 +5,7 @@ PROTA (Pensando): Silêncio tenso... Isso cheira a emboscada.
 [wait time="0.2"]
 join MILITAR (Soldados Aleatórios) leftmost [animation="Fade In" length="0.5" wait="true"]
 [wait time="0.3"]
-MILITAR (Soldados Aleatórios): Operação Frequência confirmada na rádio. O alvo é a escola. Não podemos deixar aqueles estudantes pensarem por conta própria.
+MILITAR (Soldados Aleatórios): Operação Frequência confirmada. Vamos injetar as diretrizes de obediência na rádio da escola. Povo instruído é ameaça ao regime.
 [wait time="0.2"]
 update PROTA (Pensando)
 PROTA (Pensando): Querem controlar a escola via rádio? Preciso alertar o Velho.

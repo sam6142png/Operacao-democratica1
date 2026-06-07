@@ -34,6 +34,7 @@ FadeManager="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/FadeManager.gd"
 MenuPausa="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/MenuPausa.gd"
 ChoiceTimer="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/ChoiceTimer.gd"
 AtalhoSecreto="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/AtalhoSecreto.gd"
+MusicManager="*res://ASSETS/CENAS/SCRIPTS GLOBAIS/MusicManager.gd"
 
 [dialogic]
 

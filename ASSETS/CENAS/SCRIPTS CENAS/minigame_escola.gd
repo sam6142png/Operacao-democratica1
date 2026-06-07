@@ -1,613 +1,823 @@
 extends Control
 
-# === RECURSOS ===
-const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
+# ═══════════════════════════════════════════════════════════════
+#  MINIGAME ECO DA ESCOLA — REDESENHO CÍVICO
+#  Etapa 1: Editor do Pasquim (Diagramação do jornal clandestino)
+#  Etapa 2: Persuasão Socrática (Desmobilizar a doutrinação no pátio)
+# ═══════════════════════════════════════════════════════════════
+
+const FONTE      = preload("res://ASSETS/FONTES/determination.ttf")
 const FONTE_MONO = preload("res://ASSETS/FONTES/dogicapixel.ttf")
-const BG_TEX = preload("res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png")
-const AUDIO_VOZ = preload("res://ASSETS/SOUNDS/Fala minigame escola.mp3")
+const BG_TEX     = preload("res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png")
+
+# Audio Streams
 const CLICK_SOUND = preload("res://ASSETS/SOUNDS/FSX/BotoesClick.mp3")
 const HOVER_SOUND = preload("res://ASSETS/SOUNDS/FSX/BotoesHover.mp3")
+const ERRO_SOUND  = preload("res://ASSETS/SOUNDS/FSX/SlideMenu.mp3")
 
-const ALARME_MAX: int = 5
-const FREQ_ALVO: float = 98.7
-const FREQ_TOLERANCIA: float = 0.25
+# Cores do Tema Cívico-Retrô
+const COR_BG_OVERLAY  := Color(0.04, 0.04, 0.05, 0.88)
+const COR_PANEL_BG    := Color(0.06, 0.06, 0.09, 0.96)
+const COR_PANEL_BORDA := Color(0.0,  0.64, 1.0,  0.8) # Azul Cívico
 
-enum Etapa { FIOS, DISJUNTORES, SINTONIA }
+const COR_GREEN_FILL  := Color(0.0,  0.85, 0.35, 1.0)
+const COR_GREEN_BG    := Color(0.0,  0.85, 0.35, 0.14)
+const COR_RED_FILL    := Color(0.95, 0.2,  0.2,  1.0)
+const COR_RED_BG      := Color(0.95, 0.2,  0.2,  0.14)
 
-var etapa_atual: int = Etapa.FIOS
-var alarme: int = 0
-var finalizado: bool = false
-var dialogo_em_execucao: bool = false
-var medidor_visivel_antes: bool = true
+const COR_TEXT_PRI    := Color(1.0,  1.0,  1.0,  1.0)
+const COR_TEXT_SEC    := Color(0.84, 0.79, 0.67, 1.0)
+const COR_TEXT_TER    := Color(0.56, 0.53, 0.46, 1.0)
 
-var fios: Array[Dictionary] = [
-	{"id": "vermelho", "nome": "ENERGIA", "cor": Color("#ff4b4b")},
-	{"id": "azul", "nome": "SINAL", "cor": Color("#00a2ff")},
-	{"id": "verde", "nome": "TERRA", "cor": Color("#62ff86")},
-	{"id": "amarelo", "nome": "AUDIO", "cor": Color("#ffdf7d")}
-]
-var fio_selecionado: String = ""
-var fios_conectados: Dictionary = {}
-
-var ordem_disjuntores: Array[String] = ["luzes", "salas", "patio", "amplificador"]
-var disjuntores_ligados: Array[String] = []
-
-var frequencia_atual: float = 95.0
-var estabilidade: float = 0.0
-var segurando_trava: bool = false
-var wave_time: float = 0.0
-
-var layer: CanvasLayer
-var root: VBoxContainer
-var stage_panel: PanelContainer
-var stage_box: VBoxContainer
-var lbl_titulo: Label
-var lbl_subtitulo: Label
-var lbl_alarme: Label
-var progress_etapa: ProgressBar
-var progress_alarme: ProgressBar
+# ==========================================
+# ESTADO GERAL DO MINIGAME
+# ==========================================
+var etapa_atual: int = 1 # 1 = Editor de Jornal, 2 = Persuasão
+var finalizado := false
 var sfx_click: AudioStreamPlayer
 var sfx_hover: AudioStreamPlayer
-var oscilloscope: Control
-var slider_freq: HSlider
-var lbl_freq: Label
-var lbl_signal: Label
-var progress_estabilidade: ProgressBar
-var btn_travar: Button
+var sfx_erro: AudioStreamPlayer
 
+# Camada Principal de UI
+var layer: CanvasLayer
+
+# ==========================================
+# DADOS DO EDITOR DO PASQUIM
+# ==========================================
+var manchete_selecionada: int = -1
+var charge_selecionada: int = -1
+var relato_selecionado: int = -1
+
+const MANCHETES := [
+	{"id": 0, "texto": "A Verdade Sobre o Grande Apagão de 2006", "impacto": 35, "risco": 25, "desc": "Revela o corte intencional de energia do Coronel."},
+	{"id": 1, "texto": "Prefeito Dantas: O Legado de Liberdade Silenciado", "impacto": 40, "risco": 30, "desc": "Homenageia o antigo prefeito e sua constituição."},
+	{"id": 2, "texto": "Reflexões Cívicas na Sala de Aula", "impacto": 15, "risco": 5, "desc": "Artigo moderado pedindo mais debates livres."},
+	{"id": 3, "texto": "Protestos Estudantis nos Pátios", "impacto": 25, "risco": 15, "desc": "Documenta a união do grêmio estudantil."}
+]
+
+const CHARGES := [
+	{"id": 0, "texto": "O Coronel Antônio Controlando as Mentes", "impacto": 35, "risco": 35, "desc": "Desenho satírico do ditador como titereiro."},
+	{"id": 1, "texto": "Fusíveis Rompidos da Censura na Escola", "impacto": 20, "risco": 15, "desc": "Metáfora visual da rádio livre invadindo o sinal."},
+	{"id": 2, "texto": "Estudantes de Mãos Dadas Pela Verdade", "impacto": 15, "risco": 8, "desc": "Representação pacífica da resistência."}
+]
+
+const RELATOS := [
+	{"id": 0, "texto": "Relato do Peixeiro: 'Meu irmão sumiu na usina'", "impacto": 35, "risco": 30, "desc": "Testemunho cru sobre repressões passadas."},
+	{"id": 1, "texto": "Relato do Professor: 'Estamos sob mordaça'", "impacto": 30, "risco": 25, "desc": "O drama de lecionar sob a mira do exército."},
+	{"id": 2, "texto": "Estudantes: 'Queremos livros reais, não propaganda'", "impacto": 20, "risco": 10, "desc": "Manifesto por educação livre e não tendenciosa."}
+]
+
+# UI Editor
+var panel_editor: PanelContainer
+var draw_preview: Control
+var bar_impacto: ProgressBar
+var bar_risco: ProgressBar
+var lbl_risco_alerta: Label
+
+# ==========================================
+# DADOS DA PERSUASÃO SOCRÁTICA
+# ==========================================
+var doutrinacao_estudante: float = 100.0
+var alerta_militar: float = 0.0
+var rodadas_restantes: int = 5
+var argumento_estudante_id: int = 0
+
+const ARGUMENTOS_ESTUDANTE := [
+	{"id": 0, "texto": "\"O Coronel nos protege do caos e da desordem. Sem ele, a cidade morre.\"", "defesa": "ordem"},
+	{"id": 1, "texto": "\"Nossos livros de história dizem que as eleições antigas eram todas corrompidas.\"", "defesa": "livro"},
+	{"id": 2, "texto": "\"Se eu questionar ou ler coisas proibidas, serei punido. Tenho medo.\"", "defesa": "medo"},
+	{"id": 3, "texto": "\"Pelo menos a usina funciona e há comida. Para que arriscar com política?\"", "defesa": "seguranca"}
+]
+
+# UI Persuasão
+var panel_persuasao: PanelContainer
+var lbl_dialogo_estudante: Label
+var lbl_rodadas: Label
+var bar_doutrinacao: ProgressBar
+var bar_alerta: ProgressBar
+var cards_container: HBoxContainer
+var lbl_persuasao_status: Label
+
+# ==========================================
+# INICIALIZAÇÃO
+# ==========================================
 func _ready() -> void:
-	randomize()
-	_configurar_medidor(false)
-	_configurar_audio()
-	_montar_base()
-	_mostrar_intro()
-
-
-func _process(delta: float) -> void:
-	if finalizado or dialogo_em_execucao:
-		return
-
-	if etapa_atual == Etapa.SINTONIA:
-		wave_time += delta * 14.0
-		if oscilloscope:
-			oscilloscope.queue_redraw()
-		_atualizar_sintonia(delta)
-
-
-func _configurar_medidor(visivel: bool) -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
-		var medidor = get_tree().root.get_node("MedidorConfianca")
-		medidor_visivel_antes = medidor.visible
-		medidor.visible = visivel
-
+		get_tree().root.get_node("MedidorConfianca").visible = false
+		
+	_configurar_audio()
+	_construir_ui()
 
 func _configurar_audio() -> void:
 	sfx_click = AudioStreamPlayer.new()
 	sfx_click.stream = CLICK_SOUND
 	sfx_click.bus = "SFX"
 	add_child(sfx_click)
-
+	
 	sfx_hover = AudioStreamPlayer.new()
 	sfx_hover.stream = HOVER_SOUND
 	sfx_hover.bus = "SFX"
 	add_child(sfx_hover)
+	
+	sfx_erro = AudioStreamPlayer.new()
+	sfx_erro.stream = ERRO_SOUND
+	sfx_erro.bus = "SFX"
+	add_child(sfx_erro)
 
+func _play(player: AudioStreamPlayer, pitch: float = 1.0) -> void:
+	if player:
+		player.pitch_scale = pitch
+		player.play()
 
-func _montar_base() -> void:
+# ==========================================
+# CONSTRUÇÃO DA UI DINÂMICA
+# ==========================================
+func _construir_ui() -> void:
 	layer = CanvasLayer.new()
-	layer.layer = 10
 	add_child(layer)
-
-	var bg := TextureRect.new()
-	bg.texture = BG_TEX
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	
+	# Background
+	var bg = TextureRect.new()
+	if BG_TEX:
+		bg.texture = BG_TEX
+	bg.set_anchors_preset(PRESET_FULL_RECT)
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	bg.modulate = Color(0.08, 0.09, 0.12)
+	bg.modulate = Color(0.4, 0.4, 0.45) # Escurece a sala de aula
 	layer.add_child(bg)
-
-	var shade := ColorRect.new()
-	shade.color = Color(0.0, 0.0, 0.0, 0.58)
-	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	layer.add_child(shade)
-
-	var margin := MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_top", 28)
-	margin.add_theme_constant_override("margin_bottom", 28)
-	margin.add_theme_constant_override("margin_left", 70)
-	margin.add_theme_constant_override("margin_right", 70)
-	layer.add_child(margin)
-
-	root = VBoxContainer.new()
-	root.add_theme_constant_override("separation", 18)
-	margin.add_child(root)
-
-	var top := HBoxContainer.new()
-	top.add_theme_constant_override("separation", 30)
-	root.add_child(top)
-
-	var title_box := VBoxContainer.new()
-	lbl_titulo = _label("CAIXA DE SOM DA ESCOLA", 38, Color("#ff9f2f"), FONTE)
-	lbl_subtitulo = _label("Reconecte os fios, arme os disjuntores e sintonize a Radio Livre", 13, Color("#9fb3c8"), FONTE_MONO)
-	title_box.add_child(lbl_titulo)
-	title_box.add_child(lbl_subtitulo)
-	top.add_child(title_box)
-
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(spacer)
-
-	var etapa_box := VBoxContainer.new()
-	etapa_box.custom_minimum_size = Vector2(260, 0)
-	etapa_box.add_child(_label("PROGRESSO DA INVASAO", 11, Color("#62ff86"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER))
-	progress_etapa = ProgressBar.new()
-	progress_etapa.min_value = 0.0
-	progress_etapa.max_value = 3.0
-	progress_etapa.show_percentage = false
-	progress_etapa.custom_minimum_size = Vector2(0, 16)
-	progress_etapa.add_theme_stylebox_override("background", _stylebox(Color("#071108"), Color.TRANSPARENT, 0, 4))
-	progress_etapa.add_theme_stylebox_override("fill", _stylebox(Color("#2eec73"), Color.TRANSPARENT, 0, 4))
-	etapa_box.add_child(progress_etapa)
-	top.add_child(etapa_box)
-
-	var alarm_box := VBoxContainer.new()
-	alarm_box.custom_minimum_size = Vector2(260, 0)
-	lbl_alarme = _label("ALARME: 0/" + str(ALARME_MAX), 11, Color("#ff4b4b"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER)
-	alarm_box.add_child(lbl_alarme)
-	progress_alarme = ProgressBar.new()
-	progress_alarme.min_value = 0.0
-	progress_alarme.max_value = float(ALARME_MAX)
-	progress_alarme.show_percentage = false
-	progress_alarme.custom_minimum_size = Vector2(0, 16)
-	progress_alarme.add_theme_stylebox_override("background", _stylebox(Color("#170707"), Color.TRANSPARENT, 0, 4))
-	progress_alarme.add_theme_stylebox_override("fill", _stylebox(Color("#d63030"), Color.TRANSPARENT, 0, 4))
-	alarm_box.add_child(progress_alarme)
-	top.add_child(alarm_box)
-
-	stage_panel = PanelContainer.new()
-	stage_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stage_panel.add_theme_stylebox_override("panel", _stylebox(Color("#050b12", 0.95), Color("#00a2ff", 0.55), 2, 8, 18, Color("#00a2ff", 0.08)))
-	root.add_child(stage_panel)
-
-	var stage_margin := MarginContainer.new()
-	stage_margin.add_theme_constant_override("margin_top", 28)
-	stage_margin.add_theme_constant_override("margin_bottom", 28)
-	stage_margin.add_theme_constant_override("margin_left", 34)
-	stage_margin.add_theme_constant_override("margin_right", 34)
-	stage_panel.add_child(stage_margin)
-
-	stage_box = VBoxContainer.new()
-	stage_box.add_theme_constant_override("separation", 20)
-	stage_margin.add_child(stage_box)
-
-
-func _mostrar_intro() -> void:
-	_tocar_dialogic_e_continuar("fase3_escola_minigame_inicio", Callable(self, "_iniciar_fios"))
-
-
-func _iniciar_fios() -> void:
-	etapa_atual = Etapa.FIOS
-	fio_selecionado = ""
-	fios_conectados.clear()
-	progress_etapa.value = 0.0
-	_limpar_stage()
-
-	stage_box.add_child(_label("1. LIGAR OS FIOS SOLTOS", 34, Color("#ffb86c"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	var instrucao := _label("Clique em um fio solto e depois no terminal com a mesma funcao. Errou a ligacao, o alarme sobe.", 17, Color("#cfe5ff"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER)
-	instrucao.autowrap_mode = TextServer.AUTOWRAP_WORD
-	stage_box.add_child(instrucao)
-
-	var board := HBoxContainer.new()
-	board.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	board.add_theme_constant_override("separation", 42)
-	stage_box.add_child(board)
-
-	var left := VBoxContainer.new()
-	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	left.add_theme_constant_override("separation", 16)
-	left.add_child(_label("FIOS SOLTOS", 22, Color("#ffdf7d"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	board.add_child(left)
-
-	var shuffled_fios: Array = fios.duplicate()
-	shuffled_fios.shuffle()
-	for fio in shuffled_fios:
-		var fio_data: Dictionary = fio
-		var fio_cor: Color = fio_data["cor"]
-		var btn := _button(String(fio_data["nome"]), 320, Color("#111923"), fio_cor)
-		btn.pressed.connect(_selecionar_fio.bind(String(fio_data["id"]), btn))
-		left.add_child(btn)
-
-	var center := PanelContainer.new()
-	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	center.add_theme_stylebox_override("panel", _stylebox(Color("#07131d"), Color("#00a2ff", 0.45), 2, 6))
-	board.add_child(center)
-	var center_box := VBoxContainer.new()
-	center_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	center_box.add_theme_constant_override("separation", 10)
-	center.add_child(center_box)
-	center_box.add_child(_label("PAINEL DE JUNCAO", 24, Color("#00a2ff"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	center_box.add_child(_label("A energia precisa de caminho seguro antes da radio entrar.", 18, Color("#dbeaff"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	center_box.add_child(_label("Ensinamento: comunicacao livre precisa de infraestrutura; sem acesso ao meio, a voz e silenciada.", 15, Color("#9fb3c8"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER))
-
-	var right := VBoxContainer.new()
-	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right.add_theme_constant_override("separation", 16)
-	right.add_child(_label("TERMINAIS", 22, Color("#62ff86"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	board.add_child(right)
-
-	var shuffled_terms: Array = fios.duplicate()
-	shuffled_terms.shuffle()
-	for fio in shuffled_terms:
-		var term_data: Dictionary = fio
-		var term_cor: Color = term_data["cor"]
-		var btn := _button("TERMINAL " + String(term_data["nome"]), 360, Color("#0d1c12"), term_cor)
-		btn.pressed.connect(_conectar_terminal.bind(String(term_data["id"]), btn))
-		right.add_child(btn)
-
-
-func _selecionar_fio(id: String, btn: Button) -> void:
-	if id in fios_conectados:
-		return
-	_play_click()
-	fio_selecionado = id
-	btn.modulate = Color(1.35, 1.35, 1.35)
-
-
-func _conectar_terminal(id: String, btn: Button) -> void:
-	if fio_selecionado == "":
-		_punir("Escolha um fio antes de tentar encaixar no terminal.")
-		return
-
-	if fio_selecionado == id:
-		_play_click()
-		fios_conectados[id] = true
-		btn.text = "CONECTADO"
-		btn.disabled = true
-		btn.modulate = Color("#62ff86")
-		fio_selecionado = ""
-		if fios_conectados.size() == fios.size():
-			progress_etapa.value = 1.0
-			_tocar_dialogic_e_continuar("fase3_escola_minigame_fios_ok", Callable(self, "_iniciar_disjuntores"))
-	else:
-		fio_selecionado = ""
-		_punir("Ligacao errada. O painel chiou e a patrulha ouviu ruido na linha.")
-
-
-func _iniciar_disjuntores() -> void:
-	etapa_atual = Etapa.DISJUNTORES
-	disjuntores_ligados.clear()
-	_limpar_stage()
-
-	stage_box.add_child(_label("2. ARMAR OS DISJUNTORES", 34, Color("#ffb86c"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	var instrucao := _label("Ligue na ordem de carga: LUZES, SALAS, PATIO, AMPLIFICADOR. Se ligar o amplificador cedo demais, sobrecarrega.", 17, Color("#cfe5ff"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER)
-	instrucao.autowrap_mode = TextServer.AUTOWRAP_WORD
-	stage_box.add_child(instrucao)
-
-	var grid := GridContainer.new()
-	grid.columns = 4
-	grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation", 22)
-	grid.add_theme_constant_override("v_separation", 22)
-	stage_box.add_child(grid)
-
-	var labels: Dictionary = {
-		"luzes": "LUZES",
-		"salas": "SALAS",
-		"patio": "PATIO",
-		"amplificador": "AMPLIFICADOR"
-	}
-	var ids: Array[String] = ["amplificador", "patio", "luzes", "salas"]
-	for id in ids:
-		var card := PanelContainer.new()
-		card.custom_minimum_size = Vector2(250, 300)
-		card.add_theme_stylebox_override("panel", _stylebox(Color("#111923"), Color("#334155"), 2, 8))
-		grid.add_child(card)
-
-		var box := VBoxContainer.new()
-		box.alignment = BoxContainer.ALIGNMENT_CENTER
-		box.add_theme_constant_override("separation", 18)
-		card.add_child(box)
-		box.add_child(_label(String(labels[id]), 25, Color("#f8fbff"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-		box.add_child(_label("OFF", 42, Color("#ff4b4b"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-		var btn := _button("LIGAR", 170, Color("#1a2735"), Color("#ffdf7d"))
-		btn.pressed.connect(_acionar_disjuntor.bind(id, card, btn))
-		box.add_child(btn)
-
-	stage_box.add_child(_label("Ensinamento: liberdade tambem exige cuidado coletivo. Potencia sem ordem vira apagao.", 16, Color("#9fb3c8"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER))
-
-
-func _acionar_disjuntor(id: String, card: PanelContainer, btn: Button) -> void:
-	if id in disjuntores_ligados:
-		return
-
-	var esperado: String = ordem_disjuntores[disjuntores_ligados.size()]
-	if id != esperado:
-		_punir("Sobrecarga. Esse disjuntor precisava esperar os circuitos menores estabilizarem.")
-		return
-
-	_play_click()
-	disjuntores_ligados.append(id)
-	btn.text = "ON"
-	btn.disabled = true
-	card.add_theme_stylebox_override("panel", _stylebox(Color("#08190f"), Color("#62ff86"), 2, 8, 10, Color("#62ff86", 0.2)))
-	progress_etapa.value = 1.0 + float(disjuntores_ligados.size()) / float(ordem_disjuntores.size())
-
-	if disjuntores_ligados.size() == ordem_disjuntores.size():
-		progress_etapa.value = 2.0
-		_tocar_dialogic_e_continuar("fase3_escola_minigame_disjuntores_ok", Callable(self, "_iniciar_sintonia"))
-
-
-func _iniciar_sintonia() -> void:
-	etapa_atual = Etapa.SINTONIA
-	frequencia_atual = 95.0
-	estabilidade = 0.0
-	segurando_trava = false
-	_limpar_stage()
-
-	stage_box.add_child(_label("3. SINTONIZAR A RADIO LIVRE", 34, Color("#ffb86c"), FONTE, HORIZONTAL_ALIGNMENT_CENTER))
-	var instrucao := _label("Ajuste a frequencia para 98.7 MHz. Quando o sinal ficar forte, segure TRAVAR SINAL para preencher a estabilidade.", 17, Color("#cfe5ff"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER)
-	instrucao.autowrap_mode = TextServer.AUTOWRAP_WORD
-	stage_box.add_child(instrucao)
-
-	var panel := PanelContainer.new()
-	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", _stylebox(Color("#06130c"), Color("#62ff86", 0.8), 2, 8))
-	stage_box.add_child(panel)
-
-	var m := MarginContainer.new()
-	m.add_theme_constant_override("margin_top", 22)
-	m.add_theme_constant_override("margin_bottom", 22)
-	m.add_theme_constant_override("margin_left", 28)
-	m.add_theme_constant_override("margin_right", 28)
-	panel.add_child(m)
-
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 18)
-	m.add_child(box)
-
-	oscilloscope = Control.new()
-	oscilloscope.custom_minimum_size = Vector2(0, 190)
-	oscilloscope.draw.connect(_on_oscilloscope_draw)
-	box.add_child(oscilloscope)
-
-	lbl_freq = _label("FREQUENCIA: 95.0 MHz", 30, Color("#f8fbff"), FONTE, HORIZONTAL_ALIGNMENT_CENTER)
-	box.add_child(lbl_freq)
-
-	slider_freq = HSlider.new()
-	slider_freq.min_value = 88.0
-	slider_freq.max_value = 108.0
-	slider_freq.step = 0.1
-	slider_freq.value = frequencia_atual
-	slider_freq.custom_minimum_size = Vector2(760, 36)
-	slider_freq.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	slider_freq.value_changed.connect(_on_freq_changed)
-	box.add_child(slider_freq)
-
-	lbl_signal = _label("SINAL: 0%", 22, Color("#ff4b4b"), FONTE, HORIZONTAL_ALIGNMENT_CENTER)
-	box.add_child(lbl_signal)
-
-	progress_estabilidade = ProgressBar.new()
-	progress_estabilidade.min_value = 0.0
-	progress_estabilidade.max_value = 100.0
-	progress_estabilidade.value = 0.0
-	progress_estabilidade.custom_minimum_size = Vector2(760, 18)
-	progress_estabilidade.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	progress_estabilidade.show_percentage = false
-	progress_estabilidade.add_theme_stylebox_override("background", _stylebox(Color("#071108"), Color.TRANSPARENT, 0, 4))
-	progress_estabilidade.add_theme_stylebox_override("fill", _stylebox(Color("#2eec73"), Color.TRANSPARENT, 0, 4))
-	box.add_child(progress_estabilidade)
-
-	btn_travar = _button("TRAVAR SINAL", 320, Color("#18351f"), Color("#62ff86"))
-	btn_travar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	btn_travar.button_down.connect(func(): segurando_trava = true)
-	btn_travar.button_up.connect(func(): segurando_trava = false)
-	box.add_child(btn_travar)
-
-	box.add_child(_label("Ensinamento: quando a comunicacao e livre, a escola escuta mais de uma versao e pode questionar o poder.", 16, Color("#9fb3c8"), FONTE_MONO, HORIZONTAL_ALIGNMENT_CENTER))
-	_atualizar_sintonia(0.0)
-
-
-func _on_freq_changed(value: float) -> void:
-	frequencia_atual = value
-	_atualizar_sintonia(0.0)
-
-
-func _atualizar_sintonia(delta: float) -> void:
-	if not lbl_freq:
-		return
-
-	var dist: float = abs(frequencia_atual - FREQ_ALVO)
-	var forca_sinal: float = clamp(1.0 - dist / 2.2, 0.0, 1.0)
-	lbl_freq.text = "FREQUENCIA: %.1f MHz" % frequencia_atual
-	lbl_signal.text = "SINAL: " + str(int(forca_sinal * 100.0)) + "%"
-	lbl_signal.add_theme_color_override("font_color", Color("#62ff86") if forca_sinal > 0.88 else Color("#ffdf7d") if forca_sinal > 0.55 else Color("#ff4b4b"))
-
-	if segurando_trava:
-		if dist <= FREQ_TOLERANCIA:
-			estabilidade = min(100.0, estabilidade + delta * 34.0)
-		else:
-			estabilidade = max(0.0, estabilidade - delta * 26.0)
-			if delta > 0.0:
-				alarme = min(ALARME_MAX, alarme + 1)
-				_atualizar_alarme()
-				segurando_trava = false
-				if alarme >= ALARME_MAX:
-					_derrota("A frequencia errada abriu o canal oficial e a patrulha rastreou a escola.")
-					return
-	else:
-		estabilidade = max(0.0, estabilidade - delta * 5.0)
-
-	if progress_estabilidade:
-		progress_estabilidade.value = estabilidade
-
-	if estabilidade >= 100.0:
-		progress_etapa.value = 3.0
-		_tocar_dialogic_e_continuar("fase3_escola_minigame_sintonia_ok", Callable(self, "_vitoria"))
-
-
-func _on_oscilloscope_draw() -> void:
-	if not oscilloscope:
-		return
-
-	var size_rect: Vector2 = oscilloscope.size
-	var grid_color := Color(0.0, 0.3, 0.1, 0.25)
-	for x in range(0, int(size_rect.x), 24):
-		oscilloscope.draw_line(Vector2(x, 0), Vector2(x, size_rect.y), grid_color, 1.0)
-	for y in range(0, int(size_rect.y), 24):
-		oscilloscope.draw_line(Vector2(0, y), Vector2(size_rect.x, y), grid_color, 1.0)
-
-	var dist: float = abs(frequencia_atual - FREQ_ALVO)
-	var forca_sinal: float = clamp(1.0 - dist / 2.2, 0.0, 1.0)
-	var points := PackedVector2Array()
-	var num_points: int = 140
-	var amp: float = size_rect.y * 0.32
-	var center_y: float = size_rect.y * 0.5
-	for i in range(num_points):
-		var t: float = float(i) / float(num_points - 1)
-		var x_pos: float = t * size_rect.x
-		var clean_y: float = sin(t * 34.0 - wave_time) * amp
-		var noise_y: float = randf_range(-amp * 1.2, amp * 1.2)
-		points.append(Vector2(x_pos, center_y + lerp(noise_y, clean_y, forca_sinal)))
-
-	for i in range(points.size() - 1):
-		oscilloscope.draw_line(points[i], points[i + 1], Color(0.0, 1.0, 0.4, 0.25), 5.0)
-	for i in range(points.size() - 1):
-		oscilloscope.draw_line(points[i], points[i + 1], Color(0.0, 1.0, 0.4, 0.9), 2.0)
-
-
-func _punir(msg: String) -> void:
-	_play_click()
-	alarme = min(ALARME_MAX, alarme + 1)
-	_atualizar_alarme()
-	_mostrar_alerta(msg)
-	if alarme >= ALARME_MAX:
-		_derrota("A patrulha chegou antes da Radio Livre entrar no sistema.")
-
-
-func _atualizar_alarme() -> void:
-	lbl_alarme.text = "ALARME: " + str(alarme) + "/" + str(ALARME_MAX)
-	progress_alarme.value = alarme
-
-
-func _mostrar_alerta(msg: String) -> void:
-	var alert := Label.new()
-	alert.text = msg
-	alert.add_theme_font_override("font", FONTE)
-	alert.add_theme_font_size_override("font_size", 22)
-	alert.add_theme_color_override("font_color", Color("#ff4b4b"))
-	alert.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stage_box.add_child(alert)
-	var tw := create_tween()
-	tw.tween_property(alert, "modulate:a", 0.0, 1.2)
-	tw.finished.connect(func(): alert.queue_free())
-
-
-func _tocar_dialogic_e_continuar(timeline: String, ao_final: Callable) -> void:
-	dialogo_em_execucao = true
-	await TimelineManager.tocar_dialogo(timeline, false)
-	dialogo_em_execucao = false
-	if ao_final.is_valid():
-		ao_final.call()
-
-
-func _vitoria() -> void:
-	if finalizado:
-		return
-	finalizado = true
-	_configurar_medidor(false)
-
-	var overlay := ColorRect.new()
-	overlay.color = Color(0.02, 0.08, 0.04, 0.92)
-	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	
+	# Overlay escurecido
+	var overlay = ColorRect.new()
+	overlay.color = COR_BG_OVERLAY
+	overlay.set_anchors_preset(PRESET_FULL_RECT)
 	layer.add_child(overlay)
+	
+	# Grid de efeito tecnológico
+	var bg_grid = Control.new()
+	bg_grid.set_anchors_preset(PRESET_FULL_RECT)
+	bg_grid.modulate = Color(0.0, 0.5, 1.0, 0.02)
+	bg_grid.draw.connect(func():
+		var step = 40
+		var grid_size = bg_grid.size
+		for x in range(0, int(grid_size.x), step):
+			bg_grid.draw_line(Vector2(x, 0), Vector2(x, grid_size.y), Color.WHITE, 1.0)
+		for y in range(0, int(grid_size.y), step):
+			bg_grid.draw_line(Vector2(0, y), Vector2(grid_size.x, y), Color.WHITE, 1.0)
+	)
+	layer.add_child(bg_grid)
+	
+	# ---------------------------------------------
+	# TELA DA ETAPA 1: EDITOR DO PASQUIM
+	# ---------------------------------------------
+	_criar_layout_editor()
+	
+	# ---------------------------------------------
+	# TELA DA ETAPA 2: PERSUASÃO SOCRÁTICA (Inicialmente escondida)
+	# ---------------------------------------------
+	_criar_layout_persuasao()
+	panel_persuasao.hide()
 
-	var player := AudioStreamPlayer.new()
-	player.stream = AUDIO_VOZ
-	player.bus = "SFX"
-	add_child(player)
-	player.play()
-	await player.finished
+# ==========================================
+# DETALHAMENTO DA ETAPA 1: EDITOR
+# ==========================================
+func _criar_layout_editor() -> void:
+	panel_editor = PanelContainer.new()
+	panel_editor.custom_minimum_size = Vector2(1100, 680)
+	panel_editor.set_anchors_preset(PRESET_CENTER)
+	panel_editor.grow_horizontal = GROW_DIRECTION_BOTH
+	panel_editor.grow_vertical = GROW_DIRECTION_BOTH
+	panel_editor.add_theme_stylebox_override("panel", _stylebox(COR_PANEL_BG, COR_PANEL_BORDA, 3, 10))
+	layer.add_child(panel_editor)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	margin.add_theme_constant_override("margin_left", 30)
+	margin.add_theme_constant_override("margin_right", 30)
+	panel_editor.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	margin.add_child(vbox)
+	
+	# Título
+	var lbl_title = Label.new()
+	lbl_title.text = "DIAGRAMADOR DE IMPRENSA CLANDESTINA"
+	lbl_title.add_theme_font_override("font", FONTE)
+	lbl_title.add_theme_font_size_override("font_size", 32)
+	lbl_title.add_theme_color_override("font_color", COR_PANEL_BORDA)
+	lbl_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_title)
+	
+	# Dividir em colunas: Esquerda (Itens), Direita (Layout Preview)
+	var columns = HBoxContainer.new()
+	columns.size_flags_vertical = SIZE_EXPAND_FILL
+	columns.add_theme_constant_override("separation", 24)
+	vbox.add_child(columns)
+	
+	# Coluna Esquerda: Seletor de Blocos
+	var col_left = ScrollContainer.new()
+	col_left.size_flags_horizontal = SIZE_EXPAND_FILL
+	col_left.size_flags_stretch_ratio = 1.3
+	columns.add_child(col_left)
+	
+	var left_vbox = VBoxContainer.new()
+	left_vbox.size_flags_horizontal = SIZE_EXPAND_FILL
+	left_vbox.add_theme_constant_override("separation", 16)
+	col_left.add_child(left_vbox)
+	
+	# Seção 1: Manchetes
+	left_vbox.add_child(_label("1. SELECIONE A MANCHETE PRINCIPAL", 16, COR_PANEL_BORDA, FONTE_MONO))
+	var grp_manchetes = VBoxContainer.new()
+	left_vbox.add_child(grp_manchetes)
+	for item in MANCHETES:
+		_criar_opcao_seletor(grp_manchetes, item, "manchete")
+		
+	# Seção 2: Charges
+	left_vbox.add_child(_label("2. SELECIONE A CHARGE EDITORIAL", 16, COR_PANEL_BORDA, FONTE_MONO))
+	var grp_charges = VBoxContainer.new()
+	left_vbox.add_child(grp_charges)
+	for item in CHARGES:
+		_criar_opcao_seletor(grp_charges, item, "charge")
+		
+	# Seção 3: Relatos/Testemunhos
+	left_vbox.add_child(_label("3. SELECIONE O TESTEMUNHO POPULAR", 16, COR_PANEL_BORDA, FONTE_MONO))
+	var grp_relatos = VBoxContainer.new()
+	left_vbox.add_child(grp_relatos)
+	for item in RELATOS:
+		_criar_opcao_seletor(grp_relatos, item, "relato")
+		
+	# Coluna Direita: O jornal simulado
+	var col_right = VBoxContainer.new()
+	col_right.size_flags_horizontal = SIZE_EXPAND_FILL
+	col_right.add_theme_constant_override("separation", 12)
+	columns.add_child(col_right)
+	
+	col_right.add_child(_label("VISUALIZAÇÃO DA PÁGINA IMPRESSA", 15, COR_TEXT_TER, FONTE_MONO))
+	
+	draw_preview = Control.new()
+	draw_preview.size_flags_vertical = SIZE_EXPAND_FILL
+	draw_preview.custom_minimum_size = Vector2(0, 320)
+	draw_preview.draw.connect(_desenhar_preview_jornal)
+	col_right.add_child(draw_preview)
+	
+	# Barra de Métricas (Impacto e Risco)
+	var metrics_box = HBoxContainer.new()
+	metrics_box.add_theme_constant_override("separation", 30)
+	vbox.add_child(metrics_box)
+	
+	# Impacto
+	var box_imp = VBoxContainer.new()
+	box_imp.size_flags_horizontal = SIZE_EXPAND_FILL
+	box_imp.add_child(_label("IMPACTO DE CONSCIENTIZAÇÃO (META >= 50%)", 14, COR_GREEN_FILL, FONTE_MONO))
+	bar_impacto = _criar_barra(COR_GREEN_FILL, COR_GREEN_BG)
+	box_imp.add_child(bar_impacto)
+	metrics_box.add_child(box_imp)
+	
+	# Risco
+	var box_ris = VBoxContainer.new()
+	box_ris.size_flags_horizontal = SIZE_EXPAND_FILL
+	box_ris.add_child(_label("RISCO DE APREENSÃO MILITAR (LIMITE <= 80%)", 14, COR_RED_FILL, FONTE_MONO))
+	bar_risco = _criar_barra(COR_RED_FILL, COR_RED_BG)
+	box_ris.add_child(bar_risco)
+	metrics_box.add_child(box_ris)
+	
+	# Alerta e Botão de Publicação
+	var bottom_box = HBoxContainer.new()
+	bottom_box.add_theme_constant_override("separation", 20)
+	vbox.add_child(bottom_box)
+	
+	lbl_risco_alerta = _label("Ajuste o layout do jornal cívico.", 16, COR_TEXT_SEC, FONTE)
+	lbl_risco_alerta.size_flags_horizontal = SIZE_EXPAND_FILL
+	bottom_box.add_child(lbl_risco_alerta)
+	
+	var btn_publicar = Button.new()
+	btn_publicar.text = " PUBLICAR JORNAL "
+	btn_publicar.custom_minimum_size = Vector2(250, 48)
+	btn_publicar.add_theme_font_override("font", FONTE)
+	btn_publicar.add_theme_font_size_override("font_size", 22)
+	btn_publicar.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	btn_publicar.pressed.connect(_tentar_publicar_jornal)
+	
+	var sb_n = _stylebox(COR_PANEL_BORDA, Color.WHITE, 1, 4)
+	var sb_h = _stylebox(Color("#008ae6"), Color.WHITE, 1, 4)
+	btn_publicar.add_theme_stylebox_override("normal", sb_n)
+	btn_publicar.add_theme_stylebox_override("hover", sb_h)
+	btn_publicar.add_theme_stylebox_override("pressed", sb_h)
+	bottom_box.add_child(btn_publicar)
+	
+	_recalcular_metricas()
 
-	await GameState.mostrar_registro_democratico({
-		"fase": "Fase 3 - Escola",
-		"conceito": "Liberdade de expressao, infraestrutura publica e comunicacao livre",
-		"evidencia": "O jogador reconectou fios, armou disjuntores e sintonizou a Radio Livre nos alto-falantes.",
-		"impacto": "A escola deixou de receber apenas a voz oficial e passou a ouvir uma transmissao independente.",
-		"reflexao": "Democracia tambem depende de acesso aos meios de comunicacao: sem canal livre, nao ha debate publico real."
-	})
-
-	_configurar_medidor(medidor_visivel_antes)
-	GameState.fase3_passo = "escola_concluida"
-	await GameState.retornar_para_game_scene_apos_minigame()
-
-
-func _derrota(motivo: String) -> void:
-	if finalizado:
-		return
-	finalizado = true
-	_configurar_medidor(false)
-
-	push_warning("[Minigame Escola] Derrota: " + motivo)
-	_tocar_dialogic_e_continuar("fase3_escola_minigame_derrota", Callable(self, "_reiniciar"))
-
-
-func _reiniciar() -> void:
-	_configurar_medidor(medidor_visivel_antes)
-	FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_escola.tscn")
-
-
-func _limpar_stage() -> void:
-	for child in stage_box.get_children():
-		child.queue_free()
-
-
-func _play_click() -> void:
-	if sfx_click:
-		sfx_click.play()
-
-
-func _play_hover() -> void:
-	if sfx_hover:
-		sfx_hover.play()
-
-
-func _button(txt: String, width: int, bg: Color, border: Color) -> Button:
-	var btn := Button.new()
-	btn.text = txt
-	btn.custom_minimum_size = Vector2(width, 54)
+func _criar_opcao_seletor(parent: Control, item: Dictionary, categoria: String) -> Button:
+	var btn = Button.new()
+	btn.text = "  " + item["texto"]
+	btn.custom_minimum_size = Vector2(0, 36)
+	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn.add_theme_font_override("font", FONTE)
-	btn.add_theme_font_size_override("font_size", 21)
-	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	btn.add_theme_stylebox_override("normal", _stylebox(bg, border, 2, 6))
-	btn.add_theme_stylebox_override("hover", _stylebox(bg.lightened(0.16), border, 2, 6, 8, Color(border.r, border.g, border.b, 0.28)))
-	btn.add_theme_stylebox_override("pressed", _stylebox(bg.darkened(0.1), border, 2, 6))
-	btn.mouse_entered.connect(_play_hover)
+	btn.add_theme_font_size_override("font_size", 16)
+	btn.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	
+	var sb_n = StyleBoxFlat.new()
+	sb_n.bg_color = Color(0.08, 0.08, 0.12, 0.8)
+	sb_n.border_width_left = 3
+	sb_n.border_color = Color("#8c96a6")
+	btn.add_theme_stylebox_override("normal", sb_n)
+	
+	var sb_h = sb_n.duplicate() as StyleBoxFlat
+	sb_h.bg_color = Color(0.12, 0.12, 0.18, 0.9)
+	sb_h.border_color = COR_PANEL_BORDA
+	btn.add_theme_stylebox_override("hover", sb_h)
+	
+	btn.pressed.connect(func():
+		_play(sfx_click, 1.1)
+		if categoria == "manchete":
+			manchete_selecionada = item["id"]
+		elif categoria == "charge":
+			charge_selecionada = item["id"]
+		elif categoria == "relato":
+			relato_selecionado = item["id"]
+			
+		_atualizar_selecao_botoes(parent, item["id"])
+		_recalcular_metricas()
+		if draw_preview:
+			draw_preview.queue_redraw()
+	)
+	
+	btn.mouse_entered.connect(func(): _play(sfx_hover, 1.0))
+	parent.add_child(btn)
 	return btn
 
+func _atualizar_selecao_botoes(parent: Control, ativo_id: int) -> void:
+	for i in range(parent.get_child_count()):
+		var btn = parent.get_child(i) as Button
+		if btn:
+			var sb = btn.get_theme_stylebox("normal").duplicate() as StyleBoxFlat
+			if i == ativo_id:
+				sb.border_color = COR_GREEN_FILL
+				sb.bg_color = Color(COR_GREEN_FILL, 0.12)
+			else:
+				sb.border_color = Color("#8c96a6")
+				sb.bg_color = Color(0.08, 0.08, 0.12, 0.8)
+			btn.add_theme_stylebox_override("normal", sb)
 
-func _stylebox(bg: Color, border: Color, w: int, r: int, shadow_s: int = 0, shadow_c: Color = Color.TRANSPARENT) -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.border_width_left = w
-	sb.border_width_top = w
-	sb.border_width_right = w
-	sb.border_width_bottom = w
-	sb.border_color = border
-	sb.corner_radius_top_left = r
-	sb.corner_radius_top_right = r
-	sb.corner_radius_bottom_left = r
-	sb.corner_radius_bottom_right = r
-	sb.shadow_size = shadow_s
-	sb.shadow_color = shadow_c
-	return sb
+func _recalcular_metricas() -> void:
+	var total_imp = 0
+	var total_ris = 0
+	
+	if manchete_selecionada != -1:
+		total_imp += MANCHETES[manchete_selecionada]["impacto"]
+		total_ris += MANCHETES[manchete_selecionada]["risco"]
+	if charge_selecionada != -1:
+		total_imp += CHARGES[charge_selecionada]["impacto"]
+		total_ris += CHARGES[charge_selecionada]["risco"]
+	if relato_selecionado != -1:
+		total_imp += RELATOS[relato_selecionado]["impacto"]
+		total_ris += RELATOS[relato_selecionado]["risco"]
+		
+	bar_impacto.value = total_imp
+	bar_risco.value = total_ris
+	
+	if total_ris > 80:
+		lbl_risco_alerta.text = "¡ CENSURA IMINENTE ! Risco muito alto. Substitua por peças mais seguras."
+		lbl_risco_alerta.add_theme_color_override("font_color", COR_RED_FILL)
+	elif total_imp < 50:
+		lbl_risco_alerta.text = "Impacto cívico insuficiente. Adicione manchetes ou relatos mais marcantes."
+		lbl_risco_alerta.add_theme_color_override("font_color", Color("#ffa240"))
+	else:
+		lbl_risco_alerta.text = "Layout estável e pronto para publicação."
+		lbl_risco_alerta.add_theme_color_override("font_color", COR_GREEN_FILL)
 
+func _desenhar_preview_jornal() -> void:
+	if not draw_preview: return
+	var size = draw_preview.size
+	
+	# Desenha fundo de papel
+	draw_preview.draw_rect(Rect2(Vector2.ZERO, size), Color("#ede6d8"))
+	draw_preview.draw_rect(Rect2(Vector2.ZERO, size), Color("#423d33"), false, 3.0)
+	
+	# Header do Jornal Clandestino
+	draw_preview.draw_rect(Rect2(12, 12, size.x - 24, 44), Color("#211d17"))
+	draw_preview.draw_string(FONTE, Vector2(size.x/2.0, 42), "O ECO DA RESISTENCIA", HORIZONTAL_ALIGNMENT_CENTER, -1, 22, Color("#ede6d8"))
+	
+	# Linha divisória
+	draw_preview.draw_line(Vector2(12, 64), Vector2(size.x - 12, 64), Color.BLACK, 1.5)
+	
+	# Desenha Manchete selecionada
+	if manchete_selecionada != -1:
+		var m_txt = MANCHETES[manchete_selecionada]["texto"].to_upper()
+		draw_preview.draw_string(FONTE, Vector2(size.x/2.0, 92), m_txt, HORIZONTAL_ALIGNMENT_CENTER, size.x - 40, 16, Color.BLACK)
+	else:
+		draw_preview.draw_string(FONTE, Vector2(size.x/2.0, 92), "[MANCHETE PRINCIPAL AUSENTE]", HORIZONTAL_ALIGNMENT_CENTER, -1, 14, Color("#a83232"))
+		
+	draw_preview.draw_line(Vector2(12, 114), Vector2(size.x - 12, 114), Color.BLACK, 1.0)
+	
+	# Esquerda do jornal: Relato
+	var relato_rect = Rect2(15, 124, size.x/2.0 - 20, size.y - 140)
+	draw_preview.draw_rect(relato_rect, Color(0, 0, 0, 0.05))
+	draw_preview.draw_string(FONTE, Vector2(24, 144), "DEPOIMENTO POPULAR:", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.BLACK)
+	if relato_selecionado != -1:
+		var r_txt = RELATOS[relato_selecionado]["texto"]
+		var r_desc = RELATOS[relato_selecionado]["desc"]
+		draw_preview.draw_string(FONTE, Vector2(24, 170), r_txt, HORIZONTAL_ALIGNMENT_LEFT, size.x/2.0 - 35, 11, Color("#211d17"))
+		draw_preview.draw_string(FONTE, Vector2(24, 210), r_desc, HORIZONTAL_ALIGNMENT_LEFT, size.x/2.0 - 35, 11, Color("#4f4b43"))
+	else:
+		draw_preview.draw_string(FONTE, Vector2(24, 180), "[SELECIONE UM DEPOIMENTO]", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#a83232"))
+		
+	# Divisor central
+	draw_preview.draw_line(Vector2(size.x/2.0, 120), Vector2(size.x/2.0, size.y - 14), Color.BLACK, 1.0)
+	
+	# Direita do jornal: Charge
+	var charge_rect = Rect2(size.x/2.0 + 10, 124, size.x/2.0 - 25, size.y - 140)
+	draw_preview.draw_rect(charge_rect, Color(0, 0, 0, 0.03))
+	draw_preview.draw_string(FONTE, Vector2(size.x/2.0 + 20, 144), "CHARGE EDITORIAL:", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.BLACK)
+	if charge_selecionada != -1:
+		var c_txt = CHARGES[charge_selecionada]["texto"]
+		draw_preview.draw_rect(Rect2(size.x/2.0 + 20, 160, size.x/2.0 - 45, 80), Color.BLACK, false, 1.5)
+		draw_preview.draw_string(FONTE, Vector2(size.x/2.0 + size.x/4.0 - 10, 204), "[CARTOON SATIRA]", HORIZONTAL_ALIGNMENT_CENTER, -1, 11, Color.BLACK)
+		draw_preview.draw_string(FONTE, Vector2(size.x/2.0 + 20, 260), c_txt, HORIZONTAL_ALIGNMENT_LEFT, size.x/2.0 - 45, 11, Color("#4f4b43"))
+	else:
+		draw_preview.draw_string(FONTE, Vector2(size.x/2.0 + 20, 180), "[SELECIONE UMA CHARGE]", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#a83232"))
 
-func _label(txt: String, font_size: int, color: Color, font: Font, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
-	var lbl := Label.new()
-	lbl.text = txt
-	lbl.add_theme_font_override("font", font)
-	lbl.add_theme_font_size_override("font_size", font_size)
-	lbl.add_theme_color_override("font_color", color)
-	lbl.horizontal_alignment = align
+func _tentar_publicar_jornal() -> void:
+	if manchete_selecionada == -1 or charge_selecionada == -1 or relato_selecionado == -1:
+		_play(sfx_erro, 0.95)
+		_shake_panel(10)
+		lbl_risco_alerta.text = "Incompleto! Preencha todos os blocos do jornal clandestino."
+		lbl_risco_alerta.add_theme_color_override("font_color", COR_RED_FILL)
+		return
+		
+	var imp = bar_impacto.value
+	var ris = bar_risco.value
+	
+	if ris > 80:
+		_play(sfx_erro, 0.9)
+		_shake_panel(15)
+		lbl_risco_alerta.text = "Falha! O jornal foi apreendido pelos militares devido ao risco alto."
+		return
+		
+	if imp < 50:
+		_play(sfx_erro, 0.95)
+		_shake_panel(10)
+		lbl_risco_alerta.text = "Falha! Conteúdo muito brando, não despertará a consciência cívica."
+		return
+		
+	# Sucesso! Transição para a Etapa 2
+	_play(sfx_click, 0.85)
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(panel_editor, "modulate:a", 0.0, 0.45)
+	tw.tween_property(panel_editor, "scale", Vector2(0.95, 0.95), 0.45)
+	await tw.finished
+	
+	panel_editor.hide()
+	etapa_atual = 2
+	
+	# Inicia a etapa de persuasão
+	panel_persuasao.show()
+	panel_persuasao.modulate.a = 0.0
+	panel_persuasao.scale = Vector2(0.95, 0.95)
+	
+	var tw2 = create_tween().set_parallel(true)
+	tw2.tween_property(panel_persuasao, "modulate:a", 1.0, 0.45)
+	tw2.tween_property(panel_persuasao, "scale", Vector2.ONE, 0.45).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	
+	_atualizar_argumento_estudante()
+
+func _shake_panel(intensity: float) -> void:
+	var orig_pos = panel_editor.position
+	var tw = create_tween()
+	for i in range(5):
+		var offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		tw.tween_property(panel_editor, "position", orig_pos + offset, 0.05)
+	tw.tween_property(panel_editor, "position", orig_pos, 0.05)
+
+# ==========================================
+# DETALHAMENTO DA ETAPA 2: PERSUASÃO SOCRÁTICA
+# ==========================================
+func _criar_layout_persuasao() -> void:
+	panel_persuasao = PanelContainer.new()
+	panel_persuasao.custom_minimum_size = Vector2(1000, 640)
+	panel_persuasao.set_anchors_preset(PRESET_CENTER)
+	panel_persuasao.grow_horizontal = GROW_DIRECTION_BOTH
+	panel_persuasao.grow_vertical = GROW_DIRECTION_BOTH
+	panel_persuasao.add_theme_stylebox_override("panel", _stylebox(COR_PANEL_BG, COR_GREEN_FILL, 3, 10))
+	layer.add_child(panel_persuasao)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 24)
+	margin.add_theme_constant_override("margin_bottom", 24)
+	margin.add_theme_constant_override("margin_left", 36)
+	margin.add_theme_constant_override("margin_right", 36)
+	panel_persuasao.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 20)
+	margin.add_child(vbox)
+	
+	# Header Persuasão
+	var header = HBoxContainer.new()
+	vbox.add_child(header)
+	
+	var lbl_title = _label("CONVERSA DE PERSUASÃO SOCRÁTICA", 26, COR_GREEN_FILL, FONTE)
+	lbl_title.size_flags_horizontal = SIZE_EXPAND_FILL
+	header.add_child(lbl_title)
+	
+	lbl_rodadas = _label("AÇÕES RESTANTES: 5", 18, COR_TEXT_SEC, FONTE_MONO)
+	header.add_child(lbl_rodadas)
+	
+	# Box do Estudante (Diálogo e Silhouette)
+	var box_student = PanelContainer.new()
+	box_student.custom_minimum_size = Vector2(0, 160)
+	var sb_st = StyleBoxFlat.new()
+	sb_st.bg_color = Color(0.1, 0.1, 0.15, 0.9)
+	sb_st.border_width_left = 2; sb_st.border_color = COR_GREEN_FILL
+	sb_st.content_margin_left = 20; sb_st.content_margin_right = 20
+	box_student.add_theme_stylebox_override("panel", sb_st)
+	vbox.add_child(box_student)
+	
+	var h_st = HBoxContainer.new()
+	h_st.add_theme_constant_override("separation", 20)
+	box_student.add_child(h_st)
+	
+	# Desenho do estudante (Vetorial ou placeholder desenhado)
+	var avatar = Control.new()
+	avatar.custom_minimum_size = Vector2(100, 120)
+	avatar.draw.connect(func():
+		var size = avatar.size
+		# Desenha ombro e cabeça estilizados
+		avatar.draw_circle(Vector2(size.x/2.0, 40), 28.0, Color("#54d6ff"))
+		var points = PackedVector2Array([
+			Vector2(10, size.y),
+			Vector2(size.x - 10, size.y),
+			Vector2(size.x/2.0 + 35, 75),
+			Vector2(size.x/2.0 - 35, 75)
+		])
+		avatar.draw_polygon(points, PackedColorArray([Color("#2a5c78"), Color("#2a5c78"), Color("#4585a8"), Color("#4585a8")]))
+		avatar.draw_string(FONTE_MONO, Vector2(size.x/2.0, size.y - 4), "ESTUDANTE", HORIZONTAL_ALIGNMENT_CENTER, -1, 10, Color.WHITE)
+	)
+	h_st.add_child(avatar)
+	
+	lbl_dialogo_estudante = _label("", 21, COR_TEXT_PRI, FONTE)
+	lbl_dialogo_estudante.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_dialogo_estudante.size_flags_horizontal = SIZE_EXPAND_FILL
+	h_st.add_child(lbl_dialogo_estudante)
+	
+	# Indicadores (Doutrinação vs Alerta Militar)
+	var meters_hbox = HBoxContainer.new()
+	meters_hbox.add_theme_constant_override("separation", 36)
+	vbox.add_child(meters_hbox)
+	
+	# Doutrinação
+	var box_dou = VBoxContainer.new()
+	box_dou.size_flags_horizontal = SIZE_EXPAND_FILL
+	box_dou.add_child(_label("INDICE DE DOUTRINAÇÃO (META: 0%)", 14, Color("#ffa240"), FONTE_MONO))
+	bar_doutrinacao = _criar_barra(Color("#ffa240"), Color("#ffa240", 0.12))
+	bar_doutrinacao.value = 100
+	box_dou.add_child(bar_doutrinacao)
+	meters_hbox.add_child(box_dou)
+	
+	# Alerta Militar
+	var box_ale = VBoxContainer.new()
+	box_ale.size_flags_horizontal = SIZE_EXPAND_FILL
+	box_ale.add_child(_label("ALERTA PATRULHA MILITAR (LIMITE: 100%)", 14, COR_RED_FILL, FONTE_MONO))
+	bar_alerta = _criar_barra(COR_RED_FILL, COR_RED_BG)
+	bar_alerta.value = 0
+	box_ale.add_child(bar_alerta)
+	meters_hbox.add_child(box_ale)
+	
+	# Cartas de Ação Cívica
+	vbox.add_child(_label("SUAS CARTAS DE PERSUASÃO CIVICA:", 15, COR_TEXT_TER, FONTE_MONO))
+	
+	cards_container = HBoxContainer.new()
+	cards_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	cards_container.add_theme_constant_override("separation", 24)
+	vbox.add_child(cards_container)
+	
+	# Rodapé de status
+	lbl_persuasao_status = _label("Selecione uma tática socrática para responder ao argumento do estudante.", 17, COR_TEXT_SEC, FONTE)
+	lbl_persuasao_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_persuasao_status)
+	
+	_construir_cards_persuasao()
+
+func _construir_cards_persuasao() -> void:
+	# Remove cartas anteriores
+	for c in cards_container.get_children():
+		c.queue_free()
+		
+	# Carta 1: Pergunta Socrática
+	_criar_card_tática(
+		"Pergunta Socrática", 
+		"Questione o argumento sobre controle.\nEfeito: -20% Doutrinação.\nDobro de dano contra argumentos de 'Ordem'.\nCusto: +10% Alerta.",
+		Color("#54d6ff"),
+		func(): _jogar_tática("socrática")
+	)
+	
+	# Carta 2: Apresentar Evidência (Panfleto)
+	_criar_card_tática(
+		"Apresentar Evidência", 
+		"Mostre o jornal publicado.\nEfeito: -35% Doutrinação.\nDobro de dano contra mentiras de 'Livro'.\nCusto: +30% Alerta.",
+		Color("#62ff86"),
+		func(): _jogar_tática("evidência")
+	)
+	
+	# Carta 3: Apelo Emocional (Liberdade)
+	_criar_card_tática(
+		"Apelo Emocional", 
+		"Fale sobre o futuro cívico livre.\nEfeito: -15% Doutrinação.\nDobro de dano contra o medo de 'Punido'.\nCusto: +5% Alerta.",
+		Color("#ffe28a"),
+		func(): _jogar_tática("emocional")
+	)
+
+func _criar_card_tática(titulo: String, desc: String, cor: Color, callback: Callable) -> void:
+	# Card Wrapper (Para evitar conflitos de rotação do HBox)
+	var card_control = Control.new()
+	card_control.custom_minimum_size = Vector2(280, 200)
+	cards_container.add_child(card_control)
+	
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(280, 200)
+	card.add_theme_stylebox_override("panel", _stylebox(Color("#131118"), cor, 2, 8))
+	card_control.add_child(card)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_right", 14)
+	card.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	margin.add_child(vbox)
+	
+	vbox.add_child(_label(titulo.to_upper(), 17, cor, FONTE))
+	vbox.add_child(_label(desc, 13, COR_TEXT_SEC, FONTE_MONO))
+	
+	var btn = Button.new()
+	btn.text = "SELECIONAR"
+	btn.custom_minimum_size = Vector2(0, 32)
+	btn.size_flags_vertical = SIZE_SHRINK_END
+	btn.add_theme_font_override("font", FONTE)
+	btn.add_theme_font_size_override("font_size", 15)
+	btn.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	btn.pressed.connect(callback)
+	
+	btn.add_theme_stylebox_override("normal", _stylebox(Color("#181b22"), cor, 1, 4))
+	btn.add_theme_stylebox_override("hover", _stylebox(cor, cor, 1, 4))
+	btn.add_theme_stylebox_override("pressed", _stylebox(cor, cor, 1, 4))
+	
+	btn.mouse_entered.connect(func():
+		_play(sfx_hover, 1.1)
+		# Efeito de elevação suave em hover
+		var tw = create_tween().set_parallel(true)
+		tw.tween_property(card, "position:y", -12.0, 0.15).set_trans(Tween.TRANS_QUAD)
+		tw.tween_property(card, "scale", Vector2(1.04, 1.04), 0.15)
+	)
+	btn.mouse_exited.connect(func():
+		var tw = create_tween().set_parallel(true)
+		tw.tween_property(card, "position:y", 0.0, 0.2).set_trans(Tween.TRANS_QUAD)
+		tw.tween_property(card, "scale", Vector2.ONE, 0.2)
+	)
+	
+	vbox.add_child(btn)
+
+func _atualizar_argumento_estudante() -> void:
+	if finalizado: return
+	var arg = ARGUMENTOS_ESTUDANTE[argumento_estudante_id]
+	lbl_dialogo_estudante.text = arg["texto"]
+	lbl_rodadas.text = "AÇÕES RESTANTES: " + str(rodadas_restantes)
+
+func _jogar_tática(tática: String) -> void:
+	if finalizado: return
+	
+	var arg = ARGUMENTOS_ESTUDANTE[argumento_estudante_id]
+	var dano = 0.0
+	var alerta_gerado = 0.0
+	var critico = false
+	var log_txt = ""
+	
+	# Resolve tática
+	if tática == "socrática":
+		dano = 20.0
+		alerta_gerado = 10.0
+		if arg["defesa"] == "ordem" or arg["defesa"] == "seguranca":
+			dano = 40.0
+			critico = true
+		log_txt = "Dante questionou as incoerências lógicas do controle militar."
+	elif tática == "evidência":
+		dano = 35.0
+		alerta_gerado = 30.0
+		if arg["defesa"] == "livro":
+			dano = 70.0
+			critico = true
+		log_txt = "Dante mostrou o jornal ecoando fatos históricos censurados."
+	elif tática == "emocional":
+		dano = 15.0
+		alerta_gerado = 5.0
+		if arg["defesa"] == "medo":
+			dano = 30.0
+			critico = true
+		log_txt = "Dante consolou o estudante mostrando a esperança na liberdade coletiva."
+		
+	# Aplica no estado
+	doutrinacao_estudante = max(0.0, doutrinacao_estudante - dano)
+	alerta_militar = min(100.0, alerta_militar + alerta_gerado)
+	rodadas_restantes -= 1
+	
+	bar_doutrinacao.value = doutrinacao_estudante
+	bar_alerta.value = alerta_militar
+	
+	# Feedback sonoro
+	if critico:
+		_play(sfx_click, 1.25)
+		lbl_persuasao_status.text = "¡ ARGUMENTO CRÍTICO ! O estudante ficou confuso com as contradições."
+		lbl_persuasao_status.add_theme_color_override("font_color", COR_GREEN_FILL)
+	else:
+		_play(sfx_click, 0.95)
+		lbl_persuasao_status.text = "O estudante ouviu o argumento."
+		lbl_persuasao_status.add_theme_color_override("font_color", COR_TEXT_SEC)
+		
+	# Verifica derrota por alerta
+	if alerta_militar >= 100.0:
+		_finalizar_persuasao(false, "Os guardas notaram a distribuição de panfletos no pátio e apreenderam Dante!")
+		return
+		
+	# Verifica vitória
+	if doutrinacao_estudante <= 0.0:
+		_finalizar_persuasao(true, "Você desmobilizou a mentira! O estudante guardou o jornal e se uniu à resistência cívica.")
+		return
+		
+	# Verifica derrota por turnos
+	if rodadas_restantes <= 0:
+		_finalizar_persuasao(false, "Suas ações acabaram e o estudante não foi convencido a tempo. O pátio foi evacuado.")
+		return
+		
+	# Muda o argumento do estudante para a próxima rodada
+	argumento_estudante_id = (argumento_estudante_id + 1) % ARGUMENTOS_ESTUDANTE.size()
+	_atualizar_argumento_estudante()
+
+func _finalizar_persuasao(sucesso: bool, texto_resultado: String) -> void:
+	finalizado = true
+	
+	# Esconde UI de jogo
+	lbl_rodadas.hide()
+	cards_container.hide()
+	
+	lbl_persuasao_status.text = texto_resultado
+	if sucesso:
+		lbl_persuasao_status.add_theme_color_override("font_color", COR_GREEN_FILL)
+		await get_tree().create_timer(3.5).timeout
+		GameState.fase3_passo = "escola_concluida"
+		await GameState.retornar_para_game_scene_apos_minigame()
+	else:
+		_play(sfx_erro, 0.9)
+		lbl_persuasao_status.add_theme_color_override("font_color", COR_RED_FILL)
+		await get_tree().create_timer(3.5).timeout
+		# Reinicia a fase da escola
+		FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_escola.tscn")
+
+# ==========================================
+# HELPERS DE UI
+# ==========================================
+func _label(texto: String, tamanho: int, cor: Color, fonte: Font = FONTE) -> Label:
+	var lbl = Label.new()
+	lbl.text = texto
+	lbl.add_theme_font_override("font", fonte)
+	lbl.add_theme_font_size_override("font_size", tamanho)
+	lbl.add_theme_color_override("font_color", cor)
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	return lbl
+
+func _criar_barra(cor_fg: Color, cor_bg: Color) -> ProgressBar:
+	var bar = ProgressBar.new()
+	bar.min_value = 0
+	bar.max_value = 100
+	bar.value = 0
+	bar.custom_minimum_size = Vector2(0, 16)
+	bar.show_percentage = true
+	bar.add_theme_font_override("font", FONTE_MONO)
+	bar.add_theme_font_size_override("font_size", 10)
+	
+	var sb_bg = StyleBoxFlat.new()
+	sb_bg.bg_color = cor_bg
+	bar.add_theme_stylebox_override("background", sb_bg)
+	
+	var sb_fg = StyleBoxFlat.new()
+	sb_fg.bg_color = cor_fg
+	bar.add_theme_stylebox_override("fill", sb_fg)
+	
+	return bar
+
+func _stylebox(bg: Color, border: Color, border_width: int, radius: int) -> StyleBoxFlat:
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.border_color = border
+	sb.border_width_left = border_width
+	sb.border_width_top = border_width
+	sb.border_width_right = border_width
+	sb.border_width_bottom = border_width
+	sb.corner_radius_top_left = radius
+	sb.corner_radius_top_right = radius
+	sb.corner_radius_bottom_left = radius
+	sb.corner_radius_bottom_right = radius
+	return sb
