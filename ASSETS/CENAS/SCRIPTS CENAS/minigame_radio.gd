@@ -30,6 +30,7 @@ var signal_strength: float = 0.0 # 0.0 a 1.0
 var wave_time: float = 0.0
 var finalizado := false
 var dialogo_descoberta_em_execucao := false
+var cometeu_erro_radio: bool = false
 
 # === COMPONENTES DE UI ===
 var layer: CanvasLayer
@@ -464,6 +465,13 @@ func _on_freq_changed(value: float) -> void:
 func _ajustar_shift(delta: int) -> void:
 	if captured_index == -1 or decrypted_states[captured_index]: return
 	
+	if shift_atual == -3:
+		cometeu_erro_radio = true
+	elif shift_atual > -3 and delta > 0:
+		cometeu_erro_radio = true
+	elif shift_atual < -3 and delta < 0:
+		cometeu_erro_radio = true
+		
 	shift_atual = clamp(shift_atual + delta, -13, 13)
 	_atualizar_ui_estado()
 
@@ -685,6 +693,9 @@ func _set_interacao_minigame(habilitada: bool) -> void:
 func _on_finish_pressed() -> void:
 	if finalizado: return
 	finalizado = true
+	
+	if not cometeu_erro_radio:
+		GameState.desbloquear_conquista("radio_perfeito")
 	
 	# Reabilita visualizador de confiança principal
 	if get_tree().root.has_node("MedidorConfianca"):

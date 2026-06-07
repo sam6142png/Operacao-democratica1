@@ -3,8 +3,8 @@ extends Control
 const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 const FONTE_MONO = preload("res://ASSETS/FONTES/dogicapixel.ttf")
 const BG_TEX = preload("res://ASSETS/SPRITES/FUNDOS/O Comandante das Ruínas.png")
-const DANTE_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/PROTA/Bravo determinado.png")
-const DANTE_FALA_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/PROTA/Falando (boca aberta).png")
+var DANTE_TEX: Texture2D
+var DANTE_FALA_TEX: Texture2D
 const VILAO_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/cara maléfica sem fundo.png")
 const VILAO_RAIVA_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/raiva sem fundo.png")
 const VILAO_ASSUSTADO_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Vilão/assustado sem fundo.png")
@@ -21,7 +21,7 @@ const QTE_TIME: float = 6.0
 # === ESTRUTURAS DE DADOS DO DEBATE ===
 const PROOFS: Dictionary = {
 	"radio": {"nome": "Prova da Rádio", "texto": "A transmissão interceptada prova censura e mentiras oficiais."},
-	"livro": {"nome": "Livro de Direitos", "texto": "O livro prova que as liberdades civis existiam antes da ditadura."},
+	"livro": {"nome": "Direitos e Deveres do Povo", "texto": "O livro prova que as liberdades civis existiam antes da ditadura."},
 	"escola": {"nome": "Doutrinação Escolar", "texto": "O material escolar foi adulterado para pregar a obediência."},
 	"memoria": {"nome": "Memória da Usina", "texto": "As anotações revelam como o medo calou os trabalhadores originais."},
 	"praca": {"nome": "Apoio da Praça", "texto": "A praça cheia prova que a cidade quer participar e decidir."}
@@ -174,6 +174,8 @@ var overlay_vignette: ColorRect
 
 
 func _ready() -> void:
+	DANTE_TEX = load(GameState.obter_caminho_sprite_dante("Bravo determinado.png"))
+	DANTE_FALA_TEX = load(GameState.obter_caminho_sprite_dante("Falando (boca aberta).png"))
 	randomize()
 	_configurar_audio()
 	_configurar_estado_inicial()
@@ -840,9 +842,9 @@ func _abrir_dossie() -> void:
 	var provas_dossie = [
 		{
 			"id": "livro",
-			"nome": "Livro de Direitos Civis (Fase 1)",
+			"nome": "Livro 'Direitos e Deveres do Povo' (Fase 1)",
 			"tag": "[LEGISLAÇÃO / DIREITOS]",
-			"desc": "A constituição histórica e livro de direitos civis recuperado da biblioteca. Prova que em Usina Velha a soberania pertence ao povo, as liberdades de expressão e reunião são invioláveis, e o voto direto é garantido por lei.",
+			"desc": "A constituição histórica e o livro de Direitos e Deveres do Povo recuperado na Vila do Açude Seco. Prova que em Usina Velha a soberania pertence ao povo, as liberdades de expressão e reunião são invioláveis, e o voto direto é garantido por lei.",
 			"cor": "#ffe28a"
 		},
 		{
@@ -1292,6 +1294,10 @@ func _registrar_resultado(resultado: String) -> void:
 	GameState.pontuacao_final["atos"] = act_index
 	GameState.confianca += _delta_confianca(resultado)
 	GameState.registrar_escolha("Concluiu a ultima transmissao: " + resultado, _delta_confianca(resultado))
+	
+	GameState.desbloquear_conquista("fim_qualquer")
+	if resultado == "democratica":
+		GameState.desbloquear_conquista("fim_democratico")
 
 
 func _delta_confianca(resultado: String) -> int:

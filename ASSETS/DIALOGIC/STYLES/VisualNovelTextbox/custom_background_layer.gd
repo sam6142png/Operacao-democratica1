@@ -12,7 +12,8 @@ func _ready() -> void:
 func _on_background_child_entered(node: Node) -> void:
 	# Quando uma imagem de fundo (TextureRect) é criada pelo Dialogic, aplicamos o shader de pixelização
 	if node is TextureRect or node is Control:
-		_aplicar_shader_pixelate(node)
+		# _aplicar_shader_pixelate(node)
+		pass
 
 func _aplicar_shader_pixelate(target: Control) -> void:
 	var mat := ShaderMaterial.new()

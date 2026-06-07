@@ -15,10 +15,14 @@ var modal_dimmer: ColorRect
 var painel_opcoes: Panel
 var painel_creditos: Panel
 var painel_sair: Panel
+var painel_personalizar: Panel
+var preview_dante: TextureRect
 var painel_ativo: Panel = null
 var rastro_fogo: CPUParticles2D
 var menu_container: MarginContainer
 var vbox_botoes: VBoxContainer
+var _current_skin_idx: int = 0
+var _current_tb_idx: int = 0
 
 # Tipografia Exclusiva para Botões Principais
 @onready var dogica_font = preload("res://ArticaPro-Bold.ttf")
@@ -45,6 +49,7 @@ const TELA_CHEIA_OPCOES = ["Ligado", "Desligado"]
 var TR = {
 	"jogar":        {"pt": "Novo Jogo",      "en": "New Game",       "es": "Nuevo Juego",    "fr": "Nouveau Jeu"},
 	"continuar":    {"pt": "Continuar",      "en": "Continue",       "es": "Continuar",      "fr": "Continuer"},
+	"personalizar": {"pt": "Personalizar",   "en": "Customize",      "es": "Personalizar",   "fr": "Personnaliser"},
 	"opcoes":       {"pt": "Opções",         "en": "Options",        "es": "Opciones",       "fr": "Options"},
 	"creditos":     {"pt": "Créditos",       "en": "Credits",        "es": "Créditos",       "fr": "Crédits"},
 	"sair":         {"pt": "Sair",           "en": "Quit",           "es": "Salir",          "fr": "Quitter"},
@@ -87,11 +92,17 @@ func _ready() -> void:
 	
 	if not GameState.has_save():
 		btn_continuar.hide()
+		
+	# Criar o botão Personalizar dinamicamente
+	var btn_personalizar = Button.new()
+	btn_personalizar.text = "Personalizar"
+	btn_personalizar.name = "PersonalizarBotao"
+	btn_personalizar.pressed.connect(_on_personalizar_pressed)
 	
 	# Salva a posição original do botão Jogar como referência de ancoragem
 	var pos_ancora = jogar_botao.position
 	
-	botoes = [btn_continuar, jogar_botao, opcoes_botao, creditos_botao, sair_botao]
+	botoes = [btn_continuar, jogar_botao, btn_personalizar, opcoes_botao, creditos_botao, sair_botao]
 	
 	# Criar container organizado para evitar sobreposição
 	menu_container = MarginContainer.new()
@@ -233,6 +244,8 @@ func _configurar_botoes() -> void:
 	for btn in botoes:
 		if btn.name == "ContinuarBotao":
 			_aplicar_estilo_principal(btn, C_NEON_VERDE)
+		elif btn.name == "PersonalizarBotao":
+			_aplicar_estilo_principal(btn, Color("#54d6ff"))
 		else:
 			_aplicar_estilo_principal(btn, C_NEON_LARANJA)
 
@@ -241,7 +254,7 @@ func _aplicar_estilo_principal(btn: Button, cor_destaque: Color) -> void:
 	
 	# Hierarquia Harmônica de Tamanhos
 	var f_size = 38 # Padrão para os principais
-	if btn.name in ["OpçõesBotao", "CréditosBotao"]: f_size = 28
+	if btn.name in ["OpçõesBotao", "CréditosBotao", "PersonalizarBotao"]: f_size = 28
 	if btn.name == "SairBotao": f_size = 22
 	
 	btn.add_theme_font_size_override("font_size", f_size)
@@ -792,10 +805,15 @@ func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: 
 func _aplicar_idioma() -> void:
 	# Botões Principais
 	jogar_botao.text = _t("jogar")
-	if tr_refs.has("btn_continuar"): tr_refs["btn_continuar"].text = _t("continuar")
 	opcoes_botao.text = _t("opcoes")
 	creditos_botao.text = _t("creditos")
 	sair_botao.text = _t("sair")
+	
+	for btn in botoes:
+		if btn.name == "PersonalizarBotao":
+			btn.text = _t("personalizar")
+		elif btn.name == "ContinuarBotao":
+			btn.text = _t("continuar")
 	
 	# Opções
 	if tr_refs.has("lbl_opcoes_titulo"): tr_refs["lbl_opcoes_titulo"].text = _t("config_titulo")
@@ -889,6 +907,7 @@ func _criar_paineis() -> void:
 	_criar_painel_opcoes()
 	_criar_painel_creditos()
 	_criar_painel_sair()
+	_criar_painel_personalizar()
 
 func _abrir_modal(modal: Panel) -> void:
 	if painel_ativo != null: return
@@ -967,3 +986,361 @@ func _on_creditos_pressed() -> void:
 
 func _on_sair_pressed() -> void:
 	_abrir_modal(painel_sair)
+
+
+func _on_personalizar_pressed() -> void:
+	if is_instance_valid(painel_personalizar):
+		painel_personalizar.name = "painel_personalizar_old"
+		painel_personalizar.queue_free()
+	_criar_painel_personalizar()
+	_abrir_modal(painel_personalizar)
+
+
+func _criar_painel_personalizar() -> void:
+	var estilo_modal = painel_opcoes.get_theme_stylebox("panel").duplicate()
+	estilo_modal.border_color = Color("#54d6ff")
+	estilo_modal.shadow_color = Color("#54d6ff")
+	
+	var viewport_size = Vector2(1920, 1080)
+	
+	painel_personalizar = Panel.new()
+	painel_personalizar.add_theme_stylebox_override("panel", estilo_modal)
+	painel_personalizar.size = Vector2(1100, 750)
+	painel_personalizar.position = (viewport_size - painel_personalizar.size) / 2.0
+	painel_personalizar.pivot_offset = painel_personalizar.size / 2.0
+	painel_personalizar.z_index = 50
+	painel_personalizar.hide()
+	add_child(painel_personalizar)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 35)
+	margin.add_theme_constant_override("margin_bottom", 35)
+	margin.add_theme_constant_override("margin_left", 45)
+	margin.add_theme_constant_override("margin_right", 45)
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	painel_personalizar.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	margin.add_child(vbox)
+	
+	var lbl_titulo = Label.new()
+	lbl_titulo.text = "PERSONALIZAÇÃO & CONQUISTAS"
+	lbl_titulo.add_theme_font_size_override("font_size", 38)
+	lbl_titulo.add_theme_color_override("font_color", Color("#54d6ff"))
+	lbl_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_titulo)
+	
+	var divisor = ColorRect.new()
+	divisor.custom_minimum_size.y = 2
+	divisor.color = Color("#54d6ff", 0.3)
+	vbox.add_child(divisor)
+	
+	var hbox_paginas = HBoxContainer.new()
+	hbox_paginas.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hbox_paginas.add_theme_constant_override("separation", 24)
+	vbox.add_child(hbox_paginas)
+	
+	# --- PÁGINA ESQUERDA: CONQUISTAS ---
+	var col_left = VBoxContainer.new()
+	col_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_left.add_theme_constant_override("separation", 10)
+	hbox_paginas.add_child(col_left)
+	
+	var lbl_hdr_conquistas = Label.new()
+	lbl_hdr_conquistas.text = "CONQUISTAS CÍVICAS"
+	lbl_hdr_conquistas.add_theme_font_size_override("font_size", 18)
+	lbl_hdr_conquistas.add_theme_color_override("font_color", Color("#ffe28a"))
+	col_left.add_child(lbl_hdr_conquistas)
+	
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	col_left.add_child(scroll)
+	
+	var list_conquistas = VBoxContainer.new()
+	list_conquistas.add_theme_constant_override("separation", 10)
+	list_conquistas.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(list_conquistas)
+	
+	# Preencher conquistas
+	var info_conquistas = [
+		{"id": "historiador", "titulo": "Guardião da Memória", "desc": "Fase 1: Recuperou o Livro de Direitos do Povo.", "recompensa": "Desbloqueia Estilo 'Xilogravura do Cariri'"},
+		{"id": "radio_perfeito", "titulo": "Verdade nas Ondas", "desc": "Fase 2: Decifrou a rádio sem falhar.", "recompensa": "Desbloqueia Estilo 'Neon Hacker'"},
+		{"id": "escola_ok", "titulo": "Voz da Escola", "desc": "Fase 3: Interceptou e libertou os alto-falantes.", "recompensa": "Desbloqueia Skin 'Dante Estudante'"},
+		{"id": "praca_pacifica", "titulo": "Líder Pacífico", "desc": "Fase 4: Concluiu a Praça sem violência e com Segurança > 80%.", "recompensa": "Desbloqueia Skin 'Dante Diplomata'"},
+		{"id": "fim_democratico", "titulo": "Vontade do Povo", "desc": "Final: Julgou o ditador sob a lei e ampla defesa.", "recompensa": "Desbloqueia Estilo 'Palácio Dourado'"},
+		{"id": "fim_qualquer", "titulo": "Coração da Resistência", "desc": "Final: Concluiu a jornada em qualquer rota.", "recompensa": "Desbloqueia Skin 'Dante Revolucionário'"}
+	]
+	
+	for conq in info_conquistas:
+		var conq_panel = PanelContainer.new()
+		var desbloqueada: bool = GameState.conquistas_desbloqueadas.get(conq["id"], false)
+		
+		var conq_sb = StyleBoxFlat.new()
+		conq_sb.bg_color = Color("#111018") if desbloqueada else Color("#09090c")
+		conq_sb.border_width_left = 3
+		conq_sb.border_color = Color("#22ff55") if desbloqueada else Color("#444444")
+		conq_sb.content_margin_left = 10
+		conq_sb.content_margin_right = 10
+		conq_sb.content_margin_top = 8
+		conq_sb.content_margin_bottom = 8
+		conq_panel.add_theme_stylebox_override("panel", conq_sb)
+		
+		var conq_hbox = HBoxContainer.new()
+		conq_hbox.add_theme_constant_override("separation", 10)
+		conq_panel.add_child(conq_hbox)
+		
+		var conq_ico = Label.new()
+		conq_ico.text = "🏆" if desbloqueada else "🔒"
+		conq_ico.add_theme_font_size_override("font_size", 22)
+		conq_hbox.add_child(conq_ico)
+		
+		var conq_vbox = VBoxContainer.new()
+		conq_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		conq_hbox.add_child(conq_vbox)
+		
+		var conq_lbl_title = Label.new()
+		conq_lbl_title.text = conq["titulo"]
+		conq_lbl_title.add_theme_font_override("font", dogica_font)
+		conq_lbl_title.add_theme_font_size_override("font_size", 16)
+		conq_lbl_title.add_theme_color_override("font_color", Color("#22ff55") if desbloqueada else Color("#888888"))
+		conq_vbox.add_child(conq_lbl_title)
+		
+		var conq_lbl_desc = Label.new()
+		conq_lbl_desc.text = conq["desc"] + "\n[RECOMPENSA: " + conq["recompensa"] + "]"
+		conq_lbl_desc.add_theme_font_size_override("font_size", 13)
+		conq_lbl_desc.add_theme_color_override("font_color", Color("#d7c9aa") if desbloqueada else Color("#555555"))
+		conq_lbl_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+		conq_vbox.add_child(conq_lbl_desc)
+		
+		list_conquistas.add_child(conq_panel)
+		
+	# --- DIVISOR CENTRAL ---
+	var spine = ColorRect.new()
+	spine.custom_minimum_size = Vector2(2, 0)
+	spine.color = Color("#54d6ff", 0.2)
+	hbox_paginas.add_child(spine)
+	
+	# --- PÁGINA DIREITA: CUSTOMIZAÇÃO ---
+	var col_right = VBoxContainer.new()
+	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_right.add_theme_constant_override("separation", 12)
+	hbox_paginas.add_child(col_right)
+	
+	var lbl_hdr_armario = Label.new()
+	lbl_hdr_armario.text = "ARMÁRIO DO CIDADÃO"
+	lbl_hdr_armario.add_theme_font_size_override("font_size", 18)
+	lbl_hdr_armario.add_theme_color_override("font_color", Color("#ffe28a"))
+	col_right.add_child(lbl_hdr_armario)
+	
+	# Preview do Dante
+	var preview_panel = PanelContainer.new()
+	preview_panel.custom_minimum_size = Vector2(0, 180)
+	var pr_sb = StyleBoxFlat.new()
+	pr_sb.bg_color = Color("#11131c")
+	pr_sb.border_width_left = 1; pr_sb.border_width_top = 1
+	pr_sb.border_width_right = 1; pr_sb.border_width_bottom = 1
+	pr_sb.border_color = Color("#54d6ff", 0.4)
+	pr_sb.corner_radius_top_left = 6; pr_sb.corner_radius_top_right = 6
+	pr_sb.corner_radius_bottom_left = 6; pr_sb.corner_radius_bottom_right = 6
+	preview_panel.add_theme_stylebox_override("panel", pr_sb)
+	col_right.add_child(preview_panel)
+	
+	var pr_hbox = HBoxContainer.new()
+	pr_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	preview_panel.add_child(pr_hbox)
+	
+	preview_dante = TextureRect.new()
+	preview_dante.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	preview_dante.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	preview_dante.custom_minimum_size = Vector2(160, 160)
+	pr_hbox.add_child(preview_dante)
+	
+	# Seleção de Skin (Dante)
+	var lbl_sel_skin = Label.new()
+	lbl_sel_skin.text = "SELECIONAR SKIN DO DANTE"
+	lbl_sel_skin.add_theme_font_size_override("font_size", 15)
+	lbl_sel_skin.add_theme_color_override("font_color", Color("#8f8875"))
+	col_right.add_child(lbl_sel_skin)
+	
+	var skins_options = [
+		{"id": "padrao", "nome": "Dante Padrão", "cond": "", "conq_id": ""},
+		{"id": "estudante", "nome": "Dante Estudante 🎒", "cond": "Bloqueado: Conclua a Escola (Fase 3)", "conq_id": "escola_ok"},
+		{"id": "diplomata", "nome": "Dante Diplomata 💼", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
+		{"id": "revolucionario", "nome": "Dante Resistência ✊", "cond": "Bloqueado: Complete o jogo", "conq_id": "fim_qualquer"}
+	]
+	
+	_current_skin_idx = 0
+	for i in range(skins_options.size()):
+		if skins_options[i]["id"] == GameState.skin_dante_selecionada:
+			_current_skin_idx = i
+			
+	var skin_selector = HBoxContainer.new()
+	skin_selector.add_theme_constant_override("separation", 10)
+	col_right.add_child(skin_selector)
+	
+	var btn_skin_esq = Button.new()
+	btn_skin_esq.text = " < "
+	btn_skin_esq.add_theme_font_size_override("font_size", 20)
+	_aplicar_estilo_neon(btn_skin_esq, Color("#54d6ff"), true)
+	skin_selector.add_child(btn_skin_esq)
+	
+	var lbl_skin_nome = Label.new()
+	lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
+	lbl_skin_nome.add_theme_font_size_override("font_size", 20)
+	lbl_skin_nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_skin_nome.custom_minimum_size.x = 240
+	skin_selector.add_child(lbl_skin_nome)
+	
+	var btn_skin_dir = Button.new()
+	btn_skin_dir.text = " > "
+	btn_skin_dir.add_theme_font_size_override("font_size", 20)
+	_aplicar_estilo_neon(btn_skin_dir, Color("#54d6ff"), true)
+	skin_selector.add_child(btn_skin_dir)
+	
+	# Seleção de Caixa de Texto (Estilo)
+	var lbl_sel_tb = Label.new()
+	lbl_sel_tb.text = "SELECIONAR ESTILO DA CAIXA DE TEXTO"
+	lbl_sel_tb.add_theme_font_size_override("font_size", 15)
+	lbl_sel_tb.add_theme_color_override("font_color", Color("#8f8875"))
+	col_right.add_child(lbl_sel_tb)
+	
+	var tb_options = [
+		{"nome": "Clássico Usina", "caminho": "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres", "cond": "", "conq_id": ""},
+		{"nome": "Xilogravura Cariri 🪵", "caminho": "res://ASSETS/DIALOGIC/STYLES/XilografiaCariri.tres", "cond": "Bloqueado: Conclua a Busca pelo Livro (Fase 1)", "conq_id": "historiador"},
+		{"nome": "Renda & Jangada ⛵", "caminho": "res://ASSETS/DIALOGIC/STYLES/JangadaRenda.tres", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
+		{"nome": "Neon Hacker 📟", "caminho": "res://ASSETS/DIALOGIC/STYLES/NeonHacker.tres", "cond": "Bloqueado: Decifre a rádio sem falhar (Fase 2)", "conq_id": "radio_perfeito"},
+		{"nome": "Palácio Dourado 🏛️", "caminho": "res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres", "cond": "Bloqueado: Rota de Julgamento Civil no final", "conq_id": "fim_democratico"}
+	]
+	
+	_current_tb_idx = 0
+	for i in range(tb_options.size()):
+		if tb_options[i]["caminho"] == GameState.estilo_textbox_selecionado:
+			_current_tb_idx = i
+			
+	var tb_selector = HBoxContainer.new()
+	tb_selector.add_theme_constant_override("separation", 10)
+	col_right.add_child(tb_selector)
+	
+	var btn_tb_esq = Button.new()
+	btn_tb_esq.text = " < "
+	btn_tb_esq.add_theme_font_size_override("font_size", 20)
+	_aplicar_estilo_neon(btn_tb_esq, Color("#54d6ff"), true)
+	tb_selector.add_child(btn_tb_esq)
+	
+	var lbl_tb_nome = Label.new()
+	lbl_tb_nome.text = tb_options[_current_tb_idx]["nome"]
+	lbl_tb_nome.add_theme_font_size_override("font_size", 20)
+	lbl_tb_nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_tb_nome.custom_minimum_size.x = 240
+	tb_selector.add_child(lbl_tb_nome)
+	
+	var btn_tb_dir = Button.new()
+	btn_tb_dir.text = " > "
+	btn_tb_dir.add_theme_font_size_override("font_size", 20)
+	_aplicar_estilo_neon(btn_tb_dir, Color("#54d6ff"), true)
+	tb_selector.add_child(btn_tb_dir)
+	
+	# Feedback de bloqueio / instruções
+	var lbl_armario_feedback = Label.new()
+	lbl_armario_feedback.text = ""
+	lbl_armario_feedback.add_theme_font_size_override("font_size", 14)
+	lbl_armario_feedback.add_theme_color_override("font_color", Color("#ff4b4b"))
+	lbl_armario_feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_armario_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD
+	col_right.add_child(lbl_armario_feedback)
+	
+	# Funções de atualização local
+	var atualizar_preview = func():
+		var preview_path = GameState.obter_caminho_sprite_dante("neutro.png")
+		preview_dante.texture = load(preview_path)
+		
+	var verificar_selecoes = func():
+		atualizar_preview.call()
+		lbl_armario_feedback.text = ""
+		# Validar skin
+		var skin = skins_options[_current_skin_idx]
+		if skin["conq_id"] != "" and not GameState.conquistas_desbloqueadas.get(skin["conq_id"], false):
+			lbl_armario_feedback.text = skin["cond"]
+		# Validar textbox
+		var tb = tb_options[_current_tb_idx]
+		if tb["conq_id"] != "" and not GameState.conquistas_desbloqueadas.get(tb["conq_id"], false):
+			if lbl_armario_feedback.text != "":
+				lbl_armario_feedback.text += "\n"
+			lbl_armario_feedback.text += tb["cond"]
+			
+	atualizar_preview.call()
+	
+	btn_skin_esq.pressed.connect(func():
+		_tocar_deslize()
+		_current_skin_idx = _current_skin_idx - 1
+		if _current_skin_idx < 0: _current_skin_idx = skins_options.size() - 1
+		lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
+		var skin = skins_options[_current_skin_idx]
+		var unlocked = skin["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(skin["conq_id"], false)
+		if unlocked:
+			GameState.skin_dante_selecionada = skin["id"]
+			GameState.aplicar_estilizacao_dialogic()
+			GameState.salvar_jogo(false)
+		verificar_selecoes.call()
+	)
+	
+	btn_skin_dir.pressed.connect(func():
+		_tocar_deslize()
+		_current_skin_idx = _current_skin_idx + 1
+		if _current_skin_idx >= skins_options.size(): _current_skin_idx = 0
+		lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
+		var skin = skins_options[_current_skin_idx]
+		var unlocked = skin["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(skin["conq_id"], false)
+		if unlocked:
+			GameState.skin_dante_selecionada = skin["id"]
+			GameState.aplicar_estilizacao_dialogic()
+			GameState.salvar_jogo(false)
+		verificar_selecoes.call()
+	)
+	
+	btn_tb_esq.pressed.connect(func():
+		_tocar_deslize()
+		_current_tb_idx = _current_tb_idx - 1
+		if _current_tb_idx < 0: _current_tb_idx = tb_options.size() - 1
+		lbl_tb_nome.text = tb_options[_current_tb_idx]["nome"]
+		var tb = tb_options[_current_tb_idx]
+		var unlocked = tb["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(tb["conq_id"], false)
+		if unlocked:
+			GameState.estilo_textbox_selecionado = tb["caminho"]
+			GameState.aplicar_estilizacao_dialogic()
+			GameState.salvar_jogo(false)
+		verificar_selecoes.call()
+	)
+	
+	btn_tb_dir.pressed.connect(func():
+		_tocar_deslize()
+		_current_tb_idx = _current_tb_idx + 1
+		if _current_tb_idx >= tb_options.size(): _current_tb_idx = 0
+		lbl_tb_nome.text = tb_options[_current_tb_idx]["nome"]
+		var tb = tb_options[_current_tb_idx]
+		var unlocked = tb["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(tb["conq_id"], false)
+		if unlocked:
+			GameState.estilo_textbox_selecionado = tb["caminho"]
+			GameState.aplicar_estilizacao_dialogic()
+			GameState.salvar_jogo(false)
+		verificar_selecoes.call()
+	)
+	
+	var btn_fechar_pers = _criar_botao_generico("FECHAR PERSONALIZAÇÃO", Color("#54d6ff"))
+	btn_fechar_pers.pressed.connect(_fechar_modal)
+	btn_fechar_pers.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(btn_fechar_pers)
+	
+	# Adiciona aos botões de hover para consistência de áudio/escala
+	btn_skin_esq.mouse_entered.connect(func(): _on_hover_container_btn(btn_skin_esq))
+	btn_skin_esq.mouse_exited.connect(func(): _on_unhover_container_btn(btn_skin_esq))
+	btn_skin_dir.mouse_entered.connect(func(): _on_hover_container_btn(btn_skin_dir))
+	btn_skin_dir.mouse_exited.connect(func(): _on_unhover_container_btn(btn_skin_dir))
+	btn_tb_esq.mouse_entered.connect(func(): _on_hover_container_btn(btn_tb_esq))
+	btn_tb_esq.mouse_exited.connect(func(): _on_unhover_container_btn(btn_tb_esq))
+	btn_tb_dir.mouse_entered.connect(func(): _on_hover_container_btn(btn_tb_dir))
+	btn_tb_dir.mouse_exited.connect(func(): _on_unhover_container_btn(btn_tb_dir))
+	btn_fechar_pers.mouse_entered.connect(func(): _on_hover_container_btn(btn_fechar_pers))
+	btn_fechar_pers.mouse_exited.connect(func(): _on_unhover_container_btn(btn_fechar_pers))

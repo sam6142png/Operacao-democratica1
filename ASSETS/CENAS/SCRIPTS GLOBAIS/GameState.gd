@@ -34,6 +34,18 @@ var resultado_final: String = ""
 var pontuacao_final: Dictionary = {}
 var registros_democraticos: Array[Dictionary] = []
 
+# --- Conquistas e Customização ---
+var conquistas_desbloqueadas: Dictionary = {
+	"historiador": false,      # Completou Fase 1
+	"radio_perfeito": false,  # Decifrou rádio sem errar na Fase 2
+	"escola_ok": false,        # Completou Fase 3 (Escola)
+	"praca_pacifica": false,  # Completou Fase 4 (Praça) com Segurança > 80% e sem violência
+	"fim_democratico": false, # Final da Rota Democrática
+	"fim_qualquer": false     # Concluiu o jogo em qualquer rota
+}
+var skin_dante_selecionada: String = "padrao" # "padrao", "estudante", "diplomata", "revolucionario"
+var estilo_textbox_selecionado: String = "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
+
 # Log de escolhas para exibir no menu de pausa
 # Cada entrada: {"texto": "...", "delta": +1 ou -1}
 var log_escolhas: Array = []
@@ -70,7 +82,7 @@ func mostrar_registro_democratico(registro: Dictionary) -> void:
 	await _mostrar_painel_registro_democratico(registro)
 
 
-func mostrar_resumo_transicao_fase(fase_anterior: int, dados: Dictionary) -> void:
+func mostrar_resumo_transicao_fase(_fase_anterior: int, dados: Dictionary) -> void:
 	var overlay := CanvasLayer.new()
 	overlay.layer = 120
 	get_tree().root.add_child(overlay)
@@ -367,7 +379,10 @@ func salvar_jogo(capturar_cena_atual: bool = true):
 		"resultado_final": resultado_final,
 		"pontuacao_final": pontuacao_final,
 		"registros_democraticos": registros_democraticos,
-		"log_escolhas": log_escolhas
+		"log_escolhas": log_escolhas,
+		"conquistas_desbloqueadas": conquistas_desbloqueadas,
+		"skin_dante_selecionada": skin_dante_selecionada,
+		"estilo_textbox_selecionado": estilo_textbox_selecionado
 	}
 	
 	# 4. Salva o arquivo JSON principal
@@ -379,6 +394,169 @@ func salvar_jogo(capturar_cena_atual: bool = true):
 		# 5. Salva o estado interno profundo do Dialogic (variáveis internas, posição do texto)
 		Dialogic.Save.save("autosave")
 		print("[GameState] Jogo salvo com sucesso.")
+
+
+func desbloquear_conquista(id: String) -> void:
+	if conquistas_desbloqueadas.has(id) and not conquistas_desbloqueadas[id]:
+		conquistas_desbloqueadas[id] = true
+		salvar_jogo(false)
+		criar_toast_conquista(id)
+
+
+func criar_toast_conquista(id: String) -> void:
+	var info_conquistas = {
+		"historiador": {"titulo": "Guardião da Memória", "desc": "Fase 1: Recuperou o Livro de Direitos."},
+		"radio_perfeito": {"titulo": "Verdade nas Ondas", "desc": "Fase 2: Decifrou a rádio sem falhar."},
+		"escola_ok": {"titulo": "Voz da Escola", "desc": "Fase 3: Libertou os alto-falantes."},
+		"praca_pacifica": {"titulo": "Líder Pacífico", "desc": "Fase 4: Marchou pacificamente."},
+		"fim_democratico": {"titulo": "Vontade do Povo", "desc": "Final: Garantiu o julgamento cívico."},
+		"fim_qualquer": {"titulo": "Coração da Resistência", "desc": "Final: Concluiu a jornada por Usina Velha."}
+	}
+	
+	if not info_conquistas.has(id):
+		return
+		
+	var dados = info_conquistas[id]
+	
+	var toast_layer := CanvasLayer.new()
+	toast_layer.layer = 150
+	get_tree().root.add_child(toast_layer)
+	
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(390, 95)
+	
+	var sb = StyleBoxFlat.new()
+	sb.bg_color = Color("#0c0b11")
+	sb.border_width_left = 4
+	sb.border_width_top = 1
+	sb.border_width_right = 1
+	sb.border_width_bottom = 1
+	sb.border_color = Color("#FF8C00")
+	sb.corner_radius_top_left = 6
+	sb.corner_radius_top_right = 6
+	sb.corner_radius_bottom_right = 6
+	sb.corner_radius_bottom_left = 6
+	sb.shadow_size = 12
+	sb.shadow_color = Color("#FF8C00", 0.15)
+	sb.content_margin_left = 14
+	sb.content_margin_right = 14
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", sb)
+	
+	var viewport_width = toast_layer.get_viewport().get_visible_rect().size.x
+	var target_x = viewport_width - panel.custom_minimum_size.x - 20
+	panel.position = Vector2(target_x, -120)
+	panel.modulate.a = 0.0
+	toast_layer.add_child(panel)
+	
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 14)
+	panel.add_child(hbox)
+	
+	var lbl_icone := Label.new()
+	lbl_icone.text = "🏆"
+	lbl_icone.add_theme_font_size_override("font_size", 30)
+	lbl_icone.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hbox.add_child(lbl_icone)
+	
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 3)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_child(vbox)
+	
+	var FONTE_PADRAO = load("res://ASSETS/FONTES/determination.ttf")
+	var FONTE_MONO = load("res://ASSETS/FONTES/dogicapixel.ttf")
+	
+	var lbl_desbloqueio := Label.new()
+	lbl_desbloqueio.text = "CONQUISTA DESBLOQUEADA!"
+	lbl_desbloqueio.add_theme_color_override("font_color", Color("#FF8C00"))
+	lbl_desbloqueio.add_theme_font_size_override("font_size", 10)
+	if FONTE_MONO: lbl_desbloqueio.add_theme_font_override("font", FONTE_MONO)
+	vbox.add_child(lbl_desbloqueio)
+	
+	var lbl_titulo := Label.new()
+	lbl_titulo.text = dados["titulo"]
+	lbl_titulo.add_theme_color_override("font_color", Color.WHITE)
+	lbl_titulo.add_theme_font_size_override("font_size", 20)
+	if FONTE_PADRAO: lbl_titulo.add_theme_font_override("font", FONTE_PADRAO)
+	vbox.add_child(lbl_titulo)
+	
+	var lbl_desc := Label.new()
+	lbl_desc.text = dados["desc"]
+	lbl_desc.add_theme_color_override("font_color", Color("#8f8875"))
+	lbl_desc.add_theme_font_size_override("font_size", 14)
+	if FONTE_PADRAO: lbl_desc.add_theme_font_override("font", FONTE_PADRAO)
+	vbox.add_child(lbl_desc)
+	
+	var sfx := AudioStreamPlayer.new()
+	sfx.stream = load("res://ASSETS/SOUNDS/FSX/BotoesClick.mp3")
+	var victory_sfx = load("res://ASSETS/SOUNDS/FSX/Tensao/stinger_tensao.mp3")
+	if victory_sfx:
+		sfx.stream = victory_sfx
+	sfx.volume_db = -5.0
+	sfx.pitch_scale = 1.3
+	toast_layer.add_child(sfx)
+	sfx.play()
+	
+	var tw = panel.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(panel, "position:y", 40.0, 0.55).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.35)
+	
+	await get_tree().create_timer(4.5).timeout
+	
+	var tw_out = panel.create_tween().set_parallel(true)
+	tw_out.tween_property(panel, "position:x", viewport_width + 50.0, 0.4).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tw_out.tween_property(panel, "modulate:a", 0.0, 0.3)
+	await tw_out.finished
+	
+	toast_layer.queue_free()
+
+
+func obter_caminho_sprite_dante(nome_sprite: String) -> String:
+	if skin_dante_selecionada == "padrao":
+		return "res://ASSETS/SPRITES/PERSONAGENS/PROTA/" + nome_sprite
+		
+	var caminho_custom = "res://ASSETS/SPRITES/PERSONAGENS/PROTA/" + skin_dante_selecionada + "/" + nome_sprite
+	if FileAccess.file_exists(caminho_custom):
+		return caminho_custom
+		
+	return "res://ASSETS/SPRITES/PERSONAGENS/PROTA/" + nome_sprite
+
+
+func aplicar_estilizacao_dialogic() -> void:
+	if estilo_textbox_selecionado != "":
+		if Dialogic.Styles.has_active_layout_node():
+			Dialogic.Styles.load_style(estilo_textbox_selecionado)
+		else:
+			Dialogic.current_state_info["style"] = estilo_textbox_selecionado
+			Dialogic.current_state_info["base_style"] = estilo_textbox_selecionado
+			ProjectSettings.set_setting("dialogic/layout/default_style", estilo_textbox_selecionado)
+	
+	var char_res = load("res://ASSETS/DIALOGIC/CHARACTER/PROTA.dch")
+	if not char_res or not "portraits" in char_res:
+		return
+		
+	var portraits: Dictionary = char_res.portraits
+	for port_name in portraits.keys():
+		var port_data = portraits[port_name]
+		var img_path = ""
+		if port_data.has("export_overrides") and port_data["export_overrides"].has("image"):
+			img_path = port_data["export_overrides"]["image"]
+		elif port_data.has("image"):
+			img_path = port_data["image"]
+			
+		if not img_path.is_empty():
+			var file_name = img_path.get_file()
+			var custom_img = obter_caminho_sprite_dante(file_name)
+			
+			if port_data.has("export_overrides"):
+				port_data["export_overrides"]["image"] = custom_img
+			else:
+				port_data["image"] = custom_img
+
 
 func limpar_timeline_ativa() -> void:
 	timeline_atual = ""
@@ -506,6 +684,17 @@ func _carregar_dados_json():
 				cena_atual = data.get("cena_atual", "res://ASSETS/CENAS/game_scene.tscn")
 				timeline_atual = data.get("timeline_atual", "")
 				aguardando_sequencia_fase = data.get("aguardando_sequencia_fase", false)
+				
+				# Carregar conquistas e skins
+				var saved_conquistas = data.get("conquistas_desbloqueadas", {})
+				for key in saved_conquistas.keys():
+					if conquistas_desbloqueadas.has(key):
+						conquistas_desbloqueadas[key] = saved_conquistas[key]
+				
+				skin_dante_selecionada = data.get("skin_dante_selecionada", "padrao")
+				estilo_textbox_selecionado = data.get("estilo_textbox_selecionado", "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres")
+				
+				aplicar_estilizacao_dialogic()
 				print("[GameState] Dados JSON carregados na memória.")
 
 func reset_save():
@@ -530,6 +719,7 @@ func reset_save():
 	aguardando_sequencia_fase = false
 	log_escolhas = []
 	
+
 	# Encerra processos ativos
 	await TimelineManager.parar_tudo()
 	

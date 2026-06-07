@@ -461,6 +461,7 @@ func _finalizar() -> void:
 	GameState.fase_atual = 2
 	GameState.fase2_passo = "inicio"
 	GameState.limpar_timeline_ativa()
+	GameState.desbloquear_conquista("historiador")
 	await GameState.retornar_para_game_scene_apos_minigame()
 
 

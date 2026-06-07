@@ -242,7 +242,7 @@ func _montar_cena() -> void:
 	layer.add_child(crowd)
 
 	var dante := TextureRect.new()
-	dante.texture = DANTE_TEX
+	dante.texture = load(GameState.obter_caminho_sprite_dante("Apontando (braço estendido, expressão acusatória).png"))
 	dante.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	dante.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	dante.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -594,6 +594,10 @@ func _concluir_simulacao() -> void:
 
 
 func _ir_para_palacio() -> void:
+	var cometeu_violencia = "OCUPAÇÃO DIRETA" in escolhidos or "ATAQUE RETÓRICO" in escolhidos or "DISTRAÇÃO RADICAL" in escolhidos or "OCUPAÇÃO MASSIVA" in escolhidos
+	if seguranca >= 80.0 and not cometeu_violencia:
+		GameState.desbloquear_conquista("praca_pacifica")
+
 	GameState.fase4_passo = "palacio"
 	GameState.pontuacao_final = {
 		"bonus_praca": apoio_bonus,

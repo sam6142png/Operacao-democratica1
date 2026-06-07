@@ -307,10 +307,14 @@ static func apply_scene_export_overrides(node:Node, export_overrides:Dictionary,
 	for i in property_info:
 		if i['usage'] & PROPERTY_USAGE_EDITOR == PROPERTY_USAGE_EDITOR:
 			if i['name'] in export_overrides:
-				if str_to_var(export_overrides[i['name']]) == null and typeof(node.get(i['name'])) == TYPE_STRING:
-					node.set(i['name'], export_overrides[i['name']])
+				var val = export_overrides[i['name']]
+				if typeof(val) == TYPE_STRING:
+					if str_to_var(val) == null and typeof(node.get(i['name'])) == TYPE_STRING:
+						node.set(i['name'], val)
+					else:
+						node.set(i['name'], str_to_var(val))
 				else:
-					node.set(i['name'], str_to_var(export_overrides[i['name']]))
+					node.set(i['name'], val)
 			elif i['name'] in default_info:
 				node.set(i['name'], default_info.get(i['name']))
 	if apply:

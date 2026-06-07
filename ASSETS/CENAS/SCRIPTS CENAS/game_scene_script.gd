@@ -70,7 +70,7 @@ func iniciar_sequencia_fase():
 			if GameState.fase2_passo == "inicio":
 				await GameState.mostrar_resumo_transicao_fase(1, {
 					"titulo_fase": "FASE 1 CONCLUÍDA: A BUSCA PELO LIVRO",
-					"aprendido": "Localizamos o livro proibido 'Direitos e Deveres Civis' na Vila do Açude Seco e removemos as mentiras e propagandas que o regime tentou impor.\n\nLição: Conhecer os direitos constitucionais e combater a desinformação oficial é o primeiro passo de qualquer resistência cívica.",
+					"aprendido": "Localizamos o livro proibido 'Direitos e Deveres do Povo' na Vila do Açude Seco e removemos as mentiras e propagandas que o regime tentou impor.\n\nLição: Conhecer os direitos constitucionais e combater a desinformação oficial é o primeiro passo de qualquer resistência cívica.",
 					"titulo_proximo": "PRÓXIMO NÍVEL: VOZ NAS ENTRELINHAS",
 					"objetivos": "• Despistar as patrulhas militares das ruas de Usina Velha.\n• Invadir o prédio da Rádio sob o controle do regime.\n• Decifrar as transmissões criptografadas da 'Operação Frequência'.\n\nLição: Compreender a importância do livre fluxo de informação no combate ao autoritarismo estatal."
 				})

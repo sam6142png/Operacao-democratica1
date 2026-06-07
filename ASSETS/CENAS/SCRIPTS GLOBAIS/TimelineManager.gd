@@ -114,6 +114,10 @@ func tocar_dialogo(nome: String, salvar_ao_final: bool = true):
 	dialogo_iniciado.emit(nome)
 	print("[TimelineManager] Iniciando: ", nome)
 	
+	# Garante que o estilo de caixa de texto selecionado seja carregado no Dialogic
+	if GameState.estilo_textbox_selecionado != "":
+		Dialogic.Styles.load_style(GameState.estilo_textbox_selecionado)
+		
 	# Inicia a timeline
 	var timeline = Dialogic.start(nome)
 	

@@ -23,6 +23,19 @@ func _input(event: InputEvent) -> void:
 	var key_event := event as InputEventKey
 	if not key_event.pressed or key_event.echo:
 		return
+		
+	# Atalho: Libera todas as conquistas e toca Toasts
+	if key_event.keycode == KEY_K and key_event.shift_pressed and key_event.ctrl_pressed:
+		get_viewport().set_input_as_handled()
+		_liberar_conquistas_teste()
+		return
+		
+	# Atalho: Reseta todas as conquistas e o save
+	if key_event.keycode == KEY_R and key_event.shift_pressed and key_event.ctrl_pressed:
+		get_viewport().set_input_as_handled()
+		_resetar_conquistas_teste()
+		return
+		
 	if _combo_direto(key_event):
 		get_viewport().set_input_as_handled()
 		_executar_atalho()
@@ -57,3 +70,26 @@ func _executar_atalho() -> void:
 	print("[AtalhoSecreto] Pulando diálogos → minigame de páginas")
 	await GameState.atalho_ir_minigame_paginas()
 	_executando = false
+
+
+func _liberar_conquistas_teste() -> void:
+	print("[AtalhoSecreto] Desbloqueando todas as conquistas para teste...")
+	var conquistas = ["historiador", "radio_perfeito", "escola_ok", "praca_pacifica", "fim_democratico", "fim_qualquer"]
+	for id in conquistas:
+		GameState.conquistas_desbloqueadas[id] = true
+		GameState.criar_toast_conquista(id)
+		# Espera 1.2 segundos para os toasts cascatearem elegantemente
+		await get_tree().create_timer(1.2).timeout
+	GameState.salvar_jogo(false)
+
+
+func _resetar_conquistas_teste() -> void:
+	print("[AtalhoSecreto] Resetando estado de jogo e conquistas...")
+	for key in GameState.conquistas_desbloqueadas.keys():
+		GameState.conquistas_desbloqueadas[key] = false
+	GameState.skin_dante_selecionada = "padrao"
+	GameState.estilo_textbox_selecionado = "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres"
+	GameState.aplicar_estilizacao_dialogic()
+	GameState.reset_save()
+	if get_tree().current_scene and "title" in get_tree().current_scene.name.to_lower():
+		get_tree().reload_current_scene()

@@ -768,6 +768,7 @@ func _finalizar_persuasao(sucesso: bool, texto_resultado: String) -> void:
 		lbl_persuasao_status.add_theme_color_override("font_color", COR_GREEN_FILL)
 		await get_tree().create_timer(3.5).timeout
 		GameState.fase3_passo = "escola_concluida"
+		GameState.desbloquear_conquista("escola_ok")
 		await GameState.retornar_para_game_scene_apos_minigame()
 	else:
 		_play(sfx_erro, 0.9)

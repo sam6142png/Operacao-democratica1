@@ -57,7 +57,7 @@ PEIXEIRO (Falando e Ameaçando): Quem são vocês? Falem logo.
 	update ATENA (Falando)
 	ATENA: Dante, diga a verdade. Ele não é bobo.
 	update PROTA (Determinado)
-	PROTA: Certo. Sou Dante, filho do ex-prefeito. Vim pelo livro "Direitos e Deveres Civis".
+	PROTA: Certo. Sou Dante, filho do ex-prefeito. Vim pelo livro "Direitos e Deveres do Povo".
 	[signal arg="escolha_mentira"]
 	update PEIXEIRO [animation="Heartbeat"]
 	PEIXEIRO: Sabia! O livro está aqui, mas preciso de ajuda para achar. Entrem.
