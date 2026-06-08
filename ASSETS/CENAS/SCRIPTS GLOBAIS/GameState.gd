@@ -1,8 +1,20 @@
 extends Node
 
 const SAVE_FILE = "user://autosave.json"
+const SETTINGS_FILE = "user://settings.json"
 
 signal confianca_changed(novo_valor: int, delta: int)
+
+# --- Configurações Globais ---
+var vol_musica: float = 50.0
+var vol_sfx: float = 50.0
+var vel_dialogos: float = 1.0
+var tela_cheia: int = 0
+var resolucao: int = 1
+var auto_avanco: int = 0
+var auto_avanco_delay: float = 2.5
+var pular_lidos: int = 1
+var tamanho_fonte: int = 0
 
 # --- Variáveis de Estado ---
 var reputacao: int = 0
@@ -726,3 +738,85 @@ func reset_save():
 	# Salva o estado "limpo" para sobrescrever o anterior
 	salvar_jogo()
 	print("[GameState] Save resetado com sucesso.")
+
+
+func _ready() -> void:
+	carregar_configuracoes()
+
+
+func carregar_configuracoes() -> void:
+	if FileAccess.file_exists(SETTINGS_FILE):
+		var file = FileAccess.open(SETTINGS_FILE, FileAccess.READ)
+		if file:
+			var content = file.get_as_text()
+			file.close()
+			var json = JSON.new()
+			if json.parse(content) == OK:
+				var data = json.get_data()
+				if typeof(data) == TYPE_DICTIONARY:
+					vol_musica = data.get("vol_musica", vol_musica)
+					vol_sfx = data.get("vol_sfx", vol_sfx)
+					vel_dialogos = data.get("vel_dialogos", vel_dialogos)
+					tela_cheia = data.get("tela_cheia", tela_cheia)
+					resolucao = data.get("resolucao", resolucao)
+					auto_avanco = data.get("auto_avanco", auto_avanco)
+					auto_avanco_delay = data.get("auto_avanco_delay", auto_avanco_delay)
+					pular_lidos = data.get("pular_lidos", pular_lidos)
+					tamanho_fonte = data.get("tamanho_fonte", tamanho_fonte)
+	aplicar_configuracoes_globais()
+
+
+func salvar_configuracoes() -> void:
+	var save_data = {
+		"vol_musica": vol_musica,
+		"vol_sfx": vol_sfx,
+		"vel_dialogos": vel_dialogos,
+		"tela_cheia": tela_cheia,
+		"resolucao": resolucao,
+		"auto_avanco": auto_avanco,
+		"auto_avanco_delay": auto_avanco_delay,
+		"pular_lidos": pular_lidos,
+		"tamanho_fonte": tamanho_fonte
+	}
+	var file = FileAccess.open(SETTINGS_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(save_data))
+		file.close()
+		print("[GameState] Configurações salvas com sucesso.")
+
+
+func aplicar_configuracoes_globais() -> void:
+	aplicar_volume("Musica", vol_musica)
+	aplicar_volume("SFX", vol_sfx)
+	
+	if typeof(TimelineManager) != TYPE_NIL:
+		TimelineManager.set_velocidade_dialogos(vel_dialogos)
+		TimelineManager.aplicar_config_auto_advance_global()
+	
+	if Dialogic.has_subsystem("Inputs"):
+		var inputs = Dialogic.Inputs
+		if inputs.auto_skip:
+			inputs.auto_skip.disable_on_unread_text = (pular_lidos == 1)
+			
+	if Dialogic.has_subsystem("Styles") and Dialogic.Styles.has_active_layout_node():
+		var layout = Dialogic.Styles.get_layout_node()
+		if layout:
+			_atualizar_estilos_recursivo(layout)
+
+
+func _atualizar_estilos_recursivo(node: Node) -> void:
+	if node.has_method("_apply_text_settings"):
+		node._apply_text_settings()
+	for child in node.get_children():
+		_atualizar_estilos_recursivo(child)
+
+
+func aplicar_volume(bus_name: String, value: float) -> void:
+	var linear_vol = value / 100.0
+	var bus_index = AudioServer.get_bus_index(bus_name)
+	if bus_index == -1: return
+	if linear_vol == 0:
+		AudioServer.set_bus_mute(bus_index, true)
+	else:
+		AudioServer.set_bus_mute(bus_index, false)
+		AudioServer.set_bus_volume_db(bus_index, linear_to_db(linear_vol))

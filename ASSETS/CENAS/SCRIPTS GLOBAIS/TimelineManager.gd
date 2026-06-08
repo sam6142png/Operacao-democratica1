@@ -39,6 +39,10 @@ func _timeline_esta_protegida(nome: String) -> bool:
 	return false
 
 
+func aplicar_config_auto_advance_global() -> void:
+	_aplicar_config_auto_advance()
+
+
 func _aplicar_config_auto_advance() -> void:
 	if not Dialogic.has_subsystem("Inputs"):
 		return
@@ -49,8 +53,13 @@ func _aplicar_config_auto_advance() -> void:
 	var vel := 1.0 if _timeline_esta_protegida(_timeline_atual_nome) else _vel_dialogos
 	var fator_delay := vel * vel
 	
-	inputs.auto_advance.enabled_forced = true
-	inputs.auto_advance.fixed_delay = AUTO_ADVANCE_FIXED_DELAY_BASE / fator_delay
+	if typeof(GameState) != TYPE_NIL and "auto_avanco" in GameState and GameState.auto_avanco == 1:
+		inputs.auto_advance.enabled_forced = true
+		inputs.auto_advance.fixed_delay = GameState.auto_avanco_delay
+	else:
+		inputs.auto_advance.enabled_forced = false
+		inputs.auto_advance.fixed_delay = AUTO_ADVANCE_FIXED_DELAY_BASE / fator_delay
+	
 	inputs.auto_advance.per_character_delay = AUTO_ADVANCE_PER_CHARACTER_BASE / fator_delay
 	
 	# Acelera também o "typing" do texto para o 2x ficar realmente perceptível.

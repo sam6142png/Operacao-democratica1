@@ -41,6 +41,10 @@ var config = {
 	"vol_musica": 50.0,
 	"vol_sfx": 50.0,
 	"vel_dialogos": 1.0, # multiplicador: 1.0 = normal, 2.0 = máximo
+	"auto_avanco": 0,
+	"auto_avanco_delay": 2.5,
+	"pular_lidos": 1,
+	"tamanho_fonte": 0,
 }
 var ui_refs = {}
 
@@ -59,13 +63,24 @@ var TR = {
 	"tela_cheia":   {"pt": "Tela Cheia",     "en": "Fullscreen",     "es": "Pantalla Completa","fr": "Plein Écran"},
 	"resolucao":    {"pt": "Resolução",      "en": "Resolution",     "es": "Resolución",     "fr": "Résolution"},
 	"vel_dialogos": {"pt": "Velocidade dos Diálogos", "en": "Dialogue Speed", "es": "Velocidad de Diálogos", "fr": "Vitesse des Dialogues"},
+	"auto_avanco":      {"pt": "Auto-Avanço de Diálogos", "en": "Auto-Advance Dialogue"},
+	"auto_avanco_delay":{"pt": "Intervalo de Avanço",      "en": "Advance Delay"},
+	"pular_lidos":      {"pt": "Pular Diálogos Lidos Apenas", "en": "Skip Read Dialogue Only"},
+	"tamanho_fonte":    {"pt": "Tamanho da Fonte",         "en": "Font Size"},
+	"desligado":        {"pt": "Desligado", "en": "Off"},
+	"ligado":           {"pt": "Ligado", "en": "On"},
+	"nao":              {"pt": "Não", "en": "No"},
+	"sim":              {"pt": "Sim", "en": "Yes"},
+	"normal":           {"pt": "Normal", "en": "Normal"},
+	"grande":           {"pt": "Grande", "en": "Large"},
+	"muito_grande":     {"pt": "Muito Grande", "en": "Extra Large"},
 	"voltar":       {"pt": "Voltar",         "en": "Back",           "es": "Volver",         "fr": "Retour"},
 	"restaurar":    {"pt": "Restaurar Padrões","en": "Restore Defaults","es": "Restaurar",   "fr": "Par Défaut"},
 	"aplicar":      {"pt": "Aplicar",        "en": "Apply",          "es": "Aplicar",        "fr": "Appliquer"},
 	"cred_titulo":  {"pt": "CRÉDITOS",       "en": "CREDITS",        "es": "CRÉDITOS",       "fr": "CRÉDITS"},
 	"sair_pergunta":{"pt": "Deseja cancelar a missão\ne parar de lutar?", "en": "Do you want to abort the mission\nand stop fighting?", "es": "¿Deseas cancelar la misión\ny dejar de luchar?", "fr": "Voulez-vous annuler la mission\net arrêter de lutter ?"},
 	"sair_sim":     {"pt": "Amarelar (Sair)","en": "Chicken Out (Quit)","es": "Cobardear (Salir)","fr": "Abandonner (Quitter)"},
-	"sair_nao":     {"pt": "Continuar a Luta","en": "Keep Fighting",  "es": "Seguir Luchando","fr": "Continuer le Combat"},
+	"sair_nao":     {"pt": "Continuar a Luta","en": "Keep Fighting",  "es": "Seguir Luchando","fr": "Continuar le Combat"},
 	"direitos":     {"pt": "Todos os direitos reservados.", "en": "All rights reserved.", "es": "Todos los derechos reservados.", "fr": "Tous droits réservés."},
 	"equipe":       {"pt": "EQUIPE DE DESENVOLVIMENTO", "en": "DEVELOPMENT TEAM", "es": "EQUIPO DE DESARROLLO", "fr": "ÉQUIPE DE DÉVELOPPEMENT"},
 	"prog":         {"pt": "Programação e Liderança", "en": "Programming & Leadership", "es": "Programación y Liderazgo", "fr": "Programmation et Direction"},
@@ -84,6 +99,12 @@ func _t(chave: String) -> String:
 	return chave
 
 func _ready() -> void:
+	# Sincronizar do GameState carregado
+	if typeof(GameState) != TYPE_NIL:
+		for key in config.keys():
+			if key in GameState:
+				config[key] = GameState.get(key)
+
 	# Criar o botão Continuar dinamicamente
 	var btn_continuar = Button.new()
 	btn_continuar.text = "Continuar"
@@ -453,15 +474,23 @@ func _aplicar_todas_configuracoes(silent: bool = false) -> void:
 	TranslationServer.set_locale(LOCALE_PADRAO)
 	_aplicar_idioma()
 	
-	# Os volumes já aplicam real-time, mas garantimos aqui
-	_aplicar_volume("Musica", config["vol_musica"])
-	_aplicar_volume("SFX", config["vol_sfx"])
-	
-	# Velocidade dos diálogos
-	TimelineManager.set_velocidade_dialogos(config["vel_dialogos"])
+	# Copia configurações para o GameState global e persiste em arquivo
+	if typeof(GameState) != TYPE_NIL:
+		GameState.vol_musica = config["vol_musica"]
+		GameState.vol_sfx = config["vol_sfx"]
+		GameState.vel_dialogos = config["vel_dialogos"]
+		GameState.tela_cheia = config["tela_cheia"]
+		GameState.resolucao = config["resolucao"]
+		GameState.auto_avanco = config["auto_avanco"]
+		GameState.auto_avanco_delay = config["auto_avanco_delay"]
+		GameState.pular_lidos = config["pular_lidos"]
+		GameState.tamanho_fonte = config["tamanho_fonte"]
+		GameState.aplicar_configuracoes_globais()
+		GameState.salvar_configuracoes()
 	
 	if not silent:
 		_fechar_modal() # Feedback de conclusão
+
 
 func _restaurar_padroes() -> void:
 	_tocar_deslize()
@@ -471,20 +500,38 @@ func _restaurar_padroes() -> void:
 		"vol_musica": 50.0,
 		"vol_sfx": 50.0,
 		"vel_dialogos": 1.0,
+		"auto_avanco": 0,
+		"auto_avanco_delay": 2.5,
+		"pular_lidos": 1,
+		"tamanho_fonte": 0,
 	}
 	
 	# Atualiza Visuais imediatamente
 	ui_refs["vol_musica"].value = 50.0
 	ui_refs["vol_sfx"].value = 50.0
 	ui_refs["vel_dialogos"].value = 1.0
+	ui_refs["auto_avanco_delay"].value = 2.5
 	
 	ui_refs["tela_cheia"].text = TELA_CHEIA_OPCOES[0]
 	ui_refs["resolucao"].text = "1920x1080"
 	
 	_aplicar_idioma()
 	
-	_aplicar_volume("Musica", 50.0)
-	_aplicar_volume("SFX", 50.0)
+	if ui_refs.has("auto_avanco_delay_container"):
+		ui_refs["auto_avanco_delay_container"].visible = false
+	
+	if typeof(GameState) != TYPE_NIL:
+		GameState.vol_musica = 50.0
+		GameState.vol_sfx = 50.0
+		GameState.vel_dialogos = 1.0
+		GameState.tela_cheia = 0
+		GameState.resolucao = 1
+		GameState.auto_avanco = 0
+		GameState.auto_avanco_delay = 2.5
+		GameState.pular_lidos = 1
+		GameState.tamanho_fonte = 0
+		GameState.aplicar_configuracoes_globais()
+		GameState.salvar_configuracoes()
 
 # ────────────────────────────────────────────────────────
 
@@ -517,15 +564,16 @@ func _criar_painel_opcoes() -> void:
 	add_child(painel_opcoes)
 	
 	var op_margin = MarginContainer.new()
-	op_margin.add_theme_constant_override("margin_top", 40)
-	op_margin.add_theme_constant_override("margin_bottom", 40)
+	op_margin.add_theme_constant_override("margin_top", 30)
+	op_margin.add_theme_constant_override("margin_bottom", 30)
 	op_margin.add_theme_constant_override("margin_left", 60)
 	op_margin.add_theme_constant_override("margin_right", 60)
 	op_margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	painel_opcoes.add_child(op_margin)
 	
 	var op_vbox = VBoxContainer.new()
-	op_vbox.add_theme_constant_override("separation", 20)
+	op_vbox.add_theme_constant_override("separation", 15)
+	op_vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	op_margin.add_child(op_vbox)
 	
 	var lbl_opcoes = Label.new()
@@ -535,27 +583,67 @@ func _criar_painel_opcoes() -> void:
 	lbl_opcoes.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	op_vbox.add_child(lbl_opcoes)
 	
-	var sep1 = Control.new()
-	sep1.custom_minimum_size.y = 20
+	var sep1 = ColorRect.new()
+	sep1.custom_minimum_size = Vector2(0, 2)
+	sep1.color = Color(1, 1, 1, 0.15)
 	op_vbox.add_child(sep1)
 	
-	var sl_musica = _criar_slider(op_vbox, "vol_musica", _t("musica"))
-	var sl_sfx = _criar_slider(op_vbox, "vol_sfx", _t("sfx"))
+	# ScrollContainer no meio para evitar estouro da caixa
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	op_vbox.add_child(scroll)
+	
+	var scroll_vbox = VBoxContainer.new()
+	scroll_vbox.add_theme_constant_override("separation", 18)
+	scroll_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(scroll_vbox)
+	
+	var sl_musica = _criar_slider(scroll_vbox, "vol_musica", _t("musica"))
+	var sl_sfx = _criar_slider(scroll_vbox, "vol_sfx", _t("sfx"))
 	tr_refs["lbl_musica"] = sl_musica.get_parent().get_child(0)
 	tr_refs["lbl_sfx"] = sl_sfx.get_parent().get_child(0)
 	
-	var sl_vel = _criar_slider_vel_dialogos(op_vbox)
+	var sl_vel = _criar_slider_vel_dialogos(scroll_vbox)
 	tr_refs["lbl_vel_dialogos"] = sl_vel.get_child(0)
 	
-	var sel_tela = _criar_seletor(op_vbox, "tela_cheia", _t("tela_cheia"), TELA_CHEIA_OPCOES)
-	var sel_resolucao = _criar_seletor(op_vbox, "resolucao", _t("resolucao"), ["2560x1440", "1920x1080", "1600x900", "1366x768", "1280x720", "1024x576", "854x480"])
+	var sel_tela = _criar_seletor(scroll_vbox, "tela_cheia", _t("tela_cheia"), TELA_CHEIA_OPCOES)
+	var sel_resolucao = _criar_seletor(scroll_vbox, "resolucao", _t("resolucao"), ["2560x1440", "1920x1080", "1600x900", "1366x768", "1280x720", "1024x576", "854x480"])
 	
 	tr_refs["lbl_opcoes_titulo"] = lbl_opcoes
 	tr_refs["lbl_tela_cheia"] = sel_tela.get_child(0)
 	tr_refs["lbl_resolucao"] = sel_resolucao.get_child(0)
 	
-	var sep_bottom = Control.new()
-	sep_bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	# Novos Seletores (Narrativos do Tópico 1)
+	var sl_delay_container: VBoxContainer
+	
+	# Auto-Avanço
+	var sel_auto = _criar_seletor(scroll_vbox, "auto_avanco", _t("auto_avanco"), [_t("desligado"), _t("ligado")], func(v):
+		if is_instance_valid(sl_delay_container):
+			sl_delay_container.visible = (v == 1)
+	)
+	tr_refs["lbl_auto_avanco"] = sel_auto.get_child(0)
+	ui_refs["auto_avanco"] = sel_auto.get_child(1).get_child(1)
+	
+	sl_delay_container = _criar_slider_auto_avanco_delay(scroll_vbox)
+	tr_refs["lbl_auto_avanco_delay"] = sl_delay_container.get_child(0)
+	ui_refs["auto_avanco_delay_container"] = sl_delay_container
+	sl_delay_container.visible = (config["auto_avanco"] == 1)
+	
+	# Pular lidos apenas
+	var sel_pular = _criar_seletor(scroll_vbox, "pular_lidos", _t("pular_lidos"), [_t("nao"), _t("sim")])
+	tr_refs["lbl_pular_lidos"] = sel_pular.get_child(0)
+	ui_refs["pular_lidos"] = sel_pular.get_child(1).get_child(1)
+	
+	# Tamanho da fonte
+	var sel_fonte = _criar_seletor(scroll_vbox, "tamanho_fonte", _t("tamanho_fonte"), [_t("normal"), _t("grande"), _t("muito_grande")])
+	tr_refs["lbl_tamanho_fonte"] = sel_fonte.get_child(0)
+	ui_refs["tamanho_fonte"] = sel_fonte.get_child(1).get_child(1)
+	
+	# Rodapé Fixo fora do ScrollContainer
+	var sep_bottom = ColorRect.new()
+	sep_bottom.custom_minimum_size = Vector2(0, 2)
+	sep_bottom.color = Color(1, 1, 1, 0.15)
 	op_vbox.add_child(sep_bottom)
 	
 	var hbox_opcoes_btns = HBoxContainer.new()
@@ -745,7 +833,7 @@ func _criar_slider(pai: Control, chave_config: String, titulo: String) -> HSlide
 	pai.add_child(container)
 	return slider
 
-func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: Array) -> HBoxContainer:
+func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: Array, on_value_changed: Callable = Callable()) -> HBoxContainer:
 	var container = HBoxContainer.new()
 	var lbl = Label.new()
 	lbl.text = titulo
@@ -784,6 +872,8 @@ func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: 
 		if i < 0: i = opcoes.size() - 1
 		config[chave_config] = i
 		valor.text = opcoes[i]
+		if on_value_changed.is_valid():
+			on_value_changed.call(i)
 	)
 	btn_dir.pressed.connect(func():
 		_tocar_deslize()
@@ -791,6 +881,8 @@ func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: 
 		if i >= opcoes.size(): i = 0
 		config[chave_config] = i
 		valor.text = opcoes[i]
+		if on_value_changed.is_valid():
+			on_value_changed.call(i)
 	)
 	
 	btn_esq.mouse_entered.connect(func(): _on_hover_container_btn(btn_esq))
@@ -799,6 +891,51 @@ func _criar_seletor(pai: Control, chave_config: String, titulo: String, opcoes: 
 	btn_dir.mouse_exited.connect(func(): _on_unhover_container_btn(btn_dir))
 	
 	container.add_child(seletor)
+	pai.add_child(container)
+	return container
+
+
+func _criar_slider_auto_avanco_delay(pai: Control) -> VBoxContainer:
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 5)
+	
+	var lbl = Label.new()
+	lbl.text = _t("auto_avanco_delay")
+	lbl.add_theme_font_size_override("font_size", 24)
+	lbl.add_theme_color_override("font_color", Color("#CCCCCC"))
+	container.add_child(lbl)
+	
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 12)
+	container.add_child(hbox)
+	
+	var slider = HSlider.new()
+	slider.custom_minimum_size = Vector2(0, 30)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.min_value = 1.0
+	slider.max_value = 5.0
+	slider.step = 0.1
+	slider.value = config["auto_avanco_delay"]
+	ui_refs["auto_avanco_delay"] = slider
+	hbox.add_child(slider)
+	
+	var lbl_valor = Label.new()
+	lbl_valor.text = "%.1fs" % config["auto_avanco_delay"]
+	lbl_valor.add_theme_font_size_override("font_size", 22)
+	lbl_valor.add_theme_color_override("font_color", Color("#FF8C00"))
+	lbl_valor.custom_minimum_size.x = 65
+	lbl_valor.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(lbl_valor)
+	
+	slider.value_changed.connect(func(v: float):
+		config["auto_avanco_delay"] = v
+		lbl_valor.text = "%.1fs" % v
+		if typeof(GameState) != TYPE_NIL and "auto_avanco_delay" in GameState:
+			GameState.auto_avanco_delay = v
+			if typeof(TimelineManager) != TYPE_NIL:
+				TimelineManager.aplicar_config_auto_advance_global()
+	)
+	
 	pai.add_child(container)
 	return container
 
@@ -822,6 +959,10 @@ func _aplicar_idioma() -> void:
 	if tr_refs.has("lbl_vel_dialogos"): tr_refs["lbl_vel_dialogos"].text = _t("vel_dialogos")
 	if tr_refs.has("lbl_tela_cheia"): tr_refs["lbl_tela_cheia"].text = _t("tela_cheia")
 	if tr_refs.has("lbl_resolucao"): tr_refs["lbl_resolucao"].text = _t("resolucao")
+	if tr_refs.has("lbl_auto_avanco"): tr_refs["lbl_auto_avanco"].text = _t("auto_avanco")
+	if tr_refs.has("lbl_auto_avanco_delay"): tr_refs["lbl_auto_avanco_delay"].text = _t("auto_avanco_delay")
+	if tr_refs.has("lbl_pular_lidos"): tr_refs["lbl_pular_lidos"].text = _t("pular_lidos")
+	if tr_refs.has("lbl_tamanho_fonte"): tr_refs["lbl_tamanho_fonte"].text = _t("tamanho_fonte")
 	
 	if tr_refs.has("btn_voltar_op"): tr_refs["btn_voltar_op"].text = _t("voltar")
 	if tr_refs.has("btn_restaurar"): tr_refs["btn_restaurar"].text = _t("restaurar")
@@ -830,6 +971,15 @@ func _aplicar_idioma() -> void:
 	# Atualizar o texto do seletor de tela cheia (Ligado/Desligado)
 	var sel_tela_val = ui_refs["tela_cheia"]
 	sel_tela_val.text = TELA_CHEIA_OPCOES[config["tela_cheia"]]
+	
+	# Atualizar seletores novos
+	if ui_refs.has("auto_avanco"):
+		ui_refs["auto_avanco"].text = _t("ligado") if config["auto_avanco"] == 1 else _t("desligado")
+	if ui_refs.has("pular_lidos"):
+		ui_refs["pular_lidos"].text = _t("sim") if config["pular_lidos"] == 1 else _t("nao")
+	if ui_refs.has("tamanho_fonte"):
+		var font_opts = [_t("normal"), _t("grande"), _t("muito_grande")]
+		ui_refs["tamanho_fonte"].text = font_opts[config["tamanho_fonte"]]
 	
 	# Créditos
 	if tr_refs.has("lbl_cred_titulo"): tr_refs["lbl_cred_titulo"].text = _t("cred_titulo")

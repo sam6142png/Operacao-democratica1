@@ -30,6 +30,18 @@ func _input(event: InputEvent) -> void:
 		_liberar_conquistas_teste()
 		return
 		
+	# Atalho: Testa Caixa de Diálogo Xilografia
+	if key_event.keycode == KEY_T and key_event.shift_pressed and key_event.ctrl_pressed:
+		get_viewport().set_input_as_handled()
+		_testar_estilo_dialogo("res://ASSETS/DIALOGIC/STYLES/XilografiaCariri.tres")
+		return
+
+	# Atalho: Testa Caixa de Diálogo Palácio Dourado
+	if key_event.keycode == KEY_Y and key_event.shift_pressed and key_event.ctrl_pressed:
+		get_viewport().set_input_as_handled()
+		_testar_estilo_dialogo("res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres")
+		return
+		
 	# Atalho: Reseta todas as conquistas e o save
 	if key_event.keycode == KEY_R and key_event.shift_pressed and key_event.ctrl_pressed:
 		get_viewport().set_input_as_handled()
@@ -93,3 +105,11 @@ func _resetar_conquistas_teste() -> void:
 	GameState.reset_save()
 	if get_tree().current_scene and "title" in get_tree().current_scene.name.to_lower():
 		get_tree().reload_current_scene()
+
+
+func _testar_estilo_dialogo(estilo_path: String) -> void:
+	print("[AtalhoSecreto] Testando estilo de diálogo: ", estilo_path)
+	for id in ["historiador", "radio_perfeito", "escola_ok", "praca_pacifica", "fim_democratico", "fim_qualquer"]:
+		GameState.conquistas_desbloqueadas[id] = true
+	GameState.estilo_textbox_selecionado = estilo_path
+	TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")

@@ -217,12 +217,24 @@ func _apply_text_settings() -> void:
 	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
 	dialog_text.alignment = text_alignment as DialogicNode_DialogText.Alignment
 
+	var base_size = text_size
 	if text_use_global_size:
-		text_size = get_global_setting(&'font_size', text_size)
-	dialog_text.add_theme_font_size_override(&"normal_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"bold_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"italics_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"bold_italics_font_size", text_size)
+		base_size = get_global_setting(&'font_size', text_size)
+	
+	var final_size = base_size
+	if typeof(GameState) != TYPE_NIL and "tamanho_fonte" in GameState:
+		match GameState.tamanho_fonte:
+			1: # Grande
+				final_size = int(base_size * 1.25)
+			2: # Muito Grande
+				final_size = int(base_size * 1.5)
+			0, _: # Normal
+				final_size = base_size
+
+	dialog_text.add_theme_font_size_override(&"normal_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"bold_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"italics_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"bold_italics_font_size", final_size)
 
 	if text_use_global_color:
 		dialog_text.add_theme_color_override(&"default_color", get_global_setting(&'font_color', text_custom_color) as Color)

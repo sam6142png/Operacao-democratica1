@@ -104,116 +104,233 @@ func iniciar_sequencia_fase():
 # ══════════════════════════════════════════════
 
 func _mostrar_tutorial() -> void:
+	var font_title = load("res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Share_Tech/ShareTech-Regular.ttf")
+	var font_body = load("res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Comfortaa/Comfortaa-VariableFont_wght.ttf")
+	
 	var layer = CanvasLayer.new()
 	layer.layer = 50
 	add_child(layer)
 	
-	# Fundo escuro
+	# Fundo escuro (cyber charcoal-blue translúcido)
 	var bg = ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.92)
+	bg.color = Color(0.04, 0.05, 0.08, 0.88)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(bg)
 	
-	# Painel central
+	# Painel central premium
 	var painel = PanelContainer.new()
-	painel.custom_minimum_size = Vector2(850, 550)
+	painel.custom_minimum_size = Vector2(900, 600)
 	painel.set_anchors_preset(Control.PRESET_CENTER)
 	painel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	painel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	
 	var sb = StyleBoxFlat.new()
-	sb.bg_color = Color(0.02, 0.02, 0.04, 0.97)
+	sb.bg_color = Color(0.06, 0.08, 0.12, 0.98)
 	for p in ["border_width_left","border_width_top","border_width_right","border_width_bottom"]:
 		sb.set(p, 2)
-	sb.border_color = Color("#FF8C00")
+	sb.border_color = Color("#FF8C00", 0.85)
 	for p in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:
-		sb.set(p, 12)
-	sb.shadow_size = 30
-	sb.shadow_color = Color("#FF8C00", 0.15)
+		sb.set(p, 16)
+	sb.shadow_size = 35
+	sb.shadow_color = Color("#FF8C00", 0.12)
 	painel.add_theme_stylebox_override("panel", sb)
 	layer.add_child(painel)
 	
 	# Margem interna
 	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_top", 50)
-	margin.add_theme_constant_override("margin_bottom", 40)
-	margin.add_theme_constant_override("margin_left", 50)
-	margin.add_theme_constant_override("margin_right", 50)
+	margin.add_theme_constant_override("margin_top", 40)
+	margin.add_theme_constant_override("margin_bottom", 35)
+	margin.add_theme_constant_override("margin_left", 40)
+	margin.add_theme_constant_override("margin_right", 40)
 	painel.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 22)
+	vbox.add_theme_constant_override("separation", 20)
 	margin.add_child(vbox)
 	
 	# Título
-	var titulo = _lbl("COMO JOGAR", 36, Color("#FF8C00"))
+	var titulo = Label.new()
+	titulo.text = "COMO JOGAR"
+	titulo.add_theme_font_override("font", font_title)
+	titulo.add_theme_font_size_override("font_size", 38)
+	titulo.add_theme_color_override("font_color", Color("#FF9F33"))
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(titulo)
 	
+	# Separador estilizado
 	var sep = ColorRect.new()
-	sep.custom_minimum_size = Vector2(0, 2)
-	sep.color = Color("#FF8C00", 0.4)
+	sep.custom_minimum_size = Vector2(0, 1)
+	sep.color = Color("#FF8C00", 0.25)
 	vbox.add_child(sep)
 	
 	# Itens do tutorial
 	var itens = [
 		["🖱  CLIQUE", "Clique na tela ou pressione ESPAÇO para avançar os diálogos."],
-		["⏸  MENU (ESC)", "Pressione ESC para abrir o Menu de Pausa.\nLá você pode salvar, voltar ao menu ou sair."],
-		["⚖  CONFIANÇA", "Suas decisões afetam a Confiança da cidade.\nA barra no canto mostra seu nível atual."],
-		["⏱  ESCOLHAS", "Quando uma escolha aparecer, você terá 30 segundos.\nSe não decidir, uma opção será escolhida aleatoriamente!"],
-		["👆  DECISÕES", "Pense com cuidado. Cada escolha muda a história\ne impacta diretamente o destino de Usina Velha."]
+		["⏸  MENU (ESC)", "Pressione ESC para abrir o Menu de Pausa. Lá você pode salvar, voltar ao menu ou sair."],
+		["⚖  CONFIANÇA", "Suas decisões afetam a Confiança da cidade. A barra no canto mostra seu nível atual."],
+		["⏱  ESCOLHAS", "Quando uma escolha aparecer, você terá 30 segundos. Se não decidir, uma opção será escolhida aleatoriamente!"],
+		["👆  DECISÕES", "Pense com cuidado. Cada escolha muda a história e impacta diretamente o destino de Usina Velha."]
 	]
 	
+	# Estilo base dos cards translúcidos
+	var card_sb = StyleBoxFlat.new()
+	card_sb.bg_color = Color(0.1, 0.13, 0.20, 0.25)
+	for p in ["border_width_left","border_width_top","border_width_right","border_width_bottom"]:
+		card_sb.set(p, 1)
+	card_sb.border_color = Color(0.18, 0.22, 0.32, 0.4)
+	for p in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:
+		card_sb.set(p, 10)
+	card_sb.content_margin_left = 20
+	card_sb.content_margin_right = 20
+	card_sb.content_margin_top = 12
+	card_sb.content_margin_bottom = 12
+	
+	# Estilo base das badges dos ícones
+	var badge_sb = StyleBoxFlat.new()
+	badge_sb.bg_color = Color(0.9, 0.55, 0.1, 0.08)
+	for p in ["border_width_left","border_width_top","border_width_right","border_width_bottom"]:
+		badge_sb.set(p, 1)
+	badge_sb.border_color = Color(0.9, 0.55, 0.1, 0.4)
+	for p in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:
+		badge_sb.set(p, 6)
+	badge_sb.content_margin_left = 14
+	badge_sb.content_margin_right = 14
+	badge_sb.content_margin_top = 6
+	badge_sb.content_margin_bottom = 6
+	
 	for item in itens:
+		var card_panel = PanelContainer.new()
+		card_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		var sb_item = card_sb.duplicate()
+		card_panel.add_theme_stylebox_override("panel", sb_item)
+		vbox.add_child(card_panel)
+		
 		var hbox = HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 18)
-		vbox.add_child(hbox)
+		hbox.add_theme_constant_override("separation", 24)
+		hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card_panel.add_child(hbox)
 		
-		var icone = _lbl(item[0], 20, Color("#FF8C00"))
-		icone.custom_minimum_size = Vector2(220, 0)
-		hbox.add_child(icone)
+		# Badge para o Ícone/Nome Técnico
+		var badge = PanelContainer.new()
+		badge.add_theme_stylebox_override("panel", badge_sb)
+		badge.custom_minimum_size = Vector2(200, 0)
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hbox.add_child(badge)
 		
-		var desc = _lbl(item[1], 18, Color(0.85, 0.85, 0.85))
+		var icone = Label.new()
+		icone.text = item[0]
+		icone.add_theme_font_override("font", font_title)
+		icone.add_theme_font_size_override("font_size", 16)
+		icone.add_theme_color_override("font_color", Color("#FF9F33"))
+		icone.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		badge.add_child(icone)
+		
+		# Descrição detalhada
+		var desc = Label.new()
+		desc.text = item[1]
+		desc.add_theme_font_override("font", font_body)
+		desc.add_theme_font_size_override("font_size", 14)
+		desc.add_theme_color_override("font_color", Color("#E2E8F0"))
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		hbox.add_child(desc)
+		
+		# Efeito de Hover interativo nos Cards (Micro-Animações)
+		card_panel.mouse_entered.connect(func():
+			var t = card_panel.create_tween().set_parallel(true)
+			t.tween_property(sb_item, "bg_color", Color(0.14, 0.18, 0.28, 0.45), 0.2)
+			t.tween_property(sb_item, "border_color", Color("#FF8C00", 0.65), 0.2)
+			card_panel.pivot_offset = card_panel.size / 2.0
+			t.tween_property(card_panel, "scale", Vector2(1.012, 1.012), 0.15)
+		)
+		card_panel.mouse_exited.connect(func():
+			var t = card_panel.create_tween().set_parallel(true)
+			t.tween_property(sb_item, "bg_color", Color(0.1, 0.13, 0.20, 0.25), 0.2)
+			t.tween_property(sb_item, "border_color", Color(0.18, 0.22, 0.32, 0.4), 0.2)
+			t.tween_property(card_panel, "scale", Vector2.ONE, 0.15)
+		)
 	
-	# Botão X (canto superior direito do painel — adicionado ao layer, não ao painel)
+	# Container invisível para posicionamento absoluto do botão X
+	var absolute_control = Control.new()
+	absolute_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	painel.add_child(absolute_control)
+	
+	# Botão X (circular, elegante, ancorado ao canto superior direito)
 	var btn_fechar = Button.new()
 	btn_fechar.text = "✕"
 	btn_fechar.flat = true
-	btn_fechar.add_theme_font_override("font", FONTE)
-	btn_fechar.add_theme_font_size_override("font_size", 32)
-	btn_fechar.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-	btn_fechar.add_theme_color_override("font_hover_color", Color("#FF4444"))
-	btn_fechar.set_anchors_preset(Control.PRESET_CENTER)
-	btn_fechar.offset_left = 380; btn_fechar.offset_right = 430
-	btn_fechar.offset_top = -280; btn_fechar.offset_bottom = -240
+	btn_fechar.add_theme_font_override("font", font_body)
+	btn_fechar.add_theme_font_size_override("font_size", 22)
+	btn_fechar.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	btn_fechar.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	btn_fechar.anchor_left = 1.0
+	btn_fechar.anchor_right = 1.0
+	btn_fechar.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	btn_fechar.offset_left = -48
+	btn_fechar.offset_right = -16
+	btn_fechar.offset_top = 16
+	btn_fechar.offset_bottom = 48
 	btn_fechar.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	btn_fechar.z_index = 10
-	layer.add_child(btn_fechar)
+	absolute_control.add_child(btn_fechar)
 	
-	# Timer visual (label no rodapé)
-	var lbl_timer = _lbl("Fechando em 30s...", 16, Color(0.5, 0.5, 0.5))
+	# Animação circular no botão fechar (Micro-Animações)
+	btn_fechar.pivot_offset = Vector2(16, 16)
+	btn_fechar.mouse_entered.connect(func():
+		var t = btn_fechar.create_tween().set_parallel(true)
+		t.tween_property(btn_fechar, "scale", Vector2(1.2, 1.2), 0.15)
+		t.tween_property(btn_fechar, "modulate", Color(1.0, 0.35, 0.35), 0.15)
+	)
+	btn_fechar.mouse_exited.connect(func():
+		var t = btn_fechar.create_tween().set_parallel(true)
+		t.tween_property(btn_fechar, "scale", Vector2.ONE, 0.15)
+		t.tween_property(btn_fechar, "modulate", Color.WHITE, 0.15)
+	)
+	
+	# Pílula de Status no rodapé para o timer
+	var center_container = CenterContainer.new()
+	vbox.add_child(center_container)
+	
+	var pill_panel = PanelContainer.new()
+	var pill_sb = StyleBoxFlat.new()
+	pill_sb.bg_color = Color(0.1, 0.12, 0.18, 0.6)
+	for p in ["border_width_left","border_width_top","border_width_right","border_width_bottom"]:
+		pill_sb.set(p, 1)
+	pill_sb.border_color = Color(0.18, 0.22, 0.32, 0.5)
+	for p in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:
+		pill_sb.set(p, 12)
+	pill_sb.content_margin_left = 16
+	pill_sb.content_margin_right = 16
+	pill_sb.content_margin_top = 6
+	pill_sb.content_margin_bottom = 6
+	pill_panel.add_theme_stylebox_override("panel", pill_sb)
+	center_container.add_child(pill_panel)
+	
+	var lbl_timer = Label.new()
+	lbl_timer.text = "Fechando em 30s..."
+	lbl_timer.add_theme_font_override("font", font_title)
+	lbl_timer.add_theme_font_size_override("font_size", 14)
+	lbl_timer.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
 	lbl_timer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(lbl_timer)
+	pill_panel.add_child(lbl_timer)
 	
-	# Animação de entrada
+	# Animação de entrada do painel
 	painel.modulate.a = 0.0
 	painel.scale = Vector2(0.9, 0.9)
-	painel.pivot_offset = painel.custom_minimum_size / 2.0
+	painel.pivot_offset = Vector2(450, 300)
 	var tw_in = create_tween().set_parallel(true)
 	tw_in.tween_property(painel, "modulate:a", 1.0, 0.4)
 	tw_in.tween_property(painel, "scale", Vector2.ONE, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	
-	# Lógica de fechar (usa Dictionary para compartilhar estado com a lambda)
-	var estado := {"fechou": false}
+	# Lógica de fechar
+	var estado := {"fechou": false, "pulsing": false}
 	
 	btn_fechar.pressed.connect(func():
 		estado.fechou = true
 	)
 	
-	# Contagem regressiva de 30s
+	# Contagem regressiva de 30s com pulso nos 5s finais
 	var tempo := 30.0
 	while tempo > 0 and not estado.fechou:
 		await get_tree().create_timer(0.5).timeout
@@ -222,6 +339,13 @@ func _mostrar_tutorial() -> void:
 			lbl_timer.text = "Fechando em " + str(int(tempo)) + "s..."
 			if tempo <= 5:
 				lbl_timer.add_theme_color_override("font_color", Color("#FF4444"))
+				pill_sb.border_color = Color("#FF4444", 0.6)
+				if not estado.pulsing:
+					estado.pulsing = true
+					pill_panel.pivot_offset = pill_panel.size / 2.0
+					var tw_pulse = pill_panel.create_tween().set_loops()
+					tw_pulse.tween_property(pill_panel, "scale", Vector2(1.05, 1.05), 0.3).set_ease(Tween.EASE_OUT)
+					tw_pulse.tween_property(pill_panel, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_IN)
 	
 	# Animação de saída
 	var tw_out = create_tween().set_parallel(true)

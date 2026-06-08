@@ -12,7 +12,7 @@ enum AnimationsNewText {NONE, WIGGLE}
 @export_subgroup("Alignment & Size")
 @export var text_alignment: Alignments= Alignments.LEFT
 @export var text_use_global_size: bool = true
-@export var text_size: int = 15
+@export var text_size: int = 26
 
 @export_subgroup("Color")
 @export var text_use_global_color: bool = true
@@ -56,7 +56,7 @@ enum AnimationsNewText {NONE, WIGGLE}
 @export var name_label_use_global_font: bool = true
 @export_file('*.ttf', '*.tres') var name_label_font: String = ""
 @export var name_label_use_global_font_size: bool = true
-@export var name_label_custom_font_size: int = 15
+@export var name_label_custom_font_size: int = 20
 
 @export_subgroup('Box')
 @export_file("*.tres") var name_label_box_panel: String = this_folder.path_join("vn_textbox_name_label_panel.tres")
@@ -125,13 +125,24 @@ func _apply_box_settings() -> void:
 
 	if estilo != "" and not "Base_testebox" in estilo:
 		# Custom style is active! We want a completely transparent stylebox,
-		# but with 20px padding margins so content text/indicators don't collapse.
+		# but we load the custom stylebox's content margins so they align perfectly!
 		var empty_style = StyleBoxEmpty.new()
-		empty_style.content_margin_left = 20
-		empty_style.content_margin_right = 20
-		empty_style.content_margin_top = 20
-		empty_style.content_margin_bottom = 20
+		var custom_stylebox: StyleBox = null
+		if not box_panel.is_empty() and ResourceLoader.exists(box_panel):
+			custom_stylebox = load(box_panel)
+		
+		if custom_stylebox:
+			empty_style.content_margin_left = custom_stylebox.content_margin_left
+			empty_style.content_margin_right = custom_stylebox.content_margin_right
+			empty_style.content_margin_top = custom_stylebox.content_margin_top
+			empty_style.content_margin_bottom = custom_stylebox.content_margin_bottom
+		else:
+			empty_style.content_margin_left = 20
+			empty_style.content_margin_right = 20
+			empty_style.content_margin_top = 20
+			empty_style.content_margin_bottom = 20
 		dialog_text_panel.add_theme_stylebox_override(&'panel', empty_style)
+
 	else:
 		# Default style is active. Use box_panel stylebox if it exists, otherwise fall back to code-generated premium styling.
 		var style: StyleBox
@@ -255,12 +266,24 @@ func _apply_text_settings() -> void:
 	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
 	dialog_text.alignment = text_alignment as DialogicNode_DialogText.Alignment
 
+	var base_size = text_size
 	if text_use_global_size:
-		text_size = get_global_setting(&'font_size', text_size)
-	dialog_text.add_theme_font_size_override(&"normal_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"bold_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"italics_font_size", text_size)
-	dialog_text.add_theme_font_size_override(&"bold_italics_font_size", text_size)
+		base_size = get_global_setting(&'font_size', text_size)
+	
+	var final_size = base_size
+	if typeof(GameState) != TYPE_NIL and "tamanho_fonte" in GameState:
+		match GameState.tamanho_fonte:
+			1: # Grande
+				final_size = int(base_size * 1.25)
+			2: # Muito Grande
+				final_size = int(base_size * 1.5)
+			0, _: # Normal
+				final_size = base_size
+
+	dialog_text.add_theme_font_size_override(&"normal_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"bold_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"italics_font_size", final_size)
+	dialog_text.add_theme_font_size_override(&"bold_italics_font_size", final_size)
 
 	if text_use_global_color:
 		dialog_text.add_theme_color_override(&"default_color", get_global_setting(&'font_color', text_custom_color) as Color)
@@ -314,3 +337,41 @@ func _apply_sounds_settings() -> void:
 	type_sounds.pitch_variance = typing_sounds_pitch_variance
 	type_sounds.volume_variance = typing_sounds_volume_variance
 	type_sounds.ignore_characters = typing_sounds_ignore_characters
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
+	if dialog_text:
+		dialog_text.started_revealing_text.connect(_on_dialog_started_revealing)
+
+
+func _on_dialog_started_revealing() -> void:
+	var name_label: DialogicNode_NameLabel = %DialogicNode_NameLabel
+	var type_sounds: DialogicNode_TypeSounds = %DialogicNode_TypeSounds
+	if name_label and type_sounds:
+		var speaker_name = name_label.text.to_lower()
+		
+		# Ajusta o pitch do som de digitação dependendo do personagem ativo (beeps)
+		if "coronel" in speaker_name or "antônio" in speaker_name:
+			type_sounds.base_pitch = 0.65
+			type_sounds.pitch_variance = 0.04
+		elif "dante" in speaker_name or "prota" in speaker_name:
+			type_sounds.base_pitch = 1.05
+			type_sounds.pitch_variance = 0.05
+		elif "atena" in speaker_name:
+			type_sounds.base_pitch = 1.30
+			type_sounds.pitch_variance = 0.06
+		elif "luis" in speaker_name:
+			type_sounds.base_pitch = 0.90
+			type_sounds.pitch_variance = 0.04
+		elif "véio" in speaker_name or "velho" in speaker_name:
+			type_sounds.base_pitch = 0.80
+			type_sounds.pitch_variance = 0.05
+		elif "professor" in speaker_name:
+			type_sounds.base_pitch = 1.00
+			type_sounds.pitch_variance = 0.05
+		else:
+			type_sounds.base_pitch = 1.00
+			type_sounds.pitch_variance = 0.05

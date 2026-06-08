@@ -38,13 +38,20 @@ overrides = {
 "name_label_box_modulate": Color(0.129, 0.094, 0.063, 1),
 "name_label_box_use_global_color": false,
 "name_label_custom_color": Color(0.957, 0.925, 0.847, 1),
-"name_label_font": "res://ArticaPro-Bold.ttf",
+"name_label_font": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-Bold.ttf",
 "name_label_use_global_color": false,
 "name_label_use_global_font": false,
-"normal_font": "res://ArticaPro-Bold.ttf",
+"name_label_use_global_font_size": false,
+"name_label_custom_font_size": 22,
+"normal_font": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-Regular.ttf",
+"bold_font": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-Bold.ttf",
+"italics_font": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-Italic.ttf",
+"bold_italics_font": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-BoldItalic.ttf",
 "text_custom_color": Color(0.129, 0.094, 0.063, 1),
 "text_use_global_color": false,
-"text_use_global_font": false
+"text_use_global_font": false,
+"text_use_global_size": false,
+"text_size": 28
 }
 
 [sub_resource type="Resource" id="Resource_t2m7f"]
@@ -58,7 +65,7 @@ overrides = {
 "boxes_stylebox_focused": "res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/xilografia_choice_hover.tres",
 "boxes_stylebox_hovered": "res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/xilografia_choice_hover.tres",
 "boxes_stylebox_normal": "res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/xilografia_choice_normal.tres",
-"font_custom": "res://ArticaPro-Bold.ttf",
+"font_custom": "res://ASSETS/FONTES/Almendra,Comfortaa,Playfair,Share_Tech/Almendra/Almendra-Bold.ttf",
 "font_use_global": false,
 "text_color_custom": Color(0.129, 0.094, 0.063, 1),
 "text_color_hovered": Color(0.957, 0.925, 0.847, 1),
