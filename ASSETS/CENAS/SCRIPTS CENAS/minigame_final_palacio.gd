@@ -129,6 +129,8 @@ var selected_evidence_id: String = ""
 # Variáveis do QTE de Respiração (Heartbeat QTE)
 var qte_pulse_pos: float = 0.0
 var qte_successes: int = 0
+var qte_msg: String = ""
+var qte_msg_color: Color = Color.WHITE
 
 # Animações
 var glitch_phase: float = 0.0
@@ -256,6 +258,8 @@ func _process(delta: float) -> void:
 			# Miss automático por deixar passar!
 			peak_hit_in_this_cycle = true
 			qte_successes = 0
+			qte_msg = "PERDEU O RITMO!"
+			qte_msg_color = Color("#ff3333")
 			estabilidade_emocional = max(0.0, estabilidade_emocional - 12.0)
 			_play(sfx_stinger, 1.0)
 			_shake(12.0, 0.3)
@@ -294,6 +298,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var janela = _obter_janela_qte()
 		if ekg_peak_pos >= janela[0] and ekg_peak_pos <= janela[1] and not peak_hit_in_this_cycle:
 			qte_successes += 1
+			qte_msg = "PERFEITO! " + str(qte_successes) + "/3"
+			qte_msg_color = Color("#00FF66")
 			peak_hit_in_this_cycle = true
 			_play(sfx_click, 1.25)
 			
@@ -313,6 +319,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			# Miss/Double hit/Errado
 			qte_successes = 0 # Reinicia o combo se errar
+			qte_msg = "BATIMENTO ERRADO!"
+			qte_msg_color = Color("#ff3333")
 			peak_hit_in_this_cycle = true # Impede miss automático redundante neste ciclo
 			estabilidade_emocional = max(0.0, estabilidade_emocional - 15.0)
 			_play(sfx_stinger, 1.0)
@@ -1148,6 +1156,13 @@ func _desenhar_qte_heartbeat() -> void:
 	
 	qte_draw_control.draw_string(FONTE_MONO, Vector2(20, size.y - 12), success_txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#00FF66"))
 	qte_draw_control.draw_string(FONTE_MONO, Vector2(size.x - 220, size.y - 12), bpm_txt, HORIZONTAL_ALIGNMENT_RIGHT, -1, 14, bpm_col)
+	
+	# Instrução de gameplay
+	qte_draw_control.draw_string(FONTE, Vector2(size.x * 0.25, 26), "PRESSIONE [ESPAÇO] NO PICO DO BATIMENTO", HORIZONTAL_ALIGNMENT_CENTER, -1, 16, Color("#ffe28a"))
+	
+	# Mensagem de feedback do batimento
+	if not qte_msg.is_empty():
+		qte_draw_control.draw_string(FONTE, Vector2(size.x * 0.6, size.y / 2.0 - 10), qte_msg, HORIZONTAL_ALIGNMENT_CENTER, -1, 22, qte_msg_color)
 
 
 func _screen_flash(color: Color, duration: float) -> void:

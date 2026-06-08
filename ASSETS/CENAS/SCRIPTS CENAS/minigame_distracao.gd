@@ -7,6 +7,8 @@ var timer_val := 7.0
 var finalizado := false
 var layer: CanvasLayer
 var lbl_timer: Label
+var lbl_inst: Label
+var timing_seguro := false
 var color_panico: ColorRect
 var sparks_layer: Control  # Camada de faíscas visuais
 var drawing_layer: Control # Camada de desenhos (holofote, trajetórias, ondas)
@@ -96,7 +98,7 @@ void fragment() {
 	layer.add_child(color_panico)
 	
 	# Título / Instrução
-	var lbl_inst = Label.new()
+	lbl_inst = Label.new()
 	lbl_inst.text = "OS GUARDAS ESTÃO VASCULHANDO O BECO..."
 	lbl_inst.add_theme_font_override("font", FONTE)
 	lbl_inst.add_theme_font_size_override("font_size", 38)
@@ -223,6 +225,7 @@ func _criar_botao(pai: Control, texto: String, id: String) -> void:
 	btn.pressed.connect(func():
 		_spawn_sparks(btn.global_position + btn.size * 0.5)
 		_bloquear_botoes(true)
+		timing_seguro = not _check_dante_inside_cone()
 		
 		# Define os pontos da trajetória
 		trajetoria_origem = dante_pos
@@ -257,9 +260,15 @@ func _process(delta: float) -> void:
 		if is_inside:
 			detecao = min(100.0, detecao + delta * 36.0)
 			color_panico.color = Color(1.0, 0.0, 0.0, 0.15 + sin(Time.get_ticks_msec() / 60.0) * 0.1)
+			if lbl_inst:
+				lbl_inst.text = "HOLOFOTE FOCADO! NÃO SE MOVE!"
+				lbl_inst.add_theme_color_override("font_color", Color("#FF3333"))
 		else:
 			detecao = max(0.0, detecao - delta * 15.0)
 			color_panico.color.a = 0.0
+			if lbl_inst:
+				lbl_inst.text = "HOLOFOTE LONGE. SEGURO PARA ARREMESSAR!"
+				lbl_inst.add_theme_color_override("font_color", Color("#62ff86"))
 			
 		bar_detecao.value = detecao
 		
@@ -397,16 +406,73 @@ func _desenhar_drawing_layer() -> void:
 
 func _fazer_escolha(id: String) -> void:
 	if finalizado: return
-	finalizado = true
 	
-	# Esconde a UI
+	if id == "timeout":
+		finalizado = true
+		_esconder_ui_final()
+		var lbl_resultado = _criar_lbl_resultado()
+		lbl_resultado.text = "Você foi localizado pelas patrulhas autoritárias.\nEles te capturaram."
+		lbl_resultado.add_theme_color_override("font_color", Color("#FF0000"))
+		await _game_over()
+		return
+		
+	if timing_seguro:
+		finalizado = true
+		_esconder_ui_final()
+		var lbl_resultado = _criar_lbl_resultado()
+		lbl_resultado.add_theme_color_override("font_color", Color("#00FF00"))
+		match id:
+			"lata":
+				lbl_resultado.text = "A lata rola pelo beco, atraindo os guardas.\nVocê passa despercebido."
+			"pedra":
+				lbl_resultado.text = "A pedra desvia a patrulha temporariamente.\nVocê passa correndo pelos becos!"
+			"cano":
+				lbl_resultado.text = "O cano cai com um estrondo, atraindo toda a patrulha para o outro lado.\nCaminho livre!"
+		await get_tree().create_timer(3.0).timeout
+		GameState.fase2_passo = "casa_velho"
+		await GameState.retornar_para_game_scene_apos_minigame()
+	else:
+		# Penalidade de timing incorreto
+		var penalidade = 0.0
+		var msg_aviso = ""
+		match id:
+			"lata":
+				penalidade = 35.0
+				msg_aviso = "A lata fez barulho, mas os guardas viram seu vulto! (+35% Detecção)"
+			"pedra":
+				penalidade = 40.0
+				msg_aviso = "Vidraça quebrada! O barulho quase revelou sua posição (+40% Detecção)"
+			"cano":
+				penalidade = 60.0
+				msg_aviso = "Estrondo metálico sob a luz! Alerta crítico (+60% Detecção)"
+				
+		detecao = min(100.0, detecao + penalidade)
+		bar_detecao.value = detecao
+		
+		if detecao >= 100.0:
+			finalizado = true
+			_esconder_ui_final()
+			var lbl_resultado = _criar_lbl_resultado()
+			lbl_resultado.add_theme_color_override("font_color", Color("#FF0000"))
+			match id:
+				"lata":
+					lbl_resultado.text = "Você arremessou a lata sob o holofote!\nOs guardas te avistaram e capturaram."
+				"pedra":
+					lbl_resultado.text = "A pedra quebrou a vidraça diretamente na sua frente!\nOs guardas te encurralaram."
+				"cano":
+					lbl_resultado.text = "Estrondo ensurdecedor sob a luz! Os guardas atiraram na sua direção.\nVocê foi capturado."
+			await _game_over()
+		else:
+			_mostrar_aviso_temporario(msg_aviso)
+			_bloquear_botoes(false)
+
+func _esconder_ui_final() -> void:
 	for c in layer.get_children():
 		if c is VBoxContainer or c == lbl_timer or c is HBoxContainer:
 			c.hide()
-			
-	# Zera pânico visual
 	color_panico.color.a = 0
-	
+
+func _criar_lbl_resultado() -> Label:
 	var lbl_resultado = Label.new()
 	lbl_resultado.add_theme_font_override("font", FONTE)
 	lbl_resultado.add_theme_font_size_override("font_size", 42)
@@ -415,30 +481,40 @@ func _fazer_escolha(id: String) -> void:
 	lbl_resultado.custom_minimum_size = Vector2(800, 0)
 	lbl_resultado.set_anchors_preset(Control.PRESET_CENTER)
 	layer.add_child(lbl_resultado)
-	
-	match id:
-		"lata":
-			lbl_resultado.text = "A lata rola pelo beco, atraindo os guardas.\nVocê passa despercebido."
-			lbl_resultado.add_theme_color_override("font_color", Color("#00FF00"))
-			await get_tree().create_timer(3.0).timeout
-			GameState.fase2_passo = "casa_velho"
-			await GameState.retornar_para_game_scene_apos_minigame()
-		"pedra":
-			lbl_resultado.text = "A pedra estilhaça uma vidraça! Os guardas entram em alerta máximo.\nVocê foi visto."
-			lbl_resultado.add_theme_color_override("font_color", Color("#FF0000"))
-			await _game_over()
-		"cano":
-			lbl_resultado.text = "O cano cai com um estrondo ensurdecedor.\nEles atiraram na mesma hora."
-			lbl_resultado.add_theme_color_override("font_color", Color("#FF0000"))
-			await _game_over()
-		"timeout":
-			lbl_resultado.text = "Você foi localizado pelas patrulhas autoritárias.\nEles te capturaram."
-			lbl_resultado.add_theme_color_override("font_color", Color("#FF0000"))
-			await _game_over()
+	return lbl_resultado
 
 func _game_over() -> void:
 	await get_tree().create_timer(3.5).timeout
 	FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_distracao.tscn")
+
+func _mostrar_aviso_temporario(texto_aviso: String) -> void:
+	var l_aviso = Label.new()
+	l_aviso.text = texto_aviso
+	l_aviso.add_theme_font_override("font", FONTE)
+	l_aviso.add_theme_font_size_override("font_size", 28)
+	l_aviso.add_theme_color_override("font_color", Color("#FFAA00"))
+	l_aviso.add_theme_color_override("font_shadow_color", Color.BLACK)
+	l_aviso.add_theme_constant_override("shadow_offset_x", 2)
+	l_aviso.add_theme_constant_override("shadow_offset_y", 2)
+	l_aviso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l_aviso.set_anchors_preset(Control.PRESET_CENTER)
+	l_aviso.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	l_aviso.grow_vertical = Control.GROW_DIRECTION_BOTH
+	l_aviso.position = Vector2(get_viewport_rect().size.x / 2.0 - 400, get_viewport_rect().size.y / 2.0 - 150)
+	l_aviso.size = Vector2(800, 50)
+	layer.add_child(l_aviso)
+	
+	var orig_pos = l_aviso.position
+	var tw_shake = create_tween()
+	for i in range(6):
+		var offset = Vector2(randf_range(-6, 6), randf_range(-6, 6))
+		tw_shake.tween_property(l_aviso, "position", orig_pos + offset, 0.05)
+	tw_shake.tween_property(l_aviso, "position", orig_pos, 0.05)
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(l_aviso, "position:y", l_aviso.position.y - 80.0, 2.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tw.tween_property(l_aviso, "modulate:a", 0.0, 2.0).set_delay(0.5)
+	tw.chain().tween_callback(func(): l_aviso.queue_free())
 
 # Efeito de faíscas visuais na posição do clique
 func _spawn_sparks(pos: Vector2) -> void:

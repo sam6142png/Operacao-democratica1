@@ -1,0 +1,15 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg" fade="0.6" transition="Simple Fade"]
+join PROTA (Determinado) rightmost [animation="Slide From Right" wait="true"]
+PROTA (Determinado): A escola já está unida e o sinal da rádio livre está se espalhando. É a hora de levar as pessoas para as ruas.
+join ATENA (Neutro) left [animation="Slide From Left" wait="true"]
+ATENA (Falando): A praça em frente ao palácio municipal está cercada de patrulhas militares, Dante. O clima está tenso.
+join Luis leftmost [animation="Slide From Left" wait="true"]
+Luis (Falando): Se a gente não organizar as pessoas direito, vai ser um massacre. Temos que equilibrar a mobilização e a segurança da multidão.
+PROTA: Exatamente. Nosso objetivo é cercar o palácio de forma pacífica, mas firme. Cada decisão nossa pode inflamar o povo ou atrair repressão armada.
+ATENA: Estou pronta. Vamos coordenar a marcha e dar o sinal para as pessoas avançarem.
+Luis: Que a constituição e a razão nos guiem... Vamos lá.
+leave Luis
+leave ATENA
+leave PROTA
+[signal arg="iniciar_minigame_praca"]
+[end_timeline]

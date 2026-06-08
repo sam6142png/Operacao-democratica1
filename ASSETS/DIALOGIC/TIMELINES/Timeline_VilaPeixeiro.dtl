@@ -52,15 +52,18 @@ PEIXEIRO (Falando e Ameaçando): Quem são vocês? Falem logo.
 - Mentir
 	update PROTA (Falando)
 	PROTA: Procuramos o pai de Atena.
-	update ATENA (Brava) [animation="Shake X"]
-	PEIXEIRO: E por que viriam à minha casa?
-	update ATENA (Falando)
-	ATENA: Dante, diga a verdade. Ele não é bobo.
+	update PEIXEIRO (Neutro) [animation="Shake X"]
+	PEIXEIRO: O pai dela? Não conheço nenhum homem com esse nome aqui. Vocês parecem espiões do regime! Sumam da minha porta antes que eu chame os guardas!
+	update ATENA (Falando) [animation="Heartbeat"]
+	ATENA: Espere, senhor! Ele mentiu por medo dos guardas que patrulham a vila.
+	ATENA: Nós viemos pelo livro. O livro "Direitos e Deveres do Povo" que Isabela e Julian lhe confiaram.
+	update PEIXEIRO (Neutro)
+	PEIXEIRO: Isabela... Isabela e Julian?
 	update PROTA (Determinado)
-	PROTA: Certo. Sou Dante, filho do ex-prefeito. Vim pelo livro "Direitos e Deveres do Povo".
+	PROTA: Sim. Eu sou Dante, filho deles. Vim recuperar a memória que tentaram apagar.
 	[signal arg="escolha_mentira"]
 	update PEIXEIRO [animation="Heartbeat"]
-	PEIXEIRO: Sabia! O livro está aqui, mas preciso de ajuda para achar. Entrem.
+	PEIXEIRO: O olhar de teimosia do ex-prefeito... Sim, você é o filho do Dantas. Mas mentir não é uma boa forma de começar uma resistência. O livro está aqui, mas preciso de ajuda para achar. Entrem rápido.
 leave --All-- [animation="Fade Out" length="0.4" wait="true"]
 [background arg="res://ASSETS/SPRITES/FUNDOS/Interior casa do velho.png" fade="0.5" transition="Simple Fade" wait="true"]
 join PROTA leftmost [animation="Slide From Left" wait="true"]

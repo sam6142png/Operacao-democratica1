@@ -5,15 +5,12 @@ const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 
 # === DADOS DO MINIGAME ===
 const TARGET_FREQS = [91.5, 98.3, 104.7]
-const ENCRYPTED_MSGS = [
-	"YHQGD GH SDPRQKD QR EDLUUR 3",
-	"UHXQLDR VHFUXWD PDUFDGD",
-	"HVFROD FRQWUROD PHQWHV"
-]
+const CORRECT_SHIFTS = [-3, 2, -5]
+var ENCRYPTED_MSGS = ["", "", ""]
 const DECRYPTED_MSGS = [
 	"VENDA DE PAMONHA NO BAIRRO 3",
 	"REUNIAO SECRETA MARCADA",
-	"OPERAÇÃO CONTROLE EDUCACIONAL"
+	"OPERACAO CONTROLE EDUCACIONAL"
 ]
 const DISCOVERY_TIMELINES = [
 	"fase2_reacao_mensagem_1",
@@ -60,6 +57,11 @@ func _ready() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
 	
+	# Inicializa as mensagens criptografadas dinamicamente
+	ENCRYPTED_MSGS.clear()
+	for i in range(DECRYPTED_MSGS.size()):
+		ENCRYPTED_MSGS.append(_decodificar_cifra(DECRYPTED_MSGS[i], -CORRECT_SHIFTS[i]))
+		
 	# Garante que as escolhas salvas não interfiram
 	_construir_ui()
 	_atualizar_ui_estado()
@@ -465,11 +467,12 @@ func _on_freq_changed(value: float) -> void:
 func _ajustar_shift(delta: int) -> void:
 	if captured_index == -1 or decrypted_states[captured_index]: return
 	
-	if shift_atual == -3:
+	var correct_shift = CORRECT_SHIFTS[captured_index]
+	if shift_atual == correct_shift:
 		cometeu_erro_radio = true
-	elif shift_atual > -3 and delta > 0:
+	elif shift_atual > correct_shift and delta > 0:
 		cometeu_erro_radio = true
-	elif shift_atual < -3 and delta < 0:
+	elif shift_atual < correct_shift and delta < 0:
 		cometeu_erro_radio = true
 		
 	shift_atual = clamp(shift_atual + delta, -13, 13)
@@ -513,7 +516,7 @@ func _atualizar_ui_estado() -> void:
 			lbl_captured_title.add_theme_color_override("font_color", Color("#00FF66"))
 			lbl_raw_text.text = ENCRYPTED_MSGS[captured_index]
 			lbl_raw_text.add_theme_color_override("font_color", Color("#88AA88"))
-			lbl_shift_value.text = "DESLOCAMENTO: -3 (CORRETO)"
+			lbl_shift_value.text = "DESLOCAMENTO: " + str(CORRECT_SHIFTS[captured_index]) + " (CORRETO)"
 			lbl_preview_text.text = DECRYPTED_MSGS[captured_index]
 			lbl_preview_text.add_theme_color_override("font_color", Color("#00FF66"))
 			btn_save_signal.visible = false
@@ -529,8 +532,9 @@ func _atualizar_ui_estado() -> void:
 			var preview = _decodificar_cifra(raw_msg, shift_atual)
 			lbl_preview_text.text = preview
 			
-			# Se o shift for -3, a decodificação está correta
-			if shift_atual == -3:
+			# Se o shift for o correto, a decodificação está correta
+			var correct_shift = CORRECT_SHIFTS[captured_index]
+			if shift_atual == correct_shift:
 				lbl_preview_text.add_theme_color_override("font_color", Color("#00FF66")) # Verde
 				btn_save_signal.visible = true
 				btn_save_signal.text = "REGISTRAR SINAL DECODIFICADO"
@@ -619,7 +623,7 @@ func _on_cifra_info_pressed() -> void:
 	var popup_desc = RichTextLabel.new()
 	popup_desc.custom_minimum_size = Vector2(0, 240)
 	popup_desc.bbcode_enabled = true
-	popup_desc.text = "[color=#CCCCCC]A [color=#00A2FF][b]Cifra de César[/b][/color] é uma técnica clássica de criptografia por substituição.\n\nCada letra do texto original é [b]substituída[/b] por outra que está um número fixo de posições atrás ou à frente no alfabeto.\n\n[color=#FFAA00]Funcionamento prático com recuo de 3 posições (Deslocamento: -3):[/color]\n• Letra [b]D[/b] recua 3 posições e vira [b]A[/b]\n• Letra [b]E[/b] recua 3 posições e vira [b]B[/b]\n• Letra [b]F[/b] recua 3 posições e vira [b]C[/b]\n\n[color=#00FF66][b]DIRETRIZ DE DESCRIPTOGRAFIA:[/b]\ninterceptações mostram que as mensagens militares estão cifradas com [b]DESLOCAMENTO: -3[/b]. Ajuste os botões '-' e '+' até obter esse valor para que a mensagem de resistência apareça limpa e legível![/color][/color]"
+	popup_desc.text = "[color=#CCCCCC]A [color=#00A2FF][b]Cifra de César[/b][/color] é uma técnica clássica de criptografia por substituição.\n\nCada letra do texto original é [b]substituída[/b] por outra que está um número fixo de posições atrás ou à frente no alfabeto.\n\n[color=#FFAA00]Exemplo prático (Deslocamento: -3):[/color]\n• Letra [b]D[/b] recua 3 posições e vira [b]A[/b]\n• Letra [b]E[/b] recua 3 posições e vira [b]B[/b]\n\n[color=#00FF66][b]DIRETRIZ DE DESCRIPTOGRAFIA (ANOTAÇÕES DE ISABELA):[/b]\nAs transmissões usam diferentes deslocamentos de segurança:\n• Canal 1 (91.5 MHz): Deslocamento de [b]-3[/b]\n• Canal 2 (98.3 MHz): Deslocamento de [b]+2[/b]\n• Canal 3 (104.7 MHz): Deslocamento de [b]-5[/b]\n\nAjuste os botões '-' e '+' até obter os valores corretos para decodificar cada mensagem![/color][/color]"
 	popup_desc.add_theme_font_override("normal_font", FONTE)
 	popup_desc.add_theme_font_size_override("normal_font_size", 18)
 	popup_vbox.add_child(popup_desc)
@@ -646,7 +650,7 @@ func _on_cifra_info_pressed() -> void:
 	popup_vbox.add_child(popup_close)
 
 func _on_save_signal_pressed() -> void:
-	if dialogo_descoberta_em_execucao or captured_index == -1 or shift_atual != -3: return
+	if dialogo_descoberta_em_execucao or captured_index == -1 or shift_atual != CORRECT_SHIFTS[captured_index]: return
 	
 	var descoberta_idx := captured_index
 	dialogo_descoberta_em_execucao = true

@@ -165,6 +165,7 @@ var texto: Label
 var opcoes_box: HBoxContainer
 var lbl_feedback: Label
 var crowd_visualizer: Control
+var crowd_rect: TextureRect
 
 # Barras de Recursos
 var bar_mob: ProgressBar
@@ -174,6 +175,7 @@ var bar_ten: ProgressBar
 
 var sfx_click: AudioStreamPlayer
 var finalizado: bool = false
+var em_simulacao: bool = false
 var alarm_overlay: ColorRect
 var alarm_timer: float = 0.0
 
@@ -181,7 +183,6 @@ var alarm_timer: float = 0.0
 func _ready() -> void:
 	_configurar_audio()
 	_montar_cena()
-	await FadeManager.mostrar_intro_fase(4, "Praça da liberdade")
 	_mostrar_momento()
 
 
@@ -192,6 +193,16 @@ func _process(delta: float) -> void:
 	# Rotaciona/Redesenha radar continuamente
 	if crowd_visualizer:
 		crowd_visualizer.queue_redraw()
+		
+	# Atualiza medidores na interface em tempo real
+	if bar_mob: bar_mob.value = mobilizacao
+	if bar_seg: bar_seg.value = seguranca
+	if bar_org: bar_org.value = organizacao
+	if bar_ten: bar_ten.value = tensao
+	
+	if crowd_rect:
+		var target_a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
+		crowd_rect.modulate.a = target_a
 		
 	# Alarme visual se a tensão militar estiver muito alta
 	if tensao >= 70.0:
@@ -229,17 +240,17 @@ func _montar_cena() -> void:
 	layer.add_child(shade)
 
 	# Personagens integrados na lateral inferior
-	var crowd := TextureRect.new()
-	crowd.texture = PROTESTANTES_TEX
-	crowd.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	crowd.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	crowd.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	crowd.offset_left = 20
-	crowd.offset_right = 580
-	crowd.offset_top = -320
-	crowd.offset_bottom = -10
-	crowd.modulate.a = 0.8
-	layer.add_child(crowd)
+	crowd_rect = TextureRect.new()
+	crowd_rect.texture = PROTESTANTES_TEX
+	crowd_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	crowd_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	crowd_rect.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	crowd_rect.offset_left = 20
+	crowd_rect.offset_right = 580
+	crowd_rect.offset_top = -320
+	crowd_rect.offset_bottom = -10
+	crowd_rect.modulate.a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
+	layer.add_child(crowd_rect)
 
 	var dante := TextureRect.new()
 	dante.texture = load(GameState.obter_caminho_sprite_dante("Apontando (braço estendido, expressão acusatória).png"))
@@ -259,100 +270,138 @@ func _montar_cena() -> void:
 	alarm_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(alarm_overlay)
 
-	# Painel de Comando Operacional (Tamanho estendido)
+	# Painel de Comando Operacional (Glassmorphism layout)
 	panel_main = PanelContainer.new()
 	panel_main.set_anchors_preset(Control.PRESET_CENTER)
-	panel_main.custom_minimum_size = Vector2(1080, 710)
-	panel_main.add_theme_stylebox_override("panel", _stylebox(_ca("#09070e", 0.96), Color("#ffe28a"), 4, 12))
+	panel_main.custom_minimum_size = Vector2(1120, 680)
+	panel_main.add_theme_stylebox_override("panel", _stylebox(_ca("#060509", 0.90), Color("#54d6ff"), 2, 12))
 	layer.add_child(panel_main)
 	call_deferred("_centralizar", panel_main)
 
-	var margin := _margin(24)
+	var margin := _margin(20)
 	panel_main.add_child(margin)
 	
 	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 14)
+	root.add_theme_constant_override("separation", 12)
 	margin.add_child(root)
 
 	# Título do Ato
-	var head := _label("CONGRESSO DA PRAÇA DA LIBERDADE", 38, Color("#ffe28a"), FONTE)
-	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	root.add_child(head)
+	var header_hbox := HBoxContainer.new()
+	root.add_child(header_hbox)
+	
+	var head := _label("PAINEL DE CONTROLE TÁTICO", 28, Color("#54d6ff"), FONTE)
+	head.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_hbox.add_child(head)
+	
+	progresso = _label("", 15, Color("#62ff86"), FONTE_MONO)
+	header_hbox.add_child(progresso)
 
-	# ═════ MEDIDORES DE RECURSOS (4 BARRAS HORIZONTAIS) ═════
-	var medidores_grid := GridContainer.new()
-	medidores_grid.columns = 2
-	medidores_grid.add_theme_constant_override("h_separation", 35)
-	medidores_grid.add_theme_constant_override("v_separation", 6)
-	medidores_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	root.add_child(medidores_grid)
+	# ═════ COLUNAS SPLIT-SCREEN ═════
+	var split_hbox := HBoxContainer.new()
+	split_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	split_hbox.add_theme_constant_override("separation", 24)
+	root.add_child(split_hbox)
 
-	# Barra 1: Mobilização
-	var box_mob := HBoxContainer.new()
-	box_mob.add_theme_constant_override("separation", 10)
-	box_mob.add_child(_label("MOBILIZACAO:", 16, Color("#ffa240"), FONTE_MONO))
-	bar_mob = _criar_barra(Color("#ffa240"))
-	box_mob.add_child(bar_mob)
-	medidores_grid.add_child(box_mob)
+	# Coluna Esquerda: Radar Tático
+	var col_left := VBoxContainer.new()
+	col_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_left.size_flags_stretch_ratio = 1.0
+	col_left.add_theme_constant_override("separation", 8)
+	split_hbox.add_child(col_left)
 
-	# Barra 2: Segurança
-	var box_seg := HBoxContainer.new()
-	box_seg.add_theme_constant_override("separation", 10)
-	box_seg.add_child(_label("SEGURANCA:  ", 16, Color("#40d7ff"), FONTE_MONO))
-	bar_seg = _criar_barra(Color("#40d7ff"))
-	box_seg.add_child(bar_seg)
-	medidores_grid.add_child(box_seg)
+	col_left.add_child(_label("MONITOR DE DENSIDADE E SEGURANÇA", 13, Color("#54d6ff"), FONTE_MONO))
 
-	# Barra 3: Organização
-	var box_org := HBoxContainer.new()
-	box_org.add_theme_constant_override("separation", 10)
-	box_org.add_child(_label("ORGANIZACAO:", 16, Color("#62ff86"), FONTE_MONO))
-	bar_org = _criar_barra(Color("#62ff86"))
-	box_org.add_child(bar_org)
-	medidores_grid.add_child(box_org)
-
-	# Barra 4: Tensão Militar
-	var box_ten := HBoxContainer.new()
-	box_ten.add_theme_constant_override("separation", 10)
-	box_ten.add_child(_label("TENSÃO MIL.:", 16, Color("#ff5c5c"), FONTE_MONO))
-	bar_ten = _criar_barra(Color("#ff5c5c"))
-	box_ten.add_child(bar_ten)
-	medidores_grid.add_child(box_ten)
-
-	# ═════ MONITOR VISUAL DA MULTIDÃO ═════
 	var monitor_panel := PanelContainer.new()
-	monitor_panel.custom_minimum_size = Vector2(0, 72)
-	monitor_panel.add_theme_stylebox_override("panel", _stylebox(Color("#020104"), Color("#2b2118"), 2, 6))
-	root.add_child(monitor_panel)
+	monitor_panel.custom_minimum_size = Vector2(0, 310)
+	monitor_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	monitor_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.01, 0.01, 0.02, 0.94), Color("#54d6ff", 0.4), 2, 8))
+	col_left.add_child(monitor_panel)
 	
 	crowd_visualizer = Control.new()
 	crowd_visualizer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	crowd_visualizer.draw.connect(_desenhar_monitor_multidao)
 	monitor_panel.add_child(crowd_visualizer)
 
-	# Info do Momento
-	progresso = _label("", 16, Color("#7bd88f"), FONTE_MONO)
-	progresso.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	root.add_child(progresso)
+	# Coluna Direita: Narrativa e Recursos
+	var col_right := VBoxContainer.new()
+	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_right.size_flags_stretch_ratio = 1.2
+	col_right.add_theme_constant_override("separation", 14)
+	split_hbox.add_child(col_right)
 
-	titulo = _label("", 28, Color("#fff4d6"), FONTE)
-	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Painel de descrição da etapa
+	var desc_panel := PanelContainer.new()
+	desc_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.08, 0.09, 0.13, 0.65), Color("#2a2c35", 0.5), 1, 8))
+	col_right.add_child(desc_panel)
+
+	var desc_margin := _margin(14)
+	desc_panel.add_child(desc_margin)
+
+	var desc_vbox := VBoxContainer.new()
+	desc_vbox.add_theme_constant_override("separation", 8)
+	desc_margin.add_child(desc_vbox)
+
+	titulo = _label("", 21, Color("#fff4d6"), FONTE)
 	titulo.autowrap_mode = TextServer.AUTOWRAP_WORD
-	root.add_child(titulo)
+	desc_vbox.add_child(titulo)
 
-	texto = _label("", 21, Color("#d7c9aa"), FONTE)
-	texto.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	texto = _label("", 16, Color("#d7c9aa"), FONTE)
 	texto.autowrap_mode = TextServer.AUTOWRAP_WORD
-	root.add_child(texto)
+	desc_vbox.add_child(texto)
 
-	# Box horizontal para os botões de cartas
+	# Medidores verticais de recursos
+	var bar_vbox := VBoxContainer.new()
+	bar_vbox.add_theme_constant_override("separation", 8)
+	col_right.add_child(bar_vbox)
+
+	# Barra 1: Mobilização
+	var box_mob := HBoxContainer.new()
+	box_mob.add_theme_constant_override("separation", 10)
+	var lbl_mob := _label("👥 MOBILIZACAO: ", 14, Color("#ffa240"), FONTE_MONO)
+	lbl_mob.custom_minimum_size = Vector2(150, 0)
+	box_mob.add_child(lbl_mob)
+	bar_mob = _criar_barra(Color("#ffa240"))
+	box_mob.add_child(bar_mob)
+	bar_vbox.add_child(box_mob)
+
+	# Barra 2: Organização
+	var box_org := HBoxContainer.new()
+	box_org.add_theme_constant_override("separation", 10)
+	var lbl_org := _label("📋 ORGANIZACAO:", 14, Color("#62ff86"), FONTE_MONO)
+	lbl_org.custom_minimum_size = Vector2(150, 0)
+	box_org.add_child(lbl_org)
+	bar_org = _criar_barra(Color("#62ff86"))
+	box_org.add_child(bar_org)
+	bar_vbox.add_child(box_org)
+
+	# Barra 3: Segurança
+	var box_seg := HBoxContainer.new()
+	box_seg.add_theme_constant_override("separation", 10)
+	var lbl_seg := _label("🛡️ SEGURANCA:  ", 14, Color("#40d7ff"), FONTE_MONO)
+	lbl_seg.custom_minimum_size = Vector2(150, 0)
+	box_seg.add_child(lbl_seg)
+	bar_seg = _criar_barra(Color("#40d7ff"))
+	box_seg.add_child(bar_seg)
+	bar_vbox.add_child(box_seg)
+
+	# Barra 4: Tensão Militar
+	var box_ten := HBoxContainer.new()
+	box_ten.add_theme_constant_override("separation", 10)
+	var lbl_ten := _label("⚠️ TENSÃO MIL.: ", 14, Color("#ff5c5c"), FONTE_MONO)
+	lbl_ten.custom_minimum_size = Vector2(150, 0)
+	box_ten.add_child(lbl_ten)
+	bar_ten = _criar_barra(Color("#ff5c5c"))
+	box_ten.add_child(bar_ten)
+	bar_vbox.add_child(box_ten)
+
+	# Rodapé: Container para cartas
 	opcoes_box = HBoxContainer.new()
 	opcoes_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	opcoes_box.add_theme_constant_override("separation", 20)
-	opcoes_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	opcoes_box.custom_minimum_size = Vector2(0, 240)
 	root.add_child(opcoes_box)
 
-	lbl_feedback = _label("", 20, Color("#ffffff"), FONTE)
+	lbl_feedback = _label("", 18, Color("#ffffff"), FONTE)
 	lbl_feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD
 	root.add_child(lbl_feedback)
@@ -394,6 +443,9 @@ func _atualizar_barras() -> void:
 	bar_seg.value = seguranca
 	bar_org.value = organizacao
 	bar_ten.value = tensao
+	if crowd_rect:
+		var target_a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
+		create_tween().tween_property(crowd_rect, "modulate:a", target_a, 0.45)
 	crowd_visualizer.queue_redraw()
 
 
@@ -521,13 +573,33 @@ func _escolher(opcao: Dictionary) -> void:
 	if finalizado: return
 	_play_click()
 	
-	# Aplica modificadores nas variáveis de recurso
-	mobilizacao = clamp(mobilizacao + float(opcao["mod_mob"]), 0.0, 100.0)
-	seguranca = clamp(seguranca + float(opcao["mod_seg"]), 0.0, 100.0)
-	organizacao = clamp(organizacao + float(opcao["mod_org"]), 0.0, 100.0)
-	tensao = clamp(tensao + float(opcao["mod_ten"]), 0.0, 100.0)
+	# Entra em simulação
+	em_simulacao = true
+	_bloquear_botoes(true)
 	
-	_atualizar_barras()
+	# Exibe painel de processamento
+	_mostrar_processamento_simulacao(str(opcao["titulo_carta"]))
+	
+	# Calcula novos valores
+	var target_mob = clamp(mobilizacao + float(opcao["mod_mob"]), 0.0, 100.0)
+	var target_seg = clamp(seguranca + float(opcao["mod_seg"]), 0.0, 100.0)
+	var target_org = clamp(organizacao + float(opcao["mod_org"]), 0.0, 100.0)
+	var target_ten = clamp(tensao + float(opcao["mod_ten"]), 0.0, 100.0)
+	
+	# Anima as variáveis de recurso suavemente
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(self, "mobilizacao", target_mob, 1.2)
+	tw.tween_property(self, "seguranca", target_seg, 1.2)
+	tw.tween_property(self, "organizacao", target_org, 1.2)
+	tw.tween_property(self, "tensao", target_ten, 1.2)
+	
+	# Spawna popups de feedback nas barras
+	_spawnar_popups_modificadores(opcao)
+	
+	# Espera o tempo da animação e simulação
+	await get_tree().create_timer(1.6).timeout
+	
+	em_simulacao = false
 	
 	# Salva aliados e escolhas
 	var aliado: String = str(opcao["aliado"])
@@ -557,15 +629,79 @@ func _escolher(opcao: Dictionary) -> void:
 		alert.set_anchors_preset(Control.PRESET_FULL_RECT)
 		alert.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.add_child(alert)
-		var tw = create_tween()
-		tw.tween_property(alert, "color:a", 0.0, 0.4)
-		tw.tween_callback(func(): alert.queue_free())
+		var tw_alert = create_tween()
+		tw_alert.tween_property(alert, "color:a", 0.0, 0.4)
+		tw_alert.tween_callback(func(): alert.queue_free())
 
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.8).timeout
 	lbl_feedback.text = ""
 	
 	indice += 1
 	_mostrar_momento()
+
+func _mostrar_processamento_simulacao(titulo_diretiva: String) -> void:
+	_limpar(opcoes_box)
+	
+	var sim_panel = PanelContainer.new()
+	sim_panel.custom_minimum_size = Vector2(900, 220)
+	sim_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.04, 0.03, 0.06, 0.90), Color("#62ff86", 0.8), 2, 8))
+	opcoes_box.add_child(sim_panel)
+	
+	var margin = _margin(20)
+	sim_panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 14)
+	margin.add_child(vbox)
+	
+	var lbl_proc = _label("DIRETIVA ATIVADA: " + titulo_diretiva.to_upper(), 22, Color("#62ff86"), FONTE)
+	lbl_proc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_proc)
+	
+	var lbl_status = _label("Mobilizando cidadãos nas vias centrais... Sincronizando rede de vigilância...", 15, Color("#a2a8b3"), FONTE_MONO)
+	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_status)
+	
+	# Adiciona uma barrinha de progresso de simulação fictícia
+	var sim_bar = ProgressBar.new()
+	sim_bar.custom_minimum_size = Vector2(600, 12)
+	sim_bar.show_percentage = false
+	var sb_bg = StyleBoxFlat.new()
+	sb_bg.bg_color = Color(0,0,0,0.5)
+	sim_bar.add_theme_stylebox_override("background", sb_bg)
+	var sb_fg = StyleBoxFlat.new()
+	sb_fg.bg_color = Color("#62ff86")
+	sim_bar.add_theme_stylebox_override("fill", sb_fg)
+	vbox.add_child(sim_bar)
+	
+	# Tween do progresso da simulação
+	var tw = create_tween()
+	tw.tween_property(sim_bar, "value", 100.0, 1.4)
+
+func _spawnar_popups_modificadores(opcao: Dictionary) -> void:
+	if int(opcao["mod_mob"]) != 0:
+		_mostrar_popup_efeito(int(opcao["mod_mob"]), Color("#ffa240"), bar_mob)
+	if int(opcao["mod_org"]) != 0:
+		_mostrar_popup_efeito(int(opcao["mod_org"]), Color("#62ff86"), bar_org)
+	if int(opcao["mod_seg"]) != 0:
+		_mostrar_popup_efeito(int(opcao["mod_seg"]), Color("#40d7ff"), bar_seg)
+	if int(opcao["mod_ten"]) != 0:
+		_mostrar_popup_efeito(int(opcao["mod_ten"]), Color("#ff5c5c"), bar_ten)
+
+func _mostrar_popup_efeito(valor: int, cor: Color, parent_node: Control) -> void:
+	var popup := Label.new()
+	popup.text = ("+" if valor >= 0 else "") + str(valor) + "%"
+	popup.add_theme_font_override("font", FONTE_MONO)
+	popup.add_theme_font_size_override("font_size", 16)
+	popup.add_theme_color_override("font_color", cor)
+	popup.position = Vector2(240, -4)
+	parent_node.add_child(popup)
+	
+	var tw = popup.create_tween()
+	tw.tween_property(popup, "position:y", -24.0, 1.2).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(popup, "modulate:a", 0.0, 1.2)
+	tw.tween_callback(popup.queue_free)
 
 
 func _falha_marcha(motivo: String) -> void:
@@ -634,7 +770,10 @@ func _desenhar_monitor_multidao() -> void:
 	crowd_visualizer.draw_line(Vector2(centro.x, centro.y - 70), Vector2(centro.x, centro.y + 70), line_color, 1.0)
 	
 	# Linha rotativa de varredura do radar
-	var sweep_angle = fmod(Time.get_ticks_msec() * 0.0018, TAU)
+	var sweep_speed = 1.8
+	if em_simulacao:
+		sweep_speed = 5.0
+	var sweep_angle = fmod(Time.get_ticks_msec() * 0.001 * sweep_speed, TAU)
 	var sweep_dir = Vector2(cos(sweep_angle), sin(sweep_angle))
 	var sweep_len = 250.0
 	crowd_visualizer.draw_line(centro, centro + sweep_dir * sweep_len, Color("#62ff86", 0.45), 2.0)
@@ -658,6 +797,11 @@ func _desenhar_monitor_multidao() -> void:
 		var rx = r.randf_range(centro.x - 220, centro.x + 220)
 		var ry = r.randf_range(centro.y - 60, centro.y + 60)
 		
+		# Adiciona jitter vibracional em simulação
+		if em_simulacao:
+			rx += randf_range(-4.0, 4.0)
+			ry += randf_range(-4.0, 4.0)
+			
 		# Pontinho de manifestante (Verde Brilhante)
 		var p_color = Color("#62ff86", r.randf_range(0.55, 0.95))
 		crowd_visualizer.draw_circle(Vector2(rx, ry), 2.5, p_color)
@@ -672,6 +816,10 @@ func _desenhar_monitor_multidao() -> void:
 		var rx = r_p.randf_range(centro.x - 240, centro.x + 240)
 		var ry = r_p.randf_range(centro.y - 70, centro.y + 70)
 		
+		if em_simulacao:
+			rx += randf_range(-3.0, 3.0)
+			ry += randf_range(-3.0, 3.0)
+			
 		# Desenha apenas nas bordas externas do radar
 		if Vector2(rx, ry).distance_to(centro) > 75.0:
 			var p_color = Color("#ff4b4b", r_p.randf_range(0.7, 1.0))

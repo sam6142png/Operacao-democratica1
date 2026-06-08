@@ -49,22 +49,22 @@ var charge_selecionada: int = -1
 var relato_selecionado: int = -1
 
 const MANCHETES := [
-	{"id": 0, "texto": "A Verdade Sobre o Grande Apagão de 2006", "impacto": 35, "risco": 25, "desc": "Revela o corte intencional de energia do Coronel."},
-	{"id": 1, "texto": "Prefeito Dantas: O Legado de Liberdade Silenciado", "impacto": 40, "risco": 30, "desc": "Homenageia o antigo prefeito e sua constituição."},
-	{"id": 2, "texto": "Reflexões Cívicas na Sala de Aula", "impacto": 15, "risco": 5, "desc": "Artigo moderado pedindo mais debates livres."},
-	{"id": 3, "texto": "Protestos Estudantis nos Pátios", "impacto": 25, "risco": 15, "desc": "Documenta a união do grêmio estudantil."}
+	{"id": 0, "texto": "A Verdade Sobre o Grande Apagão de 2006", "impacto": 35, "risco": 25, "desc": "Revela o corte intencional de energia do Coronel.", "tema": "apagao"},
+	{"id": 1, "texto": "Prefeito Dantas: O Legado de Liberdade Silenciado", "impacto": 40, "risco": 30, "desc": "Homenageia o antigo prefeito e sua constituição.", "tema": "historia"},
+	{"id": 2, "texto": "Reflexões Cívicas na Sala de Aula", "impacto": 15, "risco": 5, "desc": "Artigo moderado pedindo mais debates livres.", "tema": "escola"},
+	{"id": 3, "texto": "Protestos Estudantis nos Pátios", "impacto": 25, "risco": 15, "desc": "Documenta a união do grêmio estudantil.", "tema": "escola"}
 ]
 
 const CHARGES := [
-	{"id": 0, "texto": "O Coronel Antônio Controlando as Mentes", "impacto": 35, "risco": 35, "desc": "Desenho satírico do ditador como titereiro."},
-	{"id": 1, "texto": "Fusíveis Rompidos da Censura na Escola", "impacto": 20, "risco": 15, "desc": "Metáfora visual da rádio livre invadindo o sinal."},
-	{"id": 2, "texto": "Estudantes de Mãos Dadas Pela Verdade", "impacto": 15, "risco": 8, "desc": "Representação pacífica da resistência."}
+	{"id": 0, "texto": "O Coronel Antônio Controlando as Mentes", "impacto": 35, "risco": 35, "desc": "Desenho satírico do ditador como titereiro.", "tema": "historia"},
+	{"id": 1, "texto": "Fusíveis Rompidos da Censura na Escola", "impacto": 20, "risco": 15, "desc": "Metáfora visual da rádio livre invadindo o sinal.", "tema": "apagao"},
+	{"id": 2, "texto": "Estudantes de Mãos Dadas Pela Verdade", "impacto": 15, "risco": 8, "desc": "Representação pacífica da resistência.", "tema": "escola"}
 ]
 
 const RELATOS := [
-	{"id": 0, "texto": "Relato do Peixeiro: 'Meu irmão sumiu na usina'", "impacto": 35, "risco": 30, "desc": "Testemunho cru sobre repressões passadas."},
-	{"id": 1, "texto": "Relato do Professor: 'Estamos sob mordaça'", "impacto": 30, "risco": 25, "desc": "O drama de lecionar sob a mira do exército."},
-	{"id": 2, "texto": "Estudantes: 'Queremos livros reais, não propaganda'", "impacto": 20, "risco": 10, "desc": "Manifesto por educação livre e não tendenciosa."}
+	{"id": 0, "texto": "Relato do Peixeiro: 'Meu irmão sumiu na usina'", "impacto": 35, "risco": 30, "desc": "Testemunho cru sobre repressões passadas.", "tema": "apagao"},
+	{"id": 1, "texto": "Relato do Professor: 'Estamos sob mordaça'", "impacto": 30, "risco": 25, "desc": "O drama de lecionar sob a mira do exército.", "tema": "escola"},
+	{"id": 2, "texto": "Estudantes: 'Queremos livros reais, não propaganda'", "impacto": 20, "risco": 10, "desc": "Manifesto por educação livre e não tendenciosa.", "tema": "historia"}
 ]
 
 # UI Editor
@@ -73,6 +73,12 @@ var draw_preview: Control
 var bar_impacto: ProgressBar
 var bar_risco: ProgressBar
 var lbl_risco_alerta: Label
+var lbl_sinergia: Label
+
+# Sinergias e métricas do jornal transportadas para a persuasão
+var sinergia_ativa: String = ""
+var jornal_impacto: float = 0.0
+var jornal_risco: float = 0.0
 
 # ==========================================
 # DADOS DA PERSUASÃO SOCRÁTICA
@@ -81,6 +87,7 @@ var doutrinacao_estudante: float = 100.0
 var alerta_militar: float = 0.0
 var rodadas_restantes: int = 5
 var argumento_estudante_id: int = 0
+var argumentos_rodada: Array = []
 
 const ARGUMENTOS_ESTUDANTE := [
 	{"id": 0, "texto": "\"O Coronel nos protege do caos e da desordem. Sem ele, a cidade morre.\"", "defesa": "ordem"},
@@ -105,6 +112,9 @@ func _ready() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
 		
+	argumentos_rodada = ARGUMENTOS_ESTUDANTE.duplicate()
+	argumentos_rodada.shuffle()
+	
 	_configurar_audio()
 	_construir_ui()
 
@@ -281,6 +291,10 @@ func _criar_layout_editor() -> void:
 	box_ris.add_child(bar_risco)
 	metrics_box.add_child(box_ris)
 	
+	# Linha de Sinergia
+	lbl_sinergia = _label("Selecione os blocos do jornal para analisar a coerência cívica.", 14, COR_TEXT_TER, FONTE_MONO)
+	vbox.add_child(lbl_sinergia)
+
 	# Alerta e Botão de Publicação
 	var bottom_box = HBoxContainer.new()
 	bottom_box.add_theme_constant_override("separation", 20)
@@ -363,23 +377,66 @@ func _recalcular_metricas() -> void:
 	var total_imp = 0
 	var total_ris = 0
 	
+	var tema_manchete = ""
+	var tema_charge = ""
+	var tema_relato = ""
+	
 	if manchete_selecionada != -1:
 		total_imp += MANCHETES[manchete_selecionada]["impacto"]
 		total_ris += MANCHETES[manchete_selecionada]["risco"]
+		tema_manchete = MANCHETES[manchete_selecionada]["tema"]
 	if charge_selecionada != -1:
 		total_imp += CHARGES[charge_selecionada]["impacto"]
 		total_ris += CHARGES[charge_selecionada]["risco"]
+		tema_charge = CHARGES[charge_selecionada]["tema"]
 	if relato_selecionado != -1:
 		total_imp += RELATOS[relato_selecionado]["impacto"]
 		total_ris += RELATOS[relato_selecionado]["risco"]
+		tema_relato = RELATOS[relato_selecionado]["tema"]
 		
-	bar_impacto.value = total_imp
-	bar_risco.value = total_ris
+	if manchete_selecionada != -1 and charge_selecionada != -1 and relato_selecionado != -1:
+		if tema_manchete == tema_charge and tema_charge == tema_relato:
+			sinergia_ativa = tema_manchete
+			if sinergia_ativa == "apagao":
+				total_imp += 30
+				total_ris -= 15
+				lbl_sinergia.text = "SINERGIA: SABOTAGEM REVELADA (+30% Impacto, -15% Risco)\nBônus na Persuasão: Aumenta a eficácia de 'Apresentar Evidência' em +15."
+				lbl_sinergia.add_theme_color_override("font_color", COR_GREEN_FILL)
+			elif sinergia_ativa == "historia":
+				total_imp += 25
+				total_ris -= 10
+				lbl_sinergia.text = "SINERGIA: VERDADE HISTÓRICA (+25% Impacto, -10% Risco)\nBônus na Persuasão: Aumenta a eficácia de 'Pergunta Socrática' em +10."
+				lbl_sinergia.add_theme_color_override("font_color", COR_GREEN_FILL)
+			elif sinergia_ativa == "escola":
+				total_imp += 20
+				total_ris -= 10
+				lbl_sinergia.text = "SINERGIA: VOZ ESTUDANTIL (+20% Impacto, -10% Risco)\nBônus na Persuasão: Reduz a doutrinação inicial em -15%."
+				lbl_sinergia.add_theme_color_override("font_color", COR_GREEN_FILL)
+		elif tema_manchete != tema_charge and tema_charge != tema_relato and tema_manchete != tema_relato:
+			sinergia_ativa = "incoerente"
+			total_imp -= 15
+			total_ris += 15
+			lbl_sinergia.text = "PENALIDADE: INCOERÊNCIA EDITORIAL (-15% Impacto, +15% Risco)\nEfeito na Persuasão: Alerta militar começa em +20% e táticas causam -5 de dano."
+			lbl_sinergia.add_theme_color_override("font_color", COR_RED_FILL)
+		else:
+			sinergia_ativa = ""
+			lbl_sinergia.text = "FOCO EDITORIAL: MODERADO (Foco misto, sem bônus adicionais)."
+			lbl_sinergia.add_theme_color_override("font_color", COR_TEXT_SEC)
+	else:
+		sinergia_ativa = ""
+		lbl_sinergia.text = "Selecione todos os blocos do jornal para analisar a coerência cívica."
+		lbl_sinergia.add_theme_color_override("font_color", COR_TEXT_TER)
+		
+	jornal_impacto = clamp(total_imp, 0, 100)
+	jornal_risco = clamp(total_ris, 0, 100)
 	
-	if total_ris > 80:
+	bar_impacto.value = jornal_impacto
+	bar_risco.value = jornal_risco
+	
+	if jornal_risco > 80:
 		lbl_risco_alerta.text = "¡ CENSURA IMINENTE ! Risco muito alto. Substitua por peças mais seguras."
 		lbl_risco_alerta.add_theme_color_override("font_color", COR_RED_FILL)
-	elif total_imp < 50:
+	elif jornal_impacto < 50:
 		lbl_risco_alerta.text = "Impacto cívico insuficiente. Adicione manchetes ou relatos mais marcantes."
 		lbl_risco_alerta.add_theme_color_override("font_color", Color("#ffa240"))
 	else:
@@ -437,6 +494,25 @@ func _desenhar_preview_jornal() -> void:
 	else:
 		draw_preview.draw_string(FONTE, Vector2(size.x/2.0 + 20, 180), "[SELECIONE UMA CHARGE]", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#a83232"))
 
+	# Carimbo de Linha Editorial no rodapé do papel
+	if sinergia_ativa != "":
+		var carimbo_txt = ""
+		var carimbo_cor = Color.BLACK
+		if sinergia_ativa == "escola":
+			carimbo_txt = "★ COLETIVO ESTUDANTIL ★"
+			carimbo_cor = Color("#1f5f3f")
+		elif sinergia_ativa == "historia":
+			carimbo_txt = "★ VERDADE E MEMÓRIA ★"
+			carimbo_cor = Color("#2b4c7e")
+		elif sinergia_ativa == "apagao":
+			carimbo_txt = "★ CONTRA-INFORMAÇÃO ★"
+			carimbo_cor = Color("#7e4b1a")
+		elif sinergia_ativa == "incoerente":
+			carimbo_txt = "⚠ EDITORIAL INCOERENTE ⚠"
+			carimbo_cor = Color("#8b2525")
+		
+		draw_preview.draw_string(FONTE_MONO, Vector2(size.x/2.0, size.y - 6), carimbo_txt, HORIZONTAL_ALIGNMENT_CENTER, -1, 9, carimbo_cor)
+
 func _tentar_publicar_jornal() -> void:
 	if manchete_selecionada == -1 or charge_selecionada == -1 or relato_selecionado == -1:
 		_play(sfx_erro, 0.95)
@@ -475,6 +551,36 @@ func _tentar_publicar_jornal() -> void:
 	panel_persuasao.show()
 	panel_persuasao.modulate.a = 0.0
 	panel_persuasao.scale = Vector2(0.95, 0.95)
+	
+	# Inicializa as variáveis da persuasão socrática com base no jornal publicado
+	# Impacto reduz doutrinação inicial
+	doutrinacao_estudante = clamp(120.0 - jornal_impacto, 30.0, 100.0)
+	
+	# Risco aumenta alerta militar inicial
+	alerta_militar = clamp(jornal_risco - 20.0, 0.0, 60.0)
+	
+	# Aplica bônus específicos da sinergia
+	var bonus_text = ""
+	if sinergia_ativa == "escola":
+		doutrinacao_estudante = max(15.0, doutrinacao_estudante - 15.0)
+		bonus_text = "Bônus 'Voz Estudantil': Doutrinação reduzida em -15%!"
+	elif sinergia_ativa == "apagao":
+		bonus_text = "Bônus 'Sabotagem Revelada': Carta 'Apresentar Evidência' fortalecida!"
+	elif sinergia_ativa == "historia":
+		bonus_text = "Bônus 'Verdade Histórica': Carta 'Pergunta Socrática' fortalecida!"
+	elif sinergia_ativa == "incoerente":
+		alerta_militar = min(90.0, alerta_militar + 20.0)
+		bonus_text = "Penalidade 'Incoerência': Alerta militar +20% e menor dano de cartas!"
+	else:
+		bonus_text = "Foco Moderado: Sem bônus de persuasão adicionais."
+		
+	bar_doutrinacao.value = doutrinacao_estudante
+	bar_alerta.value = alerta_militar
+	
+	lbl_persuasao_status.text = bonus_text
+	lbl_persuasao_status.add_theme_color_override("font_color", COR_GREEN_FILL if sinergia_ativa != "incoerente" else COR_RED_FILL)
+	
+	_construir_cards_persuasao()
 	
 	var tw2 = create_tween().set_parallel(true)
 	tw2.tween_property(panel_persuasao, "modulate:a", 1.0, 0.45)
@@ -604,26 +710,48 @@ func _construir_cards_persuasao() -> void:
 	for c in cards_container.get_children():
 		c.queue_free()
 		
+	var dmg_soc = 20
+	var dmg_evi = 35
+	var dmg_emo = 15
+	
+	var bonus_soc = ""
+	var bonus_evi = ""
+	var bonus_emo = ""
+	
+	if sinergia_ativa == "historia":
+		dmg_soc = 30
+		bonus_soc = " [BÔNUS +10]"
+	elif sinergia_ativa == "apagao":
+		dmg_evi = 50
+		bonus_evi = " [BÔNUS +15]"
+	elif sinergia_ativa == "incoerente":
+		dmg_soc = 15
+		dmg_evi = 30
+		dmg_emo = 10
+		bonus_soc = " [PENALIDADE -5]"
+		bonus_evi = " [PENALIDADE -5]"
+		bonus_emo = " [PENALIDADE -5]"
+		
 	# Carta 1: Pergunta Socrática
 	_criar_card_tática(
 		"Pergunta Socrática", 
-		"Questione o argumento sobre controle.\nEfeito: -20% Doutrinação.\nDobro de dano contra argumentos de 'Ordem'.\nCusto: +10% Alerta.",
+		"Questione o argumento sobre controle.\nEfeito: -%d%% Doutrinação%s.\nDobro contra 'Ordem'/'Segurança'.\nCusto: +10%% Alerta." % [dmg_soc, bonus_soc],
 		Color("#54d6ff"),
 		func(): _jogar_tática("socrática")
 	)
 	
-	# Carta 2: Apresentar Evidência (Panfleto)
+	# Carta 2: Apresentar Evidência
 	_criar_card_tática(
 		"Apresentar Evidência", 
-		"Mostre o jornal publicado.\nEfeito: -35% Doutrinação.\nDobro de dano contra mentiras de 'Livro'.\nCusto: +30% Alerta.",
+		"Mostre o jornal publicado.\nEfeito: -%d%% Doutrinação%s.\nDobro contra mentiras de 'Livro'.\nCusto: +30%% Alerta." % [dmg_evi, bonus_evi],
 		Color("#62ff86"),
 		func(): _jogar_tática("evidência")
 	)
 	
-	# Carta 3: Apelo Emocional (Liberdade)
+	# Carta 3: Apelo Emocional
 	_criar_card_tática(
 		"Apelo Emocional", 
-		"Fale sobre o futuro cívico livre.\nEfeito: -15% Doutrinação.\nDobro de dano contra o medo de 'Punido'.\nCusto: +5% Alerta.",
+		"Fale sobre o futuro cívico livre.\nEfeito: -%d%% Doutrinação%s.\nDobro contra o medo de 'Punido'.\nCusto: +5%% Alerta." % [dmg_emo, bonus_emo],
 		Color("#ffe28a"),
 		func(): _jogar_tática("emocional")
 	)
@@ -683,14 +811,14 @@ func _criar_card_tática(titulo: String, desc: String, cor: Color, callback: Cal
 
 func _atualizar_argumento_estudante() -> void:
 	if finalizado: return
-	var arg = ARGUMENTOS_ESTUDANTE[argumento_estudante_id]
+	var arg = argumentos_rodada[argumento_estudante_id]
 	lbl_dialogo_estudante.text = arg["texto"]
 	lbl_rodadas.text = "AÇÕES RESTANTES: " + str(rodadas_restantes)
 
 func _jogar_tática(tática: String) -> void:
 	if finalizado: return
 	
-	var arg = ARGUMENTOS_ESTUDANTE[argumento_estudante_id]
+	var arg = argumentos_rodada[argumento_estudante_id]
 	var dano = 0.0
 	var alerta_gerado = 0.0
 	var critico = false
@@ -699,23 +827,33 @@ func _jogar_tática(tática: String) -> void:
 	# Resolve tática
 	if tática == "socrática":
 		dano = 20.0
+		if sinergia_ativa == "historia":
+			dano += 10.0
+		elif sinergia_ativa == "incoerente":
+			dano -= 5.0
 		alerta_gerado = 10.0
 		if arg["defesa"] == "ordem" or arg["defesa"] == "seguranca":
-			dano = 40.0
+			dano *= 2.0
 			critico = true
 		log_txt = "Dante questionou as incoerências lógicas do controle militar."
 	elif tática == "evidência":
 		dano = 35.0
+		if sinergia_ativa == "apagao":
+			dano += 15.0
+		elif sinergia_ativa == "incoerente":
+			dano -= 5.0
 		alerta_gerado = 30.0
 		if arg["defesa"] == "livro":
-			dano = 70.0
+			dano *= 2.0
 			critico = true
 		log_txt = "Dante mostrou o jornal ecoando fatos históricos censurados."
 	elif tática == "emocional":
 		dano = 15.0
+		if sinergia_ativa == "incoerente":
+			dano -= 5.0
 		alerta_gerado = 5.0
 		if arg["defesa"] == "medo":
-			dano = 30.0
+			dano *= 2.0
 			critico = true
 		log_txt = "Dante consolou o estudante mostrando a esperança na liberdade coletiva."
 		
@@ -753,7 +891,7 @@ func _jogar_tática(tática: String) -> void:
 		return
 		
 	# Muda o argumento do estudante para a próxima rodada
-	argumento_estudante_id = (argumento_estudante_id + 1) % ARGUMENTOS_ESTUDANTE.size()
+	argumento_estudante_id = (argumento_estudante_id + 1) % argumentos_rodada.size()
 	_atualizar_argumento_estudante()
 
 func _finalizar_persuasao(sucesso: bool, texto_resultado: String) -> void:
