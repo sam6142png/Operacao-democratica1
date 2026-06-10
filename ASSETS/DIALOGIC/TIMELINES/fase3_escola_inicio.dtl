@@ -1,22 +1,7 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/Rua de noite.png" fade="0.6" transition="Simple Fade"]
-join PROTA (De fininho) rightmost [animation="Slide From Right" wait="true"]
-PROTA (De fininho): A escola onde estudei... os murais históricos foram cobertos por cartazes de culto ao Coronel Antônio.
-join ATENA (Neutro) left [animation="Slide From Left" wait="true"]
-ATENA (Falando): Transformaram as salas em curral, Dante. Bora entrar antes da próxima patrulha.
-PROTA: Ali, a porta da cantina tá encostada. Bora.
-leave ATENA [animation="Slide To Left" length="0.4"]
-leave PROTA [animation="Slide To Left" wait="true"]
-[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.6" transition="Simple Fade" wait="true"]
-join PROFESSOR (Neutro) rightmost [animation="Fade In" wait="true"]
-join PROTA (Neutro) leftmost [animation="Slide From Left" wait="true"]
-join ATENA (Neutro) left [animation="Slide From Left" wait="true"]
-PROFESSOR (Falando): Dante? Atena? Vocês são doido?! Se a patrulha pegar vocês aqui, vão direto pro xilindró!
-PROTA (Falando): Professor, a gente sabe da "Operação Frequência". Eles tão enfiando mensagem de controle nas salas!
-PROFESSOR (Neutro): Sim... Substituíram a constituição por diretrizes de obediência cega. Quem falar em liberdade é denunciado por insubordinação cívica.
-PROTA (Determinado): E se a gente interceptar os alto-falantes? Enfiar o sinal da rádio livre na caixa de junção deles!
-PROFESSOR (Falando): A caixa de controle fica no armário dos fundos. Mas é cheia de fusível — um erro e o alarme dispara.
-ATENA (Falando): A gente sabe lidar com fiação. Professor, abre pra nós. É nossa chance.
-PROFESSOR (Falando): Tá bem. Mas façam rápido. Vou vigiar o corredor.
-leave PROFESSOR [animation="Fade Out" length="0.4" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.6" transition="Simple Fade"]
+join PROTA (De fininho) leftmost [animation="Fade In" wait="true"]
+PROTA (De fininho): Só decifrar mensagens não vai ser suficiente. Preciso entender o que os alunos daqui estão realmente pensando.
+PROTA (Neutro): Encontrei um caderno abandonado nesta carteira. O regime tentou rasurar e reescrever a redação de um aluno sobre democracia.
+PROTA (De fininho): O professor e o guarda estão vigiando a sala. Preciso usar a borracha para revelar o texto original do aluno antes de ser descoberto!
 [signal arg="iniciar_minigame_escola"]
 [end_timeline]

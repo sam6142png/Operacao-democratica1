@@ -1,7 +1,13 @@
 extends Node
 
-const MUSICA_PADRAO = "res://ASSETS/SOUNDS/Trilha de fundo - SEM AÇÃO.mp3"
 const VOLUME_PADRAO = -14.0 # Volume ambiente confortável para diálogos
+
+const TRILHAS_PADRAO = [
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO.mp3",
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 2.mp3",
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 3.mp3"
+]
+const TRILHA_PALACIO = "res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 4.mp3"
 
 var player1: AudioStreamPlayer
 var player2: AudioStreamPlayer
@@ -19,6 +25,10 @@ func _ready() -> void:
 	add_child(player1)
 	add_child(player2)
 	
+	# Conecta os sinais de término para reprodução aleatória/looping
+	player1.finished.connect(_on_player_finished.bind(player1))
+	player2.finished.connect(_on_player_finished.bind(player2))
+	
 	# Determina o canal de barramento de áudio apropriado
 	var bus_idx = AudioServer.get_bus_index("Musica")
 	if bus_idx != -1:
@@ -30,9 +40,28 @@ func _ready() -> void:
 		
 	player_ativo = player1
 
-## Executa a música padrão de fundo
+## Executa a música padrão de fundo de forma aleatória
 func play_default_music() -> void:
-	play_music(MUSICA_PADRAO, VOLUME_PADRAO, 1.8)
+	if musica_atual_caminho in TRILHAS_PADRAO and player_ativo.playing:
+		return # Já está tocando uma das trilhas padrão, não precisa interromper
+		
+	var trilha = TRILHAS_PADRAO[randi() % TRILHAS_PADRAO.size()]
+	play_music(trilha, VOLUME_PADRAO, 1.8)
+
+## Callback chamado quando uma trilha termina de tocar
+func _on_player_finished(player: AudioStreamPlayer) -> void:
+	if player == player_ativo:
+		if musica_atual_caminho == TRILHA_PALACIO:
+			# A trilha do palácio toca em loop contínuo
+			player.play()
+		elif musica_atual_caminho in TRILHAS_PADRAO:
+			# Escolhe uma trilha padrão diferente da atual para tocar em seguida
+			var disponiveis = TRILHAS_PADRAO.duplicate()
+			disponiveis.erase(musica_atual_caminho)
+			if disponiveis.is_empty():
+				disponiveis = TRILHAS_PADRAO.duplicate()
+			var nova_trilha = disponiveis[randi() % disponiveis.size()]
+			play_music(nova_trilha, VOLUME_PADRAO, 1.8)
 
 ## Executa uma música específica com transição suave (crossfade)
 func play_music(caminho: String, volume_alvo: float = 0.0, crossfade_time: float = 1.2) -> void:

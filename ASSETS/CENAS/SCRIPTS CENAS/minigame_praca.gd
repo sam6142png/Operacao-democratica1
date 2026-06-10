@@ -747,10 +747,14 @@ func _ir_para_palacio() -> void:
 		"reflexao": "Participar da democracia exige estrategia, solidariedade e cuidado com a vida coletiva."
 	})
 	GameState.registrar_escolha("Liderou a marcha da praca com " + str(int(mobilizacao)) + "% de apoio", maxi(-2, int(apoio_bonus / 10)))
-	GameState.cena_atual = PALACIO_SCENE
-	GameState.salvar_jogo(false)
-	await TimelineManager.parar_tudo()
-	await FadeManager.carregar_cena(PALACIO_SCENE)
+	
+	if GameState.is_minigame_mode:
+		await GameState.retornar_para_game_scene_apos_minigame()
+	else:
+		GameState.cena_atual = PALACIO_SCENE
+		GameState.salvar_jogo(false)
+		await TimelineManager.parar_tudo()
+		await FadeManager.carregar_cena(PALACIO_SCENE)
 
 
 func _desenhar_monitor_multidao() -> void:

@@ -8,6 +8,7 @@ var label_feedback: Label
 var confianca_container: PanelContainer
 var log_vbox: VBoxContainer
 var lbl_saldo: Label
+var btn_salvar: Button
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -27,6 +28,8 @@ func alternar_pausa():
 	painel_pausa.visible = novo_estado
 	
 	if novo_estado:
+		if is_instance_valid(btn_salvar):
+			btn_salvar.visible = !GameState.is_minigame_mode
 		_atualizar_painel_confianca()
 		menu_container.modulate.a = 0
 		var tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
@@ -102,7 +105,7 @@ func _criar_interface():
 	
 	# Botões
 	_criar_botao(vbox, "CONTINUAR", alternar_pausa, Color("#22FF55"))
-	_criar_botao(vbox, "SALVAR PROGRESSO", func(): 
+	btn_salvar = _criar_botao(vbox, "SALVAR PROGRESSO", func(): 
 		GameState.salvar_jogo()
 		_mostrar_feedback_save("Progresso salvo no sistema.")
 	, Color("#FF8C00"))
@@ -184,6 +187,7 @@ func _criar_botao(parent, texto, acao, cor_destaque: Color):
 	
 	btn.pressed.connect(acao)
 	parent.add_child(btn)
+	return btn
 
 func _criar_painel_confianca(parent: Control):
 	confianca_container = PanelContainer.new()

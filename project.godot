@@ -65,6 +65,7 @@ directories/dtl_directory={
 "fase3_escola_minigame_fios_ok": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_fios_ok.dtl",
 "fase3_escola_minigame_inicio": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_inicio.dtl",
 "fase3_escola_minigame_sintonia_ok": "res://ASSETS/DIALOGIC/TIMELINES/fase3_escola_minigame_sintonia_ok.dtl",
+"fase4_praca_inicio": "res://ASSETS/DIALOGIC/TIMELINES/fase4_praca_inicio.dtl",
 "m01_rua_velho": "res://ASSETS/DIALOGIC/TIMELINES/m01_rua_velho.dtl",
 "timeline_resultado_paginas": "res://ASSETS/DIALOGIC/TIMELINES/timeline_resultado_paginas.dtl"
 }

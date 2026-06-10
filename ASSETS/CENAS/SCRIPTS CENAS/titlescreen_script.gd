@@ -16,6 +16,7 @@ var painel_opcoes: Panel
 var painel_creditos: Panel
 var painel_sair: Panel
 var painel_personalizar: Panel
+var painel_modo: Panel
 var preview_dante: TextureRect
 var painel_ativo: Panel = null
 var rastro_fogo: CPUParticles2D
@@ -1058,6 +1059,7 @@ func _criar_paineis() -> void:
 	_criar_painel_creditos()
 	_criar_painel_sair()
 	_criar_painel_personalizar()
+	_criar_painel_modo()
 
 func _abrir_modal(modal: Panel) -> void:
 	if painel_ativo != null: return
@@ -1102,7 +1104,7 @@ func _fechar_modal() -> void:
 	tween.chain().tween_callback(func(): p.hide())
 
 func _on_jogar_pressed() -> void:
-	_iniciar_partida("novo")
+	_abrir_modal(painel_modo)
 
 func _on_continuar_pressed() -> void:
 	GameState.continuar_jogo()
@@ -1136,6 +1138,132 @@ func _on_creditos_pressed() -> void:
 
 func _on_sair_pressed() -> void:
 	_abrir_modal(painel_sair)
+
+
+func _criar_painel_modo() -> void:
+	var estilo_modal = painel_opcoes.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
+	estilo_modal.border_color = C_NEON_LARANJA
+	estilo_modal.shadow_color = C_NEON_LARANJA
+	
+	var viewport_size = Vector2(1920, 1080)
+	painel_modo = Panel.new()
+	painel_modo.add_theme_stylebox_override("panel", estilo_modal)
+	painel_modo.size = Vector2(980, 560)
+	painel_modo.position = (viewport_size - painel_modo.size) / 2.0
+	painel_modo.pivot_offset = painel_modo.size / 2.0
+	painel_modo.z_index = 50
+	painel_modo.hide()
+	add_child(painel_modo)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 40)
+	margin.add_theme_constant_override("margin_bottom", 40)
+	margin.add_theme_constant_override("margin_left", 50)
+	margin.add_theme_constant_override("margin_right", 50)
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	painel_modo.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 25)
+	margin.add_child(vbox)
+	
+	var lbl_titulo = Label.new()
+	lbl_titulo.text = "SELECIONE O MODO DE JOGO"
+	lbl_titulo.add_theme_font_override("font", dogica_font)
+	lbl_titulo.add_theme_font_size_override("font_size", 34)
+	lbl_titulo.add_theme_color_override("font_color", Color.WHITE)
+	lbl_titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_titulo)
+	
+	var divisor = ColorRect.new()
+	divisor.custom_minimum_size.y = 2
+	divisor.color = Color(C_NEON_LARANJA, 0.3)
+	vbox.add_child(divisor)
+	
+	var hbox_modos = HBoxContainer.new()
+	hbox_modos.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hbox_modos.add_theme_constant_override("separation", 40)
+	vbox.add_child(hbox_modos)
+	
+	# ---- MODO HISTÓRIA ----
+	var col_historia = VBoxContainer.new()
+	col_historia.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_historia.add_theme_constant_override("separation", 15)
+	hbox_modos.add_child(col_historia)
+	
+	var btn_historia = Button.new()
+	btn_historia.text = "MODO HISTÓRIA"
+	btn_historia.custom_minimum_size = Vector2(0, 75)
+	btn_historia.add_theme_font_override("font", dogica_font)
+	btn_historia.add_theme_font_size_override("font_size", 22)
+	_aplicar_estilo_neon(btn_historia, C_NEON_VERDE)
+	col_historia.add_child(btn_historia)
+	
+	var lbl_desc_historia = Label.new()
+	lbl_desc_historia.text = "Experiência clássica e completa. Contém diálogos detalhados, exploração de cenários, cutscenes, escolhas narrativas permanentes e sistema de salvamento."
+	lbl_desc_historia.add_theme_font_size_override("font_size", 17)
+	lbl_desc_historia.add_theme_color_override("font_color", Color("#cbd7e8"))
+	lbl_desc_historia.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_desc_historia.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col_historia.add_child(lbl_desc_historia)
+	
+	# ---- MODO MINIGAMES ----
+	var col_minigames = VBoxContainer.new()
+	col_minigames.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_minigames.add_theme_constant_override("separation", 15)
+	hbox_modos.add_child(col_minigames)
+	
+	var btn_minigames = Button.new()
+	btn_minigames.text = "MODO MINIGAMES"
+	btn_minigames.custom_minimum_size = Vector2(0, 75)
+	btn_minigames.add_theme_font_override("font", dogica_font)
+	btn_minigames.add_theme_font_size_override("font_size", 22)
+	_aplicar_estilo_neon(btn_minigames, Color("#54d6ff"))
+	col_minigames.add_child(btn_minigames)
+	
+	var lbl_desc_minigames = Label.new()
+	lbl_desc_minigames.text = "Experiência rápida focada em jogabilidade. Uma sequência direta dos minigames educativos, sem exploração livre ou salvamento da campanha."
+	lbl_desc_minigames.add_theme_font_size_override("font_size", 17)
+	lbl_desc_minigames.add_theme_color_override("font_color", Color("#cbd7e8"))
+	lbl_desc_minigames.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_desc_minigames.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col_minigames.add_child(lbl_desc_minigames)
+	
+	var divisor2 = ColorRect.new()
+	divisor2.custom_minimum_size.y = 1
+	divisor2.color = Color(1, 1, 1, 0.1)
+	vbox.add_child(divisor2)
+	
+	var btn_voltar = _criar_botao_generico("VOLTAR", C_NEON_LARANJA)
+	btn_voltar.custom_minimum_size = Vector2(240, 50)
+	btn_voltar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn_voltar.pressed.connect(_fechar_modal)
+	vbox.add_child(btn_voltar)
+	
+	btn_historia.pressed.connect(func():
+		_fechar_modal()
+		if typeof(GameState) != TYPE_NIL:
+			GameState.is_minigame_mode = false
+		_iniciar_partida("novo")
+	)
+	
+	btn_minigames.pressed.connect(func():
+		_fechar_modal()
+		if typeof(GameState) != TYPE_NIL:
+			GameState.preparar_modo_minigames()
+		_iniciar_modo_minigames()
+	)
+	
+	btn_historia.mouse_entered.connect(func(): _on_hover_container_btn(btn_historia))
+	btn_historia.mouse_exited.connect(func(): _on_unhover_container_btn(btn_historia))
+	btn_minigames.mouse_entered.connect(func(): _on_hover_container_btn(btn_minigames))
+	btn_minigames.mouse_exited.connect(func(): _on_unhover_container_btn(btn_minigames))
+
+func _iniciar_modo_minigames() -> void:
+	_tocar_clique()
+	for btn in botoes:
+		btn.disabled = true
+	FadeManager.carregar_cena("res://ASSETS/CENAS/minigames_mode_controller.tscn")
 
 
 func _on_personalizar_pressed() -> void:

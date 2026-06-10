@@ -16,6 +16,10 @@ var auto_avanco_delay: float = 2.5
 var pular_lidos: int = 1
 var tamanho_fonte: int = 0
 
+# --- Modo Minigames ---
+var is_minigame_mode: bool = false
+var minigame_atual_idx: int = 0
+
 # --- Variáveis de Estado ---
 var reputacao: int = 0
 var confianca: int = 0:
@@ -354,6 +358,9 @@ func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_FILE)
 
 func salvar_jogo(capturar_cena_atual: bool = true):
+	if is_minigame_mode:
+		# Não sobrescreve o save da campanha principal
+		return
 	# 1. Captura contexto da cena atual
 	if capturar_cena_atual and get_tree() and get_tree().current_scene:
 		var scene = get_tree().current_scene
@@ -587,6 +594,16 @@ func limpar_save_dialogic() -> void:
 		Dialogic.Save.reset_slot("autosave")
 
 
+func preparar_modo_minigames() -> void:
+	is_minigame_mode = true
+	minigame_atual_idx = 0
+	confianca = 50
+	pontuacao_final = {"bonus_praca": 15}
+	aliados_final = {}
+	cartas_final_desbloqueadas = []
+
+
+
 func preparar_transicao_minigame(caminho_cena: String) -> void:
 	await TimelineManager.parar_tudo()
 	limpar_timeline_ativa()
@@ -600,6 +617,17 @@ func preparar_transicao_minigame(caminho_cena: String) -> void:
 
 ## Encerra Dialogic, marca retorno à game_scene e troca de cena (fluxo pós-minigame).
 func retornar_para_game_scene_apos_minigame() -> void:
+	if is_minigame_mode:
+		await TimelineManager.parar_tudo()
+		limpar_timeline_ativa()
+		limpar_save_dialogic()
+		Dialogic.paused = false
+		minigame_atual_idx += 1
+		if has_node("/root/MusicManager"):
+			get_node("/root/MusicManager").play_default_music()
+		await FadeManager.carregar_cena("res://ASSETS/CENAS/minigames_mode_controller.tscn")
+		return
+
 	await TimelineManager.parar_tudo()
 	limpar_timeline_ativa()
 	limpar_save_dialogic()

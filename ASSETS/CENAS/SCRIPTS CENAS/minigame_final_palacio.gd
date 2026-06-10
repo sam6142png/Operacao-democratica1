@@ -176,6 +176,9 @@ var overlay_vignette: ColorRect
 
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_music("res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 4.mp3", -14.0, 1.5)
+		
 	DANTE_TEX = load(GameState.obter_caminho_sprite_dante("Bravo determinado.png"))
 	DANTE_FALA_TEX = load(GameState.obter_caminho_sprite_dante("Falando (boca aberta).png"))
 	randomize()
@@ -1627,7 +1630,10 @@ func _botao_final(texto_btn: String) -> Button:
 func _concluir_jogo() -> void:
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
-	FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
+	if GameState.is_minigame_mode:
+		await GameState.retornar_para_game_scene_apos_minigame()
+	else:
+		FadeManager.carregar_cena("res://ASSETS/CENAS/TelaFinal.tscn")
 
 
 func _play(player: AudioStreamPlayer, pitch: float) -> void:

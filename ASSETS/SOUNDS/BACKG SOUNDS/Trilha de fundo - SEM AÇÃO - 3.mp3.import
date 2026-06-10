@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bpgycg00mjdqk"
+path="res://.godot/imported/Trilha de fundo - SEM AÇÃO - 3.mp3-f8171d3b214e8f38fb19023ca308f84c.mp3str"
+
+[deps]
+
+source_file="res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 3.mp3"
+dest_files=["res://.godot/imported/Trilha de fundo - SEM AÇÃO - 3.mp3-f8171d3b214e8f38fb19023ca308f84c.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
