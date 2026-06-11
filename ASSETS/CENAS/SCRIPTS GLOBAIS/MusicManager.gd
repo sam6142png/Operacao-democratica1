@@ -3,11 +3,11 @@ extends Node
 const VOLUME_PADRAO = -14.0 # Volume ambiente confortável para diálogos
 
 const TRILHAS_PADRAO = [
-	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO.mp3",
-	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 2.mp3",
-	"res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 3.mp3"
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/trilha_sem_acao_1.mp3",
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/trilha_sem_acao_2.mp3",
+	"res://ASSETS/SOUNDS/BACKG SOUNDS/trilha_sem_acao_3.mp3"
 ]
-const TRILHA_PALACIO = "res://ASSETS/SOUNDS/BACKG SOUNDS/Trilha de fundo - SEM AÇÃO - 4.mp3"
+const TRILHA_PALACIO = "res://ASSETS/SOUNDS/BACKG SOUNDS/trilha_sem_acao_4.mp3"
 
 var player1: AudioStreamPlayer
 var player2: AudioStreamPlayer

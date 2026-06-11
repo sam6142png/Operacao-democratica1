@@ -100,6 +100,9 @@ func _t(chave: String) -> String:
 	return chave
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").stop_music(0.5)
+
 	# Sincronizar do GameState carregado
 	if typeof(GameState) != TYPE_NIL:
 		for key in config.keys():
@@ -1444,9 +1447,9 @@ func _criar_painel_personalizar() -> void:
 	
 	var skins_options = [
 		{"id": "padrao", "nome": "Dante Padrão", "cond": "", "conq_id": ""},
-		{"id": "estudante", "nome": "Dante Estudante 🎒", "cond": "Bloqueado: Conclua a Escola (Fase 3)", "conq_id": "escola_ok"},
-		{"id": "diplomata", "nome": "Dante Diplomata 💼", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
-		{"id": "revolucionario", "nome": "Dante Resistência ✊", "cond": "Bloqueado: Complete o jogo", "conq_id": "fim_qualquer"}
+		{"id": "estudante", "nome": "Dante Estudante [Escola]", "cond": "Bloqueado: Conclua a Escola (Fase 3)", "conq_id": "escola_ok"},
+		{"id": "diplomata", "nome": "Dante Diplomata [Paz]", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
+		{"id": "revolucionario", "nome": "Dante Resistência [Punho]", "cond": "Bloqueado: Complete o jogo", "conq_id": "fim_qualquer"}
 	]
 	
 	_current_skin_idx = 0
@@ -1486,10 +1489,10 @@ func _criar_painel_personalizar() -> void:
 	
 	var tb_options = [
 		{"nome": "Clássico Usina", "caminho": "res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres", "cond": "", "conq_id": ""},
-		{"nome": "Xilogravura Cariri 🪵", "caminho": "res://ASSETS/DIALOGIC/STYLES/XilografiaCariri.tres", "cond": "Bloqueado: Conclua a Busca pelo Livro (Fase 1)", "conq_id": "historiador"},
-		{"nome": "Renda & Jangada ⛵", "caminho": "res://ASSETS/DIALOGIC/STYLES/JangadaRenda.tres", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
-		{"nome": "Neon Hacker 📟", "caminho": "res://ASSETS/DIALOGIC/STYLES/NeonHacker.tres", "cond": "Bloqueado: Decifre a rádio sem falhar (Fase 2)", "conq_id": "radio_perfeito"},
-		{"nome": "Palácio Dourado 🏛️", "caminho": "res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres", "cond": "Bloqueado: Rota de Julgamento Civil no final", "conq_id": "fim_democratico"}
+		{"nome": "Xilogravura Cariri [Cariri]", "caminho": "res://ASSETS/DIALOGIC/STYLES/XilografiaCariri.tres", "cond": "Bloqueado: Conclua a Busca pelo Livro (Fase 1)", "conq_id": "historiador"},
+		{"nome": "Renda & Jangada [Jangada]", "caminho": "res://ASSETS/DIALOGIC/STYLES/JangadaRenda.tres", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
+		{"nome": "Neon Hacker [Hacker]", "caminho": "res://ASSETS/DIALOGIC/STYLES/NeonHacker.tres", "cond": "Bloqueado: Decifre a rádio sem falhar (Fase 2)", "conq_id": "radio_perfeito"},
+		{"nome": "Palácio Dourado [Palacio]", "caminho": "res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres", "cond": "Bloqueado: Rota de Julgamento Civil no final", "conq_id": "fim_democratico"}
 	]
 	
 	_current_tb_idx = 0

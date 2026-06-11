@@ -1,0 +1,9 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Determinado) leftmost [animation="Fade In" length="0.2" wait="true"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
+PROTA: Você é o informante! Eu sei que você andou passando relatórios para os guardas do Coronel Antônio!
+"Aluno": O quê? Não! Eu não fiz nada disso! Eu sou inocente!
+PROFESSOR: Dante, pare! Esse aluno estava falando a verdade. A acusação sem provas causou pânico!
+PROTA: Droga! A gritaria alertou a patrulha. Eles estão vindo!
+PROFESSOR: Saia daqui rápido, Dante!
+[end_timeline]

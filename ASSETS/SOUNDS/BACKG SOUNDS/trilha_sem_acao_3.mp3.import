@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://o78e1jw0bgjo"
+path="res://.godot/imported/trilha_sem_acao_3.mp3-dfd3a16cc33bd2cfc84aa03b01e3b216.mp3str"
+
+[deps]
+
+source_file="res://ASSETS/SOUNDS/BACKG SOUNDS/trilha_sem_acao_3.mp3"
+dest_files=["res://.godot/imported/trilha_sem_acao_3.mp3-dfd3a16cc33bd2cfc84aa03b01e3b216.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

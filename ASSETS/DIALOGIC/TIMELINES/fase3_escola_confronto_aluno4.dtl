@@ -1,0 +1,11 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Determinado) leftmost [animation="Fade In" length="0.2" wait="true"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
+PROTA: Aluno 4! Você disse que chegou atrasado hoje, mas o Porteiro confirmou que você chegou muito cedo. O que você estava fazendo?
+"Aluno 4": Eu... o quê? Não! Eu não sou o informante!
+"Aluno 4": Eu menti que cheguei atrasado porque... eu estava grafitando a parede de trás da quadra com símbolos contra o regime!
+"Aluno 4": Se os guardas do Coronel Antônio soubessem que eu cheguei cedo, iam me associar às pichações. Por favor, acreditem em mim!
+PROFESSOR: Pichação contra o regime... Meu jovem, isso é corajoso, mas mentir causou pânico e nos fez perder tempo.
+PROTA: Droga. Se ele não é o informante, o verdadeiro espião acabou de fugir para avisar a patrulha!
+PROFESSOR: Os guardas estão vindo! Dante, saia daqui antes que nos peguem!
+[end_timeline]

@@ -33,24 +33,24 @@ const MINIGAMES = [
 		"controls": "Mouse para girar os botões e ajustar os sliders de sintonização."
 	},
 	{
-		"name": "Mentes em Disputa (Fase 3)",
+		"name": "Sinal Escolar (Fase 3)",
 		"scene": "res://ASSETS/CENAS/minigame_escola.tscn",
-		"context": "A escola de Usina Velha impõe doutrinação militarizada e censura aos alunos.",
-		"objective": "Passar bilhetes com fragmentos da constituição para conscientizar os alunos sem ser visto pelo professor ou guarda.",
-		"mechanics": "Mirar e arremessar bilhetes durante as janelas de oportunidade silenciosas da patrulha.",
-		"victory": "Convencer pelo menos 6 de 10 alunos a se unirem à resistência cívica.",
-		"defeat": "Deixar a tensão da sala de aula atingir o limite e falhar nas respostas ao professor.",
-		"controls": "Mouse para mirar, clicar para lançar e selecionar opções de diálogo."
+		"context": "Os alto-falantes da escola estão sob controle militar para doutrinação e censura.",
+		"objective": "Sintonizar os canais de microfone, transmissão e antena para a frequência da Rádio Livre.",
+		"mechanics": "Ajustar os botões de amplitude e frequência para alinhar os sinais verde e vermelho no osciloscópio.",
+		"victory": "Sintonizar com sucesso todos os 3 canais de comunicação da rádio.",
+		"defeat": "Esgotar o tempo limite de sintonia, disparando alarmes e alertando os guardas.",
+		"controls": "Mouse para arrastar e ajustar os sliders de controle da onda."
 	},
 	{
-		"name": "Praça da Liberdade (Fase 4)",
+		"name": "Infiltração Tática (Fase 4)",
 		"scene": "res://ASSETS/CENAS/minigame_praca.tscn",
-		"context": "A marcha pacífica dos cidadãos avança em direção aos portões do Palácio sob forte cerco militar.",
-		"objective": "Liderar a manifestação popular de forma pacífica equilibrando os recursos civis.",
-		"mechanics": "Selecionar diretivas civis táticas (cartas) para guiar o comportamento da multidão.",
-		"victory": "Alcançar os portões do Palácio com Segurança e Mobilização estáveis.",
-		"defeat": "A Segurança da multidão chegar a 0% ou a Tensão Militar atingir 100%.",
-		"controls": "Mouse para selecionar as cartas táticas."
+		"context": "Dante precisa invadir o Palácio Municipal pela entrada de serviço secreta, contornando a segurança do Coronel Antônio.",
+		"objective": "Desarmar a fechadura eletrônica combinando os conhecimentos adquiridos ao longo da jornada.",
+		"mechanics": "Filtrar propaganda do regime, decodificar cifra de César e sintonizar a frequência de acoplamento do sinal no osciloscópio.",
+		"victory": "Resolver as 3 etapas lógicas de segurança para liberar as travas e abrir o portão.",
+		"defeat": "Desafio focado em persistência e raciocínio cívico.",
+		"controls": "Mouse para escolher opções de texto, interagir com a roda de cifras e mover sliders."
 	},
 	{
 		"name": "Debate no Palácio (Fase Final)",
@@ -106,6 +106,9 @@ var btn_iniciar: Button
 var btn_menu: Button
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
+
 	# Parar e ocultar medidor de confiança da história
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
@@ -436,6 +439,8 @@ func _construir_painel_explicacao(idx: int) -> void:
 	
 	btn_iniciar.pressed.connect(func():
 		_play_sfx(sfx_click)
+		if has_node("/root/MusicManager"):
+			get_node("/root/MusicManager").play_default_music()
 		FadeManager.carregar_cena(dados["scene"])
 	)
 	

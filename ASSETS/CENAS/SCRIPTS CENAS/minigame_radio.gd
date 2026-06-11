@@ -404,7 +404,7 @@ func _construir_ui() -> void:
 
 func _criar_lbl_status(txt: String, cor: Color) -> Label:
 	var l = Label.new()
-	l.text = txt + " [🔴]"
+	l.text = txt + " [BLOQUEADO]"
 	l.add_theme_font_override("font", FONTE)
 	l.add_theme_font_size_override("font_size", 18)
 	l.add_theme_color_override("font_color", cor)
@@ -480,13 +480,13 @@ func _ajustar_shift(delta: int) -> void:
 
 func _atualizar_ui_estado() -> void:
 	# Atualiza os labels superiores de status
-	lbl_status_1.text = "Freq 1: 91.5 MHz " + ("[🟢 OK]" if decrypted_states[0] else "[🔴 DESCONHECIDO]")
+	lbl_status_1.text = "Freq 1: 91.5 MHz " + ("[OK]" if decrypted_states[0] else "[BLOQUEADO]")
 	lbl_status_1.add_theme_color_override("font_color", Color("#00FF66") if decrypted_states[0] else Color("#FF4444"))
 	
-	lbl_status_2.text = "Freq 2: 98.3 MHz " + ("[🟢 OK]" if decrypted_states[1] else "[🔴 DESCONHECIDO]")
+	lbl_status_2.text = "Freq 2: 98.3 MHz " + ("[OK]" if decrypted_states[1] else "[BLOQUEADO]")
 	lbl_status_2.add_theme_color_override("font_color", Color("#00FF66") if decrypted_states[1] else Color("#FF4444"))
 	
-	lbl_status_3.text = "Freq 3: 104.7 MHz " + ("[🟢 OK]" if decrypted_states[2] else "[🔴 DESCONHECIDO]")
+	lbl_status_3.text = "Freq 3: 104.7 MHz " + ("[OK]" if decrypted_states[2] else "[BLOQUEADO]")
 	lbl_status_3.add_theme_color_override("font_color", Color("#00FF66") if decrypted_states[2] else Color("#FF4444"))
 	
 	# Verifica se todos foram decodificados para mostrar botão concluir

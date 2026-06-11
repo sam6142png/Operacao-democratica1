@@ -41,6 +41,7 @@ var decisoes_fase_1 = {
 	"ajudou_vila": false
 }
 var decisoes_fase_2 = {}
+var decisoes_fase_3 = {}
 var fase2_passo: String = "inicio"
 var fase3_passo: String = "inicio"
 var fase4_passo: String = "praca"
@@ -390,6 +391,7 @@ func salvar_jogo(capturar_cena_atual: bool = true):
 		"aguardando_sequencia_fase": aguardando_sequencia_fase,
 		"decisoes_fase_1": decisoes_fase_1,
 		"decisoes_fase_2": decisoes_fase_2,
+		"decisoes_fase_3": decisoes_fase_3,
 		"fase2_passo": fase2_passo,
 		"fase3_passo": fase3_passo,
 		"fase4_passo": fase4_passo,
@@ -707,6 +709,7 @@ func _carregar_dados_json():
 				adulterada_identificada_fase1 = data.get("adulterada_identificada_fase1", false)
 				decisoes_fase_1 = data.get("decisoes_fase_1", decisoes_fase_1)
 				decisoes_fase_2 = data.get("decisoes_fase_2", decisoes_fase_2)
+				decisoes_fase_3 = data.get("decisoes_fase_3", {})
 				fase2_passo = data.get("fase2_passo", "inicio")
 				fase3_passo = data.get("fase3_passo", "inicio")
 				fase4_passo = data.get("fase4_passo", "praca")
@@ -746,6 +749,7 @@ func reset_save():
 	adulterada_identificada_fase1 = false
 	decisoes_fase_1 = {"falou_com_velho": false, "ajudou_vila": false}
 	decisoes_fase_2 = {}
+	decisoes_fase_3 = {}
 	fase2_passo = "inicio"
 	fase3_passo = "inicio"
 	fase4_passo = "praca"

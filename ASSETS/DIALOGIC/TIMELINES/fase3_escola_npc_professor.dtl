@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROFESSOR (Falando) rightmost
+join PROTA (Neutro) leftmost
+PROFESSOR: A Beatriz (Aluno 2) é inocente, Dante. Ela passou o intervalo inteiro comigo na sala de aula resolvendo problemas de equações quadráticas na lousa. Eu mesmo assino o álibi dela.
+PROTA (Pensando): Com a confirmação do professor, Beatriz está fora de suspeita.
+[signal arg="pista_professor"]
+[end_timeline]

@@ -1,6 +1,6 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
-join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
+join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
 join PROTA (Neutro) leftmost [animation="Fade In" length="0.2" wait="true"]
-ATENA: Recuar! Erramos a sequência e a frequência oscilou. A patrulha militar detectou a interferência nas ondas.
-PROTA: Vamos calibrar o painel e tentar sintonizar de novo antes que eles reforcem a vigilância.
+PROFESSOR: Dante! Os alto-falantes começaram a emitir um ruído estridente pelo atraso na sintonia! Os guardas estão vindo ver o que houve!
+PROTA: Droga, o tempo esgotou e o bloqueio militar nos detectou! Precisamos recuar antes que nos peguem!
 [end_timeline]

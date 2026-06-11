@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/fim_institucional.png" fade="1.0"]
+[wait time="0.5"]
+"...": A engrenagem do regime foi travada. Com a detenção de Antônio, as chaves do Palácio retornam lentamente à transição burocrática e às regras escritas.
+"...": A ordem militar dá lugar às comissões cívicas e ao restabelecimento das leis. O ditador foi trancafiado em uma cela comum, desprovido de seu poder.
+"...": É uma vitória das instituições, fria e pragmática, que afasta o derramamento de sangue mas exige sobriedade e constante vigilância.
+"...": O amanhã de Usina Velha agora repousa sobre a capacidade de seu povo em manter ativos os freios e contrapesos do poder.
+[end_timeline]

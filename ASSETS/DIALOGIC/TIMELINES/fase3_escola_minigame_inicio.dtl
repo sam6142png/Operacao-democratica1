@@ -2,7 +2,7 @@
 join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.3" wait="true"]
 join ATENA (Neutro) left [animation="Slide From Left" length="0.3" wait="true"]
 join PROTA (Neutro) leftmost [animation="Slide From Left" length="0.3" wait="true"]
-PROFESSOR: A caixa de junção fica aqui. Os canais MIC, TX, ANT e AMP estão dessincronizados e o regime está bloqueando a frequência livre.
-ATENA (Falando): Para burlar o bloqueio, precisamos repetir e memorizar a sequência exata de picos de sinal de cada canal no painel de sintonização.
-PROTA (Determinado): Se conseguirmos replicar a sequência sem errar, estabilizaremos a frequência da Rádio Livre nos alto-falantes da escola!
+PROFESSOR: A caixa de junção fica aqui. Os canais MIC, TX e ANT/AMP estão dessintonizados devido ao bloqueio militar.
+ATENA (Falando): Para burlar o bloqueio, precisamos ajustar e alinhar as ondas de frequência, amplitude e fase de cada canal no transmissor.
+PROTA (Determinado): Se conseguirmos sobrepor a nossa onda verde de sinal com a frequência alvo sem errar, a Voz Livre sairá limpa nos alto-falantes!
 [end_timeline]

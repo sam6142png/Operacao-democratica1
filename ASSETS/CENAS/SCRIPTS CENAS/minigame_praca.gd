@@ -1,216 +1,129 @@
 extends Control
 
+# ═══════════════════════════════════════════════════════════════
+#  MINIGAME PRAÇA — BY-PASS DO CADEADO (ENIGMA DE INTEGRAÇÃO)
+# ═══════════════════════════════════════════════════════════════
+
 const FONTE = preload("res://ASSETS/FONTES/determination.ttf")
 const FONTE_MONO = preload("res://ASSETS/FONTES/dogicapixel.ttf")
 const BG_TEX = preload("res://ASSETS/SPRITES/FUNDOS/Rua com manifestação.jpeg")
-const DANTE_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/PROTA/Apontando (braço estendido, expressão acusatória).png")
-const PROTESTANTES_TEX = preload("res://ASSETS/SPRITES/PERSONAGENS/Protestantes - Fase Praça.png")
 const CLICK_SOUND = preload("res://ASSETS/SOUNDS/FSX/BotoesClick.mp3")
 
 const PALACIO_SCENE: String = "res://ASSETS/CENAS/minigame_final_palacio.tscn"
 
-# === EVENTOS E NARRATIVA (MOMENTOS DA MOBILIZAÇÃO) ===
-const MOMENTOS: Array[Dictionary] = [
-	{
-		"titulo": "FASE 1: A CONCENTRAÇÃO DA MARCHA",
-		"texto": "A multidão se reúne na entrada da praça. A presença da polícia militar está se intensificando a distância. Como você lidera a entrada?",
-		"opcoes": [
-			{
-				"titulo_carta": "DISPERSÃO TÁTICA",
-				"desc": "Entrar em pequenos grupos separados pelas laterais para evitar chamar atenção imediata.",
-				"efeito_txt": "Segurança +20  Tensão -10  Mobilização -15",
-				"categoria": "CARTA: PRECAUÇÃO",
-				"cor": "#40d7ff",
-				"mod_mob": -15, "mod_seg": 20, "mod_org": 5, "mod_ten": -10,
-				"aliado": "", "carta": "", "bonus": 5
-			},
-			{
-				"titulo_carta": "MARCHA UNIFICADA",
-				"desc": "Avançar juntos pela avenida principal, de braços dados, cantando hinos civis de Usina Velha.",
-				"efeito_txt": "Mobilização +25  Organização +15  Tensão +15",
-				"categoria": "CARTA: LIDERANÇA",
-				"cor": "#ffd447",
-				"mod_mob": 25, "mod_seg": -5, "mod_org": 15, "mod_ten": 15,
-				"aliado": "familias", "carta": "humanos", "bonus": 10
-			},
-			{
-				"titulo_carta": "OCUPAÇÃO DIRETA",
-				"desc": "Correr em direção às barricadas do palácio, forçando a abertura dos portões com energia.",
-				"efeito_txt": "Mobilização +35  Segurança -25  Tensão +30",
-				"categoria": "CARTA: CHOQUE",
-				"cor": "#ff5c5c",
-				"mod_mob": 35, "mod_seg": -25, "mod_org": -10, "mod_ten": 30,
-				"aliado": "", "carta": "", "bonus": -5
-			}
-		]
-	},
-	{
-		"titulo": "FASE 2: O DISCURSO DA RESISTÊNCIA",
-		"texto": "Dante pega o megafone sob os alto-falantes da praça. A multidão silencia aguardando suas palavras. Qual o tom do discurço?",
-		"opcoes": [
-			{
-				"titulo_carta": "APELO CÍVICO",
-				"desc": "Discursar sobre direitos civis históricos, citando a antiga constituição e cobrando a ordem legal.",
-				"efeito_txt": "Organização +20  Segurança +10  Tensão -5",
-				"categoria": "CARTA: LEGALIDADE",
-				"cor": "#bda6ff",
-				"mod_mob": 10, "mod_seg": 10, "mod_org": 20, "mod_ten": -5,
-				"aliado": "", "carta": "", "bonus": 8
-			},
-			{
-				"titulo_carta": "DENÚNCIA DE CENSURA",
-				"desc": "Transmitir trechos gravados da rádio livre expondo a farsa da doutrinação escolar militar.",
-				"efeito_txt": "Mobilização +30  Organização +10  Tensão +15",
-				"categoria": "CARTA: CONSCIENTIZAÇÃO",
-				"cor": "#62ff86",
-				"mod_mob": 30, "mod_seg": -5, "mod_org": 10, "mod_ten": 15,
-				"aliado": "radio_livre", "carta": "imprensa", "bonus": 12
-			},
-			{
-				"titulo_carta": "ATAQUE RETÓRICO",
-				"desc": "Conclamar o povo a cercar a prefeitura imediatamente, chamando os generais de tiranos covardes.",
-				"efeito_txt": "Mobilização +40  Organização -15  Tensão +25",
-				"categoria": "CARTA: INSURREIÇÃO",
-				"cor": "#ff2d2d",
-				"mod_mob": 40, "mod_seg": -15, "mod_org": -15, "mod_ten": 25,
-				"aliado": "", "carta": "", "bonus": -2
-			}
-		]
-	},
-	{
-		"titulo": "FASE 3: A REAÇÃO DAS PATRULHAS",
-		"texto": "Uma patrulha de guardas com cassetetes se aproxima da ala norte. Cidadãos entram em pânico. Qual a diretiva?",
-		"opcoes": [
-			{
-				"titulo_carta": "BARREIRA HUMANA",
-				"desc": "Pedir que os manifestantes mais jovens formem uma barreira pacífica de braços dados para deter os guardas.",
-				"efeito_txt": "Organização +25  Segurança +15  Mobilização -10",
-				"categoria": "CARTA: RESISTÊNCIA CÍVICA",
-				"cor": "#40d7ff",
-				"mod_mob": -10, "mod_seg": 15, "mod_org": 25, "mod_ten": 5,
-				"aliado": "estudantes", "carta": "educacao", "bonus": 10
-			},
-			{
-				"titulo_carta": "EVACUAÇÃO RÁPIDA",
-				"desc": "Ordenar a retirada imediata do grupo vulnerável pelos becos, dispersando parte da marcha.",
-				"efeito_txt": "Segurança +30  Mobilização -25  Tensão -15",
-				"categoria": "CARTA: EVACUAÇÃO",
-				"cor": "#a2a8b3",
-				"mod_mob": -25, "mod_seg": 30, "mod_org": 5, "mod_ten": -15,
-				"aliado": "", "carta": "", "bonus": 5
-			},
-			{
-				"titulo_carta": "DISTRAÇÃO RADICAL",
-				"desc": "Provocar os soldados atirando latas e pedras na direção oposta para dividir as patrulhas.",
-				"efeito_txt": "Mobilização +25  Segurança -20  Tensão +30",
-				"categoria": "CARTA: CONTRATAQUE",
-				"cor": "#ffa240",
-				"mod_mob": 25, "mod_seg": -20, "mod_org": -20, "mod_ten": 30,
-				"aliado": "", "carta": "", "bonus": -10
-			}
-		]
-	},
-	{
-		"titulo": "FASE 4: O CERCO FINAL AO PALÁCIO",
-		"texto": "A multidão chega aos portões de ferro. O Coronel ordena carregar as armas. Dante precisa tomar a decisão que definirá o cerco.",
-		"opcoes": [
-			{
-				"titulo_carta": "DESOBEDIÊNCIA TOTAL",
-				"desc": "Ajoelhar diante dos portões e manter o silêncio absoluto. A força moral do silêncio paralisa a ação armada.",
-				"efeito_txt": "Segurança +20  Organização +20  Tensão -15",
-				"categoria": "CARTA: NÃO-VIOLÊNCIA",
-				"cor": "#62ff86",
-				"mod_mob": 15, "mod_seg": 20, "mod_org": 20, "mod_ten": -15,
-				"aliado": "familias", "carta": "humanos", "bonus": 15
-			},
-			{
-				"titulo_carta": "OCUPAÇÃO MASSIVA",
-				"desc": "Furar a barreira de escudos empurrando o portão principal de uma só vez, arrombando as correntes.",
-				"efeito_txt": "Mobilização +45  Segurança -35  Tensão +30",
-				"categoria": "CARTA: RUPTURA",
-				"cor": "#ff5c5c",
-				"mod_mob": 45, "mod_seg": -35, "mod_org": -10, "mod_ten": 30,
-				"aliado": "", "carta": "", "bonus": 5
-			},
-			{
-				"titulo_carta": "NEGOCIAÇÃO PÚBLICA",
-				"desc": "Chamar o comandante local em frente às câmeras de transmissão, expondo a covardia do ataque civil ao vivo.",
-				"efeito_txt": "Mobilização +20  Organização +10  Segurança +10",
-				"categoria": "CARTA: EXPOSIÇÃO",
-				"cor": "#ffd447",
-				"mod_mob": 20, "mod_seg": 10, "mod_org": 10, "mod_ten": 5,
-				"aliado": "radio_livre", "carta": "imprensa", "bonus": 10
-			}
-		]
-	}
-]
+# Cores do Tema Cívico-Retrô
+const COR_BG_OVERLAY  := Color(0.04, 0.04, 0.05, 0.82)
+const COR_PANEL_BG    := Color(0.04, 0.04, 0.07, 0.96)
+const COR_PANEL_BORDA := Color(0.0,  0.72, 1.0,  0.8) # Azul Cívico
+const COR_GREEN_WAVE  := Color(0.0,  1.0,  0.4,  0.9) # Rádio Livre (Verde)
+const COR_RED_WAVE    := Color(1.0,  0.22, 0.22, 0.85) # Bloqueio (Vermelho)
 
-# === ESTADO DO SIMULADOR ===
-var indice: int = 0
-var apoio_bonus: int = 0
-var escolhidos: Array[String] = []
+# Estado do Enigma
+var etapa_atual: int = 1 # 1 = Análise, 2 = Decodificação, 3 = Calibração
+var finalizado: bool = false
 
-# Recursos Ativos da Manifestação
-var mobilizacao: float = 35.0  # Começa em 35%
-var seguranca: float = 80.0    # Começa bem seguro (80%)
-var organizacao: float = 70.0  # Começa em 70%
-var tensao: float = 15.0       # Tensão inicial baixa (15%)
+# Componentes de Som
+var sfx_click: AudioStreamPlayer
 
-# === COMPONENTES DE UI ===
+# Componentes de UI
 var layer: CanvasLayer
 var panel_main: PanelContainer
-var progresso: Label
-var titulo: Label
-var texto: Label
-var opcoes_box: HBoxContainer
+var step_lbl_1: Label
+var step_lbl_2: Label
+var step_lbl_3: Label
+var container_etapa: PanelContainer
 var lbl_feedback: Label
-var crowd_visualizer: Control
-var crowd_rect: TextureRect
 
-# Barras de Recursos
-var bar_mob: ProgressBar
-var bar_seg: ProgressBar
-var bar_org: ProgressBar
-var bar_ten: ProgressBar
+# Elementos Dinâmicos - Etapa 1
+var btn_statement_a: Button
+var btn_statement_b: Button
 
-var sfx_click: AudioStreamPlayer
-var finalizado: bool = false
-var em_simulacao: bool = false
-var alarm_overlay: ColorRect
-var alarm_timer: float = 0.0
+# Elementos Dinâmicos - Etapa 2
+var slider_cifra: HSlider
+var lbl_cifra_result: Label
+var current_shift: int = 0
+
+# Elementos Dinâmicos - Etapa 3
+var oscilloscope: Control
+var slider_amp: HSlider
+var slider_freq: HSlider
+var target_amp: float = 0.80
+var target_freq: float = 14.0
+var val_amp: float = 0.20
+var val_freq: float = 4.0
+var lock_time: float = 0.0
+const LOCK_TARGET: float = 1.5
+var progress_lock: ProgressBar
+var lbl_lock_status: Label
+var lbl_helper_amp: Label
+var lbl_helper_freq: Label
+var wave_time: float = 0.0
 
 
+# ══════════════════════════════════════════
+# INICIALIZAÇÃO
+# ══════════════════════════════════════════
 func _ready() -> void:
+	if get_tree().root.has_node("MedidorConfianca"):
+		get_tree().root.get_node("MedidorConfianca").visible = false
+
 	_configurar_audio()
 	_montar_cena()
-	_mostrar_momento()
+	_mostrar_etapa(1)
 
 
 func _process(delta: float) -> void:
 	if finalizado:
 		return
 		
-	# Rotaciona/Redesenha radar continuamente
-	if crowd_visualizer:
-		crowd_visualizer.queue_redraw()
+	if etapa_atual == 3:
+		wave_time += delta * 4.0
+		if oscilloscope:
+			oscilloscope.queue_redraw()
+			
+		# Verifica a sintonia das ondas
+		var diff_amp = abs(val_amp - target_amp)
+		var diff_freq = abs(val_freq - target_freq)
 		
-	# Atualiza medidores na interface em tempo real
-	if bar_mob: bar_mob.value = mobilizacao
-	if bar_seg: bar_seg.value = seguranca
-	if bar_org: bar_org.value = organizacao
-	if bar_ten: bar_ten.value = tensao
-	
-	if crowd_rect:
-		var target_a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
-		crowd_rect.modulate.a = target_a
+		# Atualiza textos de ajuda
+		if lbl_helper_amp:
+			if diff_amp < 0.15:
+				lbl_helper_amp.text = "[ ALINHADO ]"
+				lbl_helper_amp.add_theme_color_override("font_color", Color("#62ff86"))
+			elif val_amp < target_amp:
+				lbl_helper_amp.text = "[ ▲ AUMENTAR ]"
+				lbl_helper_amp.add_theme_color_override("font_color", Color("#ffd447"))
+			else:
+				lbl_helper_amp.text = "[ ▼ DIMINUIR ]"
+				lbl_helper_amp.add_theme_color_override("font_color", Color("#ffd447"))
+				
+		if lbl_helper_freq:
+			if diff_freq < 1.0:
+				lbl_helper_freq.text = "[ ALINHADO ]"
+				lbl_helper_freq.add_theme_color_override("font_color", Color("#62ff86"))
+			elif val_freq < target_freq:
+				lbl_helper_freq.text = "[ ▲ AUMENTAR ]"
+				lbl_helper_freq.add_theme_color_override("font_color", Color("#ffd447"))
+			else:
+				lbl_helper_freq.text = "[ ▼ DIMINUIR ]"
+				lbl_helper_freq.add_theme_color_override("font_color", Color("#ffd447"))
 		
-	# Alarme visual se a tensão militar estiver muito alta
-	if tensao >= 70.0:
-		alarm_timer += delta * 4.0
-		var a = (sin(alarm_timer) + 1.0) / 2.0 * 0.14
-		alarm_overlay.color = Color(1.0, 0.0, 0.0, a)
-	else:
-		alarm_overlay.color.a = 0.0
+		var alinhado = (diff_amp < 0.15) and (diff_freq < 1.0)
+		if alinhado:
+			lock_time += delta
+			if progress_lock: progress_lock.value = lock_time
+			if lbl_lock_status:
+				lbl_lock_status.text = "SINAL ACOPLADO! TRAVAS DESTRANCANDO..."
+				lbl_lock_status.add_theme_color_override("font_color", Color("#62ff86"))
+				
+			if lock_time >= LOCK_TARGET:
+				_concluir_etapa_3()
+		else:
+			lock_time = max(0.0, lock_time - delta * 1.5)
+			if progress_lock: progress_lock.value = lock_time
+			if lbl_lock_status:
+				lbl_lock_status.text = "BUSCANDO ESTABILIDADE..."
+				lbl_lock_status.add_theme_color_override("font_color", Color("#ff4b4b"))
 
 
 func _configurar_audio() -> void:
@@ -225,528 +138,439 @@ func _montar_cena() -> void:
 	layer.layer = 20
 	add_child(layer)
 
-	# Fundo com protestantes e prota desfocado
+	# Fundo da praça desfocado
 	var bg := TextureRect.new()
 	bg.texture = BG_TEX
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	bg.modulate = Color(0.5, 0.5, 0.55)
+	bg.modulate = Color(0.38, 0.38, 0.42)
 	layer.add_child(bg)
 
-	var shade := ColorRect.new()
-	shade.color = Color(0.03, 0.02, 0.04, 0.65)
-	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	layer.add_child(shade)
+	var overlay := ColorRect.new()
+	overlay.color = COR_BG_OVERLAY
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(overlay)
 
-	# Personagens integrados na lateral inferior
-	crowd_rect = TextureRect.new()
-	crowd_rect.texture = PROTESTANTES_TEX
-	crowd_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	crowd_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	crowd_rect.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	crowd_rect.offset_left = 20
-	crowd_rect.offset_right = 580
-	crowd_rect.offset_top = -320
-	crowd_rect.offset_bottom = -10
-	crowd_rect.modulate.a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
-	layer.add_child(crowd_rect)
-
-	var dante := TextureRect.new()
-	dante.texture = load(GameState.obter_caminho_sprite_dante("Apontando (braço estendido, expressão acusatória).png"))
-	dante.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	dante.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	dante.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	dante.offset_left = -340
-	dante.offset_right = -30
-	dante.offset_top = -480
-	dante.offset_bottom = -10
-	dante.modulate.a = 0.95
-	layer.add_child(dante)
-
-	alarm_overlay = ColorRect.new()
-	alarm_overlay.color = Color(1.0, 0.0, 0.0, 0.0)
-	alarm_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-	alarm_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(alarm_overlay)
-
-	# Painel de Comando Operacional (Glassmorphism layout)
+	# Painel principal
 	panel_main = PanelContainer.new()
+	panel_main.custom_minimum_size = Vector2(1080, 640)
 	panel_main.set_anchors_preset(Control.PRESET_CENTER)
-	panel_main.custom_minimum_size = Vector2(1120, 680)
-	panel_main.add_theme_stylebox_override("panel", _stylebox(_ca("#060509", 0.90), Color("#54d6ff"), 2, 12))
+	panel_main.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel_main.grow_vertical = Control.GROW_DIRECTION_BOTH
+	panel_main.add_theme_stylebox_override("panel", _stylebox(COR_PANEL_BG, COR_PANEL_BORDA, 2, 12))
 	layer.add_child(panel_main)
 	call_deferred("_centralizar", panel_main)
 
-	var margin := _margin(20)
+	var margin := _margin(24)
 	panel_main.add_child(margin)
-	
+
 	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 12)
+	root.add_theme_constant_override("separation", 14)
 	margin.add_child(root)
 
-	# Título do Ato
-	var header_hbox := HBoxContainer.new()
-	root.add_child(header_hbox)
-	
-	var head := _label("PAINEL DE CONTROLE TÁTICO", 28, Color("#54d6ff"), FONTE)
-	head.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header_hbox.add_child(head)
-	
-	progresso = _label("", 15, Color("#62ff86"), FONTE_MONO)
-	header_hbox.add_child(progresso)
+	# Cabeçalho
+	var header := HBoxContainer.new()
+	root.add_child(header)
 
-	# ═════ COLUNAS SPLIT-SCREEN ═════
-	var split_hbox := HBoxContainer.new()
-	split_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	split_hbox.add_theme_constant_override("separation", 24)
-	root.add_child(split_hbox)
+	var title := _label("PAINEL DE BY-PASS: PORTÃO DO PALÁCIO", 24, COR_PANEL_BORDA, FONTE)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(title)
 
-	# Coluna Esquerda: Radar Tático
-	var col_left := VBoxContainer.new()
-	col_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col_left.size_flags_stretch_ratio = 1.0
-	col_left.add_theme_constant_override("separation", 8)
-	split_hbox.add_child(col_left)
+	# Etapas indicadas na UI
+	var steps_box := HBoxContainer.new()
+	steps_box.add_theme_constant_override("separation", 16)
+	header.add_child(steps_box)
 
-	col_left.add_child(_label("MONITOR DE DENSIDADE E SEGURANÇA", 13, Color("#54d6ff"), FONTE_MONO))
+	step_lbl_1 = _label("[ 1. ANALISE ]", 13, Color("#888888"), FONTE_MONO)
+	step_lbl_2 = _label("[ 2. DECODIFICACAO ]", 13, Color("#888888"), FONTE_MONO)
+	step_lbl_3 = _label("[ 3. CALIBRACAO ]", 13, Color("#888888"), FONTE_MONO)
+	steps_box.add_child(step_lbl_1)
+	steps_box.add_child(step_lbl_2)
+	steps_box.add_child(step_lbl_3)
 
-	var monitor_panel := PanelContainer.new()
-	monitor_panel.custom_minimum_size = Vector2(0, 310)
-	monitor_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	monitor_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.01, 0.01, 0.02, 0.94), Color("#54d6ff", 0.4), 2, 8))
-	col_left.add_child(monitor_panel)
-	
-	crowd_visualizer = Control.new()
-	crowd_visualizer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	crowd_visualizer.draw.connect(_desenhar_monitor_multidao)
-	monitor_panel.add_child(crowd_visualizer)
+	var sep := ColorRect.new()
+	sep.custom_minimum_size = Vector2(0, 2)
+	sep.color = Color("#2a2c35")
+	root.add_child(sep)
 
-	# Coluna Direita: Narrativa e Recursos
-	var col_right := VBoxContainer.new()
-	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col_right.size_flags_stretch_ratio = 1.2
-	col_right.add_theme_constant_override("separation", 14)
-	split_hbox.add_child(col_right)
+	# Container da Etapa Ativa
+	container_etapa = PanelContainer.new()
+	container_etapa.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	container_etapa.add_theme_stylebox_override("panel", _stylebox(Color(0,0,0,0), Color(0,0,0,0), 0, 0))
+	root.add_child(container_etapa)
 
-	# Painel de descrição da etapa
-	var desc_panel := PanelContainer.new()
-	desc_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.08, 0.09, 0.13, 0.65), Color("#2a2c35", 0.5), 1, 8))
-	col_right.add_child(desc_panel)
-
-	var desc_margin := _margin(14)
-	desc_panel.add_child(desc_margin)
-
-	var desc_vbox := VBoxContainer.new()
-	desc_vbox.add_theme_constant_override("separation", 8)
-	desc_margin.add_child(desc_vbox)
-
-	titulo = _label("", 21, Color("#fff4d6"), FONTE)
-	titulo.autowrap_mode = TextServer.AUTOWRAP_WORD
-	desc_vbox.add_child(titulo)
-
-	texto = _label("", 16, Color("#d7c9aa"), FONTE)
-	texto.autowrap_mode = TextServer.AUTOWRAP_WORD
-	desc_vbox.add_child(texto)
-
-	# Medidores verticais de recursos
-	var bar_vbox := VBoxContainer.new()
-	bar_vbox.add_theme_constant_override("separation", 8)
-	col_right.add_child(bar_vbox)
-
-	# Barra 1: Mobilização
-	var box_mob := HBoxContainer.new()
-	box_mob.add_theme_constant_override("separation", 10)
-	var lbl_mob := _label("👥 MOBILIZACAO: ", 14, Color("#ffa240"), FONTE_MONO)
-	lbl_mob.custom_minimum_size = Vector2(150, 0)
-	box_mob.add_child(lbl_mob)
-	bar_mob = _criar_barra(Color("#ffa240"))
-	box_mob.add_child(bar_mob)
-	bar_vbox.add_child(box_mob)
-
-	# Barra 2: Organização
-	var box_org := HBoxContainer.new()
-	box_org.add_theme_constant_override("separation", 10)
-	var lbl_org := _label("📋 ORGANIZACAO:", 14, Color("#62ff86"), FONTE_MONO)
-	lbl_org.custom_minimum_size = Vector2(150, 0)
-	box_org.add_child(lbl_org)
-	bar_org = _criar_barra(Color("#62ff86"))
-	box_org.add_child(bar_org)
-	bar_vbox.add_child(box_org)
-
-	# Barra 3: Segurança
-	var box_seg := HBoxContainer.new()
-	box_seg.add_theme_constant_override("separation", 10)
-	var lbl_seg := _label("🛡️ SEGURANCA:  ", 14, Color("#40d7ff"), FONTE_MONO)
-	lbl_seg.custom_minimum_size = Vector2(150, 0)
-	box_seg.add_child(lbl_seg)
-	bar_seg = _criar_barra(Color("#40d7ff"))
-	box_seg.add_child(bar_seg)
-	bar_vbox.add_child(box_seg)
-
-	# Barra 4: Tensão Militar
-	var box_ten := HBoxContainer.new()
-	box_ten.add_theme_constant_override("separation", 10)
-	var lbl_ten := _label("⚠️ TENSÃO MIL.: ", 14, Color("#ff5c5c"), FONTE_MONO)
-	lbl_ten.custom_minimum_size = Vector2(150, 0)
-	box_ten.add_child(lbl_ten)
-	bar_ten = _criar_barra(Color("#ff5c5c"))
-	box_ten.add_child(bar_ten)
-	bar_vbox.add_child(box_ten)
-
-	# Rodapé: Container para cartas
-	opcoes_box = HBoxContainer.new()
-	opcoes_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	opcoes_box.add_theme_constant_override("separation", 20)
-	opcoes_box.custom_minimum_size = Vector2(0, 240)
-	root.add_child(opcoes_box)
-
-	lbl_feedback = _label("", 18, Color("#ffffff"), FONTE)
+	# Feedback de Status Inferior
+	lbl_feedback = _label("SISTEMA OPERACIONAL PRONTO PARA SEGURANCA CIVICA.", 13, Color("#a2a8b3"), FONTE_MONO)
 	lbl_feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD
 	root.add_child(lbl_feedback)
 
-	_atualizar_barras()
 
-
-func _centralizar(node: Control) -> void:
-	node.size = node.custom_minimum_size
-	node.position = (get_viewport_rect().size - node.size) * 0.5 + Vector2(0, 10)
-
-
-func _criar_barra(cor: Color) -> ProgressBar:
-	var bar := ProgressBar.new()
-	bar.min_value = 0
-	bar.max_value = 100
-	bar.value = 50
-	bar.custom_minimum_size = Vector2(300, 20)
-	bar.show_percentage = true
-	bar.add_theme_font_override("font", FONTE_MONO)
-	bar.add_theme_font_size_override("font_size", 12)
-	bar.add_theme_color_override("font_color", Color.WHITE)
+# ══════════════════════════════════════════
+# CONTROLE DE ETAPAS
+# ══════════════════════════════════════════
+func _mostrar_etapa(etapa: int) -> void:
+	etapa_atual = etapa
 	
-	var sb_bg = StyleBoxFlat.new()
-	sb_bg.bg_color = Color(0.04, 0.03, 0.05)
-	bar.add_theme_stylebox_override("background", sb_bg)
-	
-	var sb_fg = StyleBoxFlat.new()
-	sb_fg.bg_color = cor
-	sb_fg.corner_radius_top_left = 3; sb_fg.corner_radius_top_right = 3
-	sb_fg.corner_radius_bottom_left = 3; sb_fg.corner_radius_bottom_right = 3
-	bar.add_theme_stylebox_override("fill", sb_fg)
-	
-	return bar
+	# Atualiza cores das labels do cabeçalho
+	step_lbl_1.add_theme_color_override("font_color", Color("#62ff86") if etapa_atual == 1 else (Color("#54d6ff") if etapa_atual > 1 else Color("#888888")))
+	step_lbl_2.add_theme_color_override("font_color", Color("#62ff86") if etapa_atual == 2 else (Color("#54d6ff") if etapa_atual > 2 else Color("#888888")))
+	step_lbl_3.add_theme_color_override("font_color", Color("#62ff86") if etapa_atual == 3 else Color("#888888"))
+
+	_limpar(container_etapa)
+	lbl_feedback.text = "SISTEMA OPERACIONAL PRONTO."
+	lbl_feedback.add_theme_color_override("font_color", Color("#a2a8b3"))
+
+	match etapa_atual:
+		1: _construir_etapa_1()
+		2: _construir_etapa_2()
+		3: _construir_etapa_3()
 
 
-func _atualizar_barras() -> void:
-	bar_mob.value = mobilizacao
-	bar_seg.value = seguranca
-	bar_org.value = organizacao
-	bar_ten.value = tensao
-	if crowd_rect:
-		var target_a = clamp(mobilizacao / 100.0 * 0.9, 0.15, 0.95)
-		create_tween().tween_property(crowd_rect, "modulate:a", target_a, 0.45)
-	crowd_visualizer.queue_redraw()
-
-
-func _mostrar_momento() -> void:
-	if finalizado:
-		return
-		
-	if indice >= MOMENTOS.size():
-		await _concluir_simulacao()
-		return
-
-	var momento: Dictionary = MOMENTOS[indice] as Dictionary
-	progresso.text = "FASE OPERACIONAL " + str(indice + 1) + "/" + str(MOMENTOS.size())
-	titulo.text = str(momento["titulo"])
-	texto.text = str(momento["texto"])
-	
-	_limpar(opcoes_box)
-
-	var i = 0
-	for opcao_data in momento["opcoes"]:
-		var opcao: Dictionary = opcao_data as Dictionary
-		var btn: Button = _criar_carta_botao(opcao)
-		btn.pressed.connect(func(): _escolher(opcao))
-		opcoes_box.add_child(btn)
-		
-		# Animação de entrada (Scale up com bounce/mola)
-		btn.scale = Vector2(0.4, 0.4)
-		btn.modulate.a = 0.0
-		
-		var tw = create_tween()
-		tw.set_parallel(true)
-		tw.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.45).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK).set_delay(i * 0.1)
-		tw.tween_property(btn, "modulate:a", 1.0, 0.35).set_delay(i * 0.1)
-		
-		i += 1
-
-
-func _criar_carta_botao(opcao: Dictionary) -> Button:
-	var btn := Button.new()
-	btn.custom_minimum_size = Vector2(310, 275)
-	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	
-	# Layout interno
-	var margin := _margin(16)
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(margin)
-	
+# ══════════════════════════════════════════
+# ETAPA 1 — FILTRAGEM CÍVICA
+# ══════════════════════════════════════════
+func _construir_etapa_1() -> void:
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(vbox)
-	
-	# Categoria superior
-	var lbl_cat := _label(str(opcao["categoria"]), 16, Color(opcao["cor"]), FONTE)
-	lbl_cat.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_cat.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(lbl_cat)
-	
-	# Divisor estético
-	var div := ColorRect.new()
-	div.custom_minimum_size = Vector2(0, 2)
-	div.color = Color(opcao["cor"], 0.4)
-	div.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(div)
+	vbox.add_theme_constant_override("separation", 16)
+	container_etapa.add_child(vbox)
 
-	# Título principal da Carta
-	var lbl_title := _label(str(opcao["titulo_carta"]), 21, Color.WHITE, FONTE)
-	lbl_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(lbl_title)
-	
-	# Descrição da ação
-	var lbl_desc := Label.new()
-	lbl_desc.text = str(opcao["desc"])
-	lbl_desc.add_theme_font_override("font", FONTE)
-	lbl_desc.add_theme_font_size_override("font_size", 16)
-	lbl_desc.add_theme_color_override("font_color", Color("#ede6d8"))
-	lbl_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_desc.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-	lbl_desc.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	lbl_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(lbl_desc)
-	
-	# Divisor de rodapé
-	var div2 := ColorRect.new()
-	div2.custom_minimum_size = Vector2(0, 1)
-	div2.color = Color(0.3, 0.3, 0.3, 0.5)
-	div2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(div2)
+	var info := _label("ETAPA 1: ISOLAMENTO E FILTRAGEM DE CENSURA", 18, Color("#54d6ff"), FONTE_MONO)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(info)
 
-	# Efeitos listados na base
-	var lbl_eff := _label(str(opcao["efeito_txt"]), 13, Color("#7bd88f") if int(opcao["bonus"]) >= 0 else Color("#ff7373"), FONTE_MONO)
-	lbl_eff.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_eff.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(lbl_eff)
-	
-	# Estilo personalizado
-	var card_color = Color(opcao["cor"])
-	var style_n = _stylebox(Color("#14131a", 0.94), card_color, 2, 8)
-	var style_h = _stylebox(Color("#201e28", 0.98), card_color.lightened(0.18), 3, 8)
-	style_h.shadow_size = 10
-	style_h.shadow_color = Color(card_color, 0.22)
-	var style_p = _stylebox(Color("#0d0d12", 0.96), card_color.darkened(0.2), 2, 8)
-	
-	btn.add_theme_stylebox_override("normal", style_n)
-	btn.add_theme_stylebox_override("hover", style_h)
-	btn.add_theme_stylebox_override("pressed", style_p)
-	
-	# Efeito de hover suave
-	btn.pivot_offset = Vector2(155, 137)
-	btn.mouse_entered.connect(func():
-		var tw = btn.create_tween()
-		tw.tween_property(btn, "scale", Vector2(1.03, 1.03), 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	)
-	btn.mouse_exited.connect(func():
-		var tw = btn.create_tween()
-		tw.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	)
-	
-	return btn
+	var desc := _label("O ditador bloqueia o portão com um sistema eletrônico de verificação. Para gerar um token de decodificação, identifique e filtre qual das afirmações emitidas pelos alto-falantes representa uma PROPAGANDA AUTORITÁRIA do regime:", 16, Color("#d7c9aa"), FONTE)
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	vbox.add_child(desc)
+
+	# Botão A (Direito Legítimo)
+	btn_statement_a = Button.new()
+	btn_statement_a.custom_minimum_size = Vector2(0, 110)
+	btn_statement_a.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_statement_a.add_theme_stylebox_override("normal", _stylebox(Color(0.08, 0.09, 0.12, 0.95), Color("#54d6ff", 0.4), 2, 8))
+	btn_statement_a.add_theme_stylebox_override("hover", _stylebox(Color(0.12, 0.14, 0.18, 0.95), Color("#54d6ff"), 2, 8))
+	btn_statement_a.pressed.connect(_on_click_a)
+	vbox.add_child(btn_statement_a)
+
+	var lbl_a := _label("AFIRMAÇÃO DE CANAL A:\n\"A livre manifestação de pensamento e a reunião pacífica dos cidadãos na praça pública constituem garantias cívicas fundamentais, protegidas pela antiga constituição da Usina.\"", 15, Color("#fff4d6"), FONTE)
+	lbl_a.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_a.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_a.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl_a.set_anchors_preset(Control.PRESET_FULL_RECT)
+	btn_statement_a.add_child(lbl_a)
+
+	# Botão B (Propaganda Autoritária)
+	btn_statement_b = Button.new()
+	btn_statement_b.custom_minimum_size = Vector2(0, 110)
+	btn_statement_b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_statement_b.add_theme_stylebox_override("normal", _stylebox(Color(0.08, 0.09, 0.12, 0.95), Color("#54d6ff", 0.4), 2, 8))
+	btn_statement_b.add_theme_stylebox_override("hover", _stylebox(Color(0.12, 0.14, 0.18, 0.95), Color("#54d6ff"), 2, 8))
+	btn_statement_b.pressed.connect(_on_click_b)
+	vbox.add_child(btn_statement_b)
+
+	var lbl_b := _label("AFIRMAÇÃO DE CANAL B:\n\"A censura prévia dos meios de comunicação e a proibição de ajuntamentos civis nas ruas são medidas de segurança necessárias para resguardar a ordem contra a desestabilização.\"", 15, Color("#fff4d6"), FONTE)
+	lbl_b.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_b.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_b.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl_b.set_anchors_preset(Control.PRESET_FULL_RECT)
+	btn_statement_b.add_child(lbl_b)
 
 
-func _escolher(opcao: Dictionary) -> void:
-	if finalizado: return
+func _on_click_a() -> void:
 	_play_click()
-	
-	# Entra em simulação
-	em_simulacao = true
-	_bloquear_botoes(true)
-	
-	# Exibe painel de processamento
-	_mostrar_processamento_simulacao(str(opcao["titulo_carta"]))
-	
-	# Calcula novos valores
-	var target_mob = clamp(mobilizacao + float(opcao["mod_mob"]), 0.0, 100.0)
-	var target_seg = clamp(seguranca + float(opcao["mod_seg"]), 0.0, 100.0)
-	var target_org = clamp(organizacao + float(opcao["mod_org"]), 0.0, 100.0)
-	var target_ten = clamp(tensao + float(opcao["mod_ten"]), 0.0, 100.0)
-	
-	# Anima as variáveis de recurso suavemente
-	var tw = create_tween().set_parallel(true)
-	tw.tween_property(self, "mobilizacao", target_mob, 1.2)
-	tw.tween_property(self, "seguranca", target_seg, 1.2)
-	tw.tween_property(self, "organizacao", target_org, 1.2)
-	tw.tween_property(self, "tensao", target_ten, 1.2)
-	
-	# Spawna popups de feedback nas barras
-	_spawnar_popups_modificadores(opcao)
-	
-	# Espera o tempo da animação e simulação
-	await get_tree().create_timer(1.6).timeout
-	
-	em_simulacao = false
-	
-	# Salva aliados e escolhas
-	var aliado: String = str(opcao["aliado"])
-	if not aliado.is_empty():
-		GameState.aliados_final[aliado] = true
-	var carta: String = str(opcao["carta"])
-	if not carta.is_empty() and not GameState.cartas_final_desbloqueadas.has(carta):
-		GameState.cartas_final_desbloqueadas.append(carta)
-	escolhidos.append(str(opcao["titulo_carta"]))
-	
-	# Verificação de falhas críticas imediatas
-	if seguranca <= 0.0:
-		_falha_marcha("A SEGURANÇA DA MULTIDÃO CHEGOU A ZERO. Os generais reprimiram o ato violentamente.")
-		return
-	if tensao >= 100.0:
-		_falha_marcha("A PRESSÃO MILITAR CHEGOU A 100%. Dante e seus aliados foram encurralados pelas patrulhas.")
-		return
-		
-	# Feedback breve de efeitos
-	lbl_feedback.text = "Efeito da diretiva selecionada aplicado!"
-	lbl_feedback.add_theme_color_override("font_color", Color("#62ff86"))
-	
-	# Efeito vermelho breve de impacto se a tensão aumentou
-	if float(opcao["mod_ten"]) > 0:
-		var alert = ColorRect.new()
-		alert.color = Color(1.0, 0.0, 0.0, 0.15)
-		alert.set_anchors_preset(Control.PRESET_FULL_RECT)
-		alert.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		layer.add_child(alert)
-		var tw_alert = create_tween()
-		tw_alert.tween_property(alert, "color:a", 0.0, 0.4)
-		tw_alert.tween_callback(func(): alert.queue_free())
-
-	await get_tree().create_timer(0.8).timeout
-	lbl_feedback.text = ""
-	
-	indice += 1
-	_mostrar_momento()
-
-func _mostrar_processamento_simulacao(titulo_diretiva: String) -> void:
-	_limpar(opcoes_box)
-	
-	var sim_panel = PanelContainer.new()
-	sim_panel.custom_minimum_size = Vector2(900, 220)
-	sim_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.04, 0.03, 0.06, 0.90), Color("#62ff86", 0.8), 2, 8))
-	opcoes_box.add_child(sim_panel)
-	
-	var margin = _margin(20)
-	sim_panel.add_child(margin)
-	
-	var vbox = VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 14)
-	margin.add_child(vbox)
-	
-	var lbl_proc = _label("DIRETIVA ATIVADA: " + titulo_diretiva.to_upper(), 22, Color("#62ff86"), FONTE)
-	lbl_proc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(lbl_proc)
-	
-	var lbl_status = _label("Mobilizando cidadãos nas vias centrais... Sincronizando rede de vigilância...", 15, Color("#a2a8b3"), FONTE_MONO)
-	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(lbl_status)
-	
-	# Adiciona uma barrinha de progresso de simulação fictícia
-	var sim_bar = ProgressBar.new()
-	sim_bar.custom_minimum_size = Vector2(600, 12)
-	sim_bar.show_percentage = false
-	var sb_bg = StyleBoxFlat.new()
-	sb_bg.bg_color = Color(0,0,0,0.5)
-	sim_bar.add_theme_stylebox_override("background", sb_bg)
-	var sb_fg = StyleBoxFlat.new()
-	sb_fg.bg_color = Color("#62ff86")
-	sim_bar.add_theme_stylebox_override("fill", sb_fg)
-	vbox.add_child(sim_bar)
-	
-	# Tween do progresso da simulação
-	var tw = create_tween()
-	tw.tween_property(sim_bar, "value", 100.0, 1.4)
-
-func _spawnar_popups_modificadores(opcao: Dictionary) -> void:
-	if int(opcao["mod_mob"]) != 0:
-		_mostrar_popup_efeito(int(opcao["mod_mob"]), Color("#ffa240"), bar_mob)
-	if int(opcao["mod_org"]) != 0:
-		_mostrar_popup_efeito(int(opcao["mod_org"]), Color("#62ff86"), bar_org)
-	if int(opcao["mod_seg"]) != 0:
-		_mostrar_popup_efeito(int(opcao["mod_seg"]), Color("#40d7ff"), bar_seg)
-	if int(opcao["mod_ten"]) != 0:
-		_mostrar_popup_efeito(int(opcao["mod_ten"]), Color("#ff5c5c"), bar_ten)
-
-func _mostrar_popup_efeito(valor: int, cor: Color, parent_node: Control) -> void:
-	var popup := Label.new()
-	popup.text = ("+" if valor >= 0 else "") + str(valor) + "%"
-	popup.add_theme_font_override("font", FONTE_MONO)
-	popup.add_theme_font_size_override("font_size", 16)
-	popup.add_theme_color_override("font_color", cor)
-	popup.position = Vector2(240, -4)
-	parent_node.add_child(popup)
-	
-	var tw = popup.create_tween()
-	tw.tween_property(popup, "position:y", -24.0, 1.2).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(popup, "modulate:a", 0.0, 1.2)
-	tw.tween_callback(popup.queue_free)
-
-
-func _falha_marcha(motivo: String) -> void:
-	finalizado = true
-	_bloquear_botoes(true)
-	lbl_feedback.text = motivo + "\nA mobilização dispersou. Tente outra estratégia de liderança cívica."
+	lbl_feedback.text = "FILTRAGEM FALHOU. ESSA AFIRMAÇÃO EXPRESSA UM DIREITO CÍVICO LEGÍTIMO."
 	lbl_feedback.add_theme_color_override("font_color", Color("#ff4b4b"))
 	
-	# Fade out preto antes de recarregar
-	var o := ColorRect.new()
-	o.color = Color(0, 0, 0, 0)
-	o.set_anchors_preset(Control.PRESET_FULL_RECT)
-	layer.add_child(o)
 	var tw = create_tween()
-	tw.tween_property(o, "color:a", 1.0, 2.5)
-	await tw.finished
-	FadeManager.carregar_cena("res://ASSETS/CENAS/minigame_praca.tscn")
+	btn_statement_a.modulate = Color(1.5, 0.4, 0.4)
+	tw.tween_property(btn_statement_a, "modulate", Color.WHITE, 0.4)
 
 
-func _concluir_simulacao() -> void:
-	finalizado = true
-	# Recompensas finais baseadas nos recursos acumulados
-	apoio_bonus = int(mobilizacao * 0.6 + organizacao * 0.4 + seguranca * 0.4 - tensao * 0.4)
+func _on_click_b() -> void:
+	_play_click()
+	lbl_feedback.text = "CENSURA DETECTADA E FILTRADA! CRIPTOGRAMA OBTIDO: K-Q-W-T"
+	lbl_feedback.add_theme_color_override("font_color", Color("#62ff86"))
 	
+	var tw = create_tween()
+	btn_statement_b.modulate = Color(0.4, 1.5, 0.4)
+	tw.tween_property(btn_statement_b, "modulate", Color.WHITE, 0.4)
+	await tw.finished
+	_mostrar_etapa(2)
+
+
+# ══════════════════════════════════════════
+# ETAPA 2 — DECODIFICAÇÃO (CIFRA DE CÉSAR)
+# ══════════════════════════════════════════
+func _construir_etapa_2() -> void:
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 15)
+	container_etapa.add_child(vbox)
+
+	var info := _label("ETAPA 2: DECODIFICACAO DE CHAVE CRIPTOGRAFICA", 18, Color("#54d6ff"), FONTE_MONO)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(info)
+
+	# Bloco de Anotações/Dica
+	var hint_panel := PanelContainer.new()
+	hint_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.12, 0.11, 0.08, 0.95), Color("#ffd447", 0.6), 1, 8))
+	vbox.add_child(hint_panel)
+
+	var hint_margin := _margin(10)
+	hint_panel.add_child(hint_margin)
+
+	var hint_lbl := _label("ANOTAÇÕES DO DIÁRIO (Dantas):\n\"O Coronel Antônio criptografa a senha de acesso usando a Cifra de César. A chave de deslocamento é a diferença exata entre o ano de promulgação da nossa antiga Constituição Democrática (1988) e o ano em que a intervenção militar de Antônio foi instaurada (1985). Desloque o sinal negativamente por essa diferença.\"", 14, Color("#ffd447"), FONTE)
+	hint_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+	hint_margin.add_child(hint_lbl)
+
+	# Criptograma
+	var cipher_box := HBoxContainer.new()
+	cipher_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	cipher_box.add_theme_constant_override("separation", 12)
+	vbox.add_child(cipher_box)
+
+	cipher_box.add_child(_label("TOKEN CRIPTOGRAFADO:", 16, Color("#a2a8b3"), FONTE_MONO))
+	var cipher_val := _label("K - Q - W - T", 24, Color("#54d6ff"), FONTE)
+	cipher_box.add_child(cipher_val)
+
+	# Ajuste do Shift
+	var control_box := HBoxContainer.new()
+	control_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	control_box.add_theme_constant_override("separation", 16)
+	vbox.add_child(control_box)
+
+	control_box.add_child(_label("Ajustar Deslocamento:", 15, Color("#fff4d6"), FONTE))
+
+	slider_cifra = HSlider.new()
+	slider_cifra.min_value = -10
+	slider_cifra.max_value = 10
+	slider_cifra.step = 1
+	slider_cifra.value = 0
+	slider_cifra.custom_minimum_size = Vector2(250, 20)
+	slider_cifra.value_changed.connect(_on_cifra_changed)
+	control_box.add_child(slider_cifra)
+
+	lbl_cifra_result = _label("Deslocamento: 0  ->  [ K Q W T ]", 18, Color("#62ff86"), FONTE_MONO)
+	lbl_cifra_result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_cifra_result)
+
+	# Botão de Ação
+	var btn_submit := Button.new()
+	btn_submit.text = "APLICAR DESCRIPTOGRAFIA"
+	btn_submit.custom_minimum_size = Vector2(260, 45)
+	btn_submit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn_submit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_submit.add_theme_font_override("font", FONTE)
+	btn_submit.add_theme_font_size_override("font_size", 18)
+	btn_submit.add_theme_color_override("font_color", Color.BLACK)
+	btn_submit.add_theme_stylebox_override("normal", _stylebox(Color("#54d6ff"), Color("#2b2118"), 2, 6))
+	btn_submit.add_theme_stylebox_override("hover", _stylebox(Color("#62ff86"), Color("#54d6ff"), 2, 6))
+	btn_submit.pressed.connect(_verificar_cifra)
+	vbox.add_child(btn_submit)
+
+
+func _on_cifra_changed(val: float) -> void:
+	_play_click()
+	current_shift = int(val)
+	var dec = _decriptar("KQWT", current_shift)
+	lbl_cifra_result.text = "Deslocamento: %d  ->  [ %s ]" % [current_shift, dec]
+
+
+func _decriptar(texto: String, shift: int) -> String:
+	var alfabeto := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	var res := ""
+	for i in range(texto.length()):
+		var c = texto[i]
+		var idx = alfabeto.find(c.to_upper())
+		if idx != -1:
+			var novo_idx = (idx + shift) % 26
+			if novo_idx < 0: novo_idx += 26
+			res += alfabeto[novo_idx]
+		else:
+			res += c
+	return res
+
+
+func _verificar_cifra() -> void:
+	_play_click()
+	if current_shift == -3:
+		lbl_feedback.text = "DESCRIPTOGRAFADO COM SUCESSO: [ H N T Q ]"
+		lbl_feedback.add_theme_color_override("font_color", Color("#62ff86"))
+		var tw = create_tween()
+		tw.tween_interval(0.8)
+		tw.tween_callback(func(): _mostrar_etapa(3))
+	else:
+		lbl_feedback.text = "CHAVE INCORRETA. A DIFERENCA DE ANOS NAO CORRESPONDE AO DESLOCAMENTO."
+		lbl_feedback.add_theme_color_override("font_color", Color("#ff4b4b"))
+		var tw = create_tween()
+		lbl_cifra_result.add_theme_color_override("font_color", Color("#ff4b4b"))
+		tw.tween_property(lbl_cifra_result, "modulate", Color(1.5, 0.4, 0.4), 0.1)
+		tw.tween_property(lbl_cifra_result, "modulate", Color.WHITE, 0.3)
+		tw.tween_callback(func(): lbl_cifra_result.add_theme_color_override("font_color", Color("#62ff86")))
+
+
+# ══════════════════════════════════════════
+# ETAPA 3 — CALIBRAÇÃO DO OSCILOSCÓPIO
+# ══════════════════════════════════════════
+func _construir_etapa_3() -> void:
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	container_etapa.add_child(vbox)
+
+	var info := _label("ETAPA 3: CALIBRACAO E ACOPLAMENTO DE ONDAS", 18, Color("#54d6ff"), FONTE_MONO)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(info)
+
+	var sub := _label("O sinal revelado (H N T Q) mapeia os valores de segurança no circuito: H é a 8ª letra (Amplitude 0.8) e N é a 14ª letra (Frequência 14.0). Alinhe a onda do oscilador eletrônico para liberar as travas físicas:", 14, Color("#d7c9aa"), FONTE)
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD
+	vbox.add_child(sub)
+
+	var split := HBoxContainer.new()
+	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	split.add_theme_constant_override("separation", 20)
+	vbox.add_child(split)
+
+	# Lado Esquerdo: CRT Screen
+	var osc_panel := PanelContainer.new()
+	osc_panel.custom_minimum_size = Vector2(460, 240)
+	osc_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	osc_panel.add_theme_stylebox_override("panel", _stylebox(Color(0.02, 0.02, 0.03, 0.98), COR_PANEL_BORDA, 2, 8))
+	split.add_child(osc_panel)
+
+	oscilloscope = Control.new()
+	oscilloscope.set_anchors_preset(Control.PRESET_FULL_RECT)
+	oscilloscope.draw.connect(_on_oscilloscope_draw)
+	osc_panel.add_child(oscilloscope)
+
+	# Lado Direito: Sliders
+	var ctrl_box := VBoxContainer.new()
+	ctrl_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ctrl_box.add_theme_constant_override("separation", 10)
+	split.add_child(ctrl_box)
+
+	# Amplitude
+	ctrl_box.add_child(_label("AMPLITUDE (Alvo: H = 0.80)", 12, Color("#54d6ff"), FONTE_MONO))
+	var amp_hbox := HBoxContainer.new()
+	amp_hbox.add_theme_constant_override("separation", 10)
+	ctrl_box.add_child(amp_hbox)
+
+	slider_amp = HSlider.new()
+	slider_amp.min_value = 0.1
+	slider_amp.max_value = 1.0
+	slider_amp.step = 0.02
+	slider_amp.value = 0.2
+	slider_amp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider_amp.custom_minimum_size = Vector2(0, 40)
+	slider_amp.value_changed.connect(func(v): val_amp = v; _play_click())
+	amp_hbox.add_child(slider_amp)
+
+	lbl_helper_amp = _label("[ AJUSTANDO ]", 11, Color("#ffd447"), FONTE_MONO)
+	lbl_helper_amp.custom_minimum_size = Vector2(110, 0)
+	amp_hbox.add_child(lbl_helper_amp)
+
+	# Frequência
+	ctrl_box.add_child(_label("FREQUENCIA (Alvo: N = 14.0)", 12, Color("#54d6ff"), FONTE_MONO))
+	var freq_hbox := HBoxContainer.new()
+	freq_hbox.add_theme_constant_override("separation", 10)
+	ctrl_box.add_child(freq_hbox)
+
+	slider_freq = HSlider.new()
+	slider_freq.min_value = 2.0
+	slider_freq.max_value = 20.0
+	slider_freq.step = 0.5
+	slider_freq.value = 4.0
+	slider_freq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider_freq.custom_minimum_size = Vector2(0, 40)
+	slider_freq.value_changed.connect(func(v): val_freq = v; _play_click())
+	freq_hbox.add_child(slider_freq)
+
+	lbl_helper_freq = _label("[ AJUSTANDO ]", 11, Color("#ffd447"), FONTE_MONO)
+	lbl_helper_freq.custom_minimum_size = Vector2(110, 0)
+	freq_hbox.add_child(lbl_helper_freq)
+
+	# Lock Progress Bar
+	progress_lock = ProgressBar.new()
+	progress_lock.min_value = 0.0
+	progress_lock.max_value = LOCK_TARGET
+	progress_lock.value = 0.0
+	progress_lock.show_percentage = false
+	progress_lock.custom_minimum_size = Vector2(0, 16)
+	ctrl_box.add_child(progress_lock)
+
+	lbl_lock_status = _label("BUSCANDO ESTABILIDADE...", 12, Color("#ff4b4b"), FONTE_MONO)
+	lbl_lock_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ctrl_box.add_child(lbl_lock_status)
+
+
+func _on_oscilloscope_draw() -> void:
+	if not oscilloscope: return
+	var size := oscilloscope.size
+	var center_y := size.y / 2.0
+
+	# 1. Desenha a grade
+	var grid_color := Color(0.0, 0.45, 0.72, 0.15)
+	for x in range(0, int(size.x), 25):
+		oscilloscope.draw_line(Vector2(x, 0), Vector2(x, size.y), grid_color, 1.0)
+	for y in range(0, int(size.y), 25):
+		oscilloscope.draw_line(Vector2(0, y), Vector2(size.x, y), grid_color, 1.0)
+
+	# 2. Gera pontos das ondas
+	var pts_target := PackedVector2Array()
+	var pts_player := PackedVector2Array()
+
+	for x in range(0, int(size.x)):
+		var t = float(x) / size.x * TAU
+		
+		# Onda Vermelha (Alvo)
+		var y_target = center_y + (target_amp * 90.0) * sin(t * target_freq + wave_time)
+		pts_target.append(Vector2(x, y_target))
+
+		# Onda Verde (Jogador)
+		var y_player = center_y + (val_amp * 90.0) * sin(t * val_freq + wave_time)
+		pts_player.append(Vector2(x, y_player))
+
+	oscilloscope.draw_polyline(pts_target, COR_RED_WAVE, 2.0)
+	oscilloscope.draw_polyline(pts_player, COR_GREEN_WAVE, 2.5)
+
+
+func _concluir_etapa_3() -> void:
+	finalizado = true
+	_play_click()
+
+	if slider_amp: slider_amp.editable = false
+	if slider_freq: slider_freq.editable = false
+
+	# Efeito visual de brilho verde
+	var tween := create_tween()
+	var original_mod = oscilloscope.modulate
+	tween.tween_property(oscilloscope, "modulate", Color(0.1, 2.0, 0.6, 1.0), 0.12)
+	tween.tween_property(oscilloscope, "modulate", original_mod, 0.4)
+	await tween.finished
+
+	_concluir_simulacao()
+
+
+# ══════════════════════════════════════════
+# CONCLUSÃO DO MINIJOGO
+# ══════════════════════════════════════════
+func _concluir_simulacao() -> void:
+	# Transiciona e atualiza os estados do jogo
 	await _ir_para_palacio()
 
 
 func _ir_para_palacio() -> void:
-	var cometeu_violencia = "OCUPAÇÃO DIRETA" in escolhidos or "ATAQUE RETÓRICO" in escolhidos or "DISTRAÇÃO RADICAL" in escolhidos or "OCUPAÇÃO MASSIVA" in escolhidos
-	if seguranca >= 80.0 and not cometeu_violencia:
-		GameState.desbloquear_conquista("praca_pacifica")
-
 	GameState.fase4_passo = "palacio"
 	GameState.pontuacao_final = {
-		"bonus_praca": apoio_bonus,
-		"escolhas_praca": escolhidos.duplicate()
+		"bonus_praca": 35,
+		"escolhas_praca": ["BY-PASS DO CADEADO"]
 	}
 	await GameState.mostrar_registro_democratico({
 		"fase": "Fase 4 - Praca",
-		"conceito": "Participacao popular, protesto pacifico e organizacao coletiva",
-		"evidencia": "O jogador equilibrou mobilizacao, seguranca, organizacao e tensao militar durante a marcha.",
-		"impacto": "A mobilizacao avancou com responsabilidade civica e protecao da comunidade.",
-		"reflexao": "Participar da democracia exige estrategia, solidariedade e cuidado com a vida coletiva."
+		"conceito": "Integração cívica, raciocínio lógico e desobediência civil",
+		"evidencia": "O jogador superou o bloqueio eletrônico do Palácio unindo e aplicando todos os aprendizados de fases passadas.",
+		"impacto": "A infiltração tática foi bem-sucedida, abrindo a entrada secreta para o Palácio sem confrontos ou violência.",
+		"reflexao": "A inteligência cívica e a persistência são as chaves para desarmar as defesas do autoritarismo."
 	})
-	GameState.registrar_escolha("Liderou a marcha da praca com " + str(int(mobilizacao)) + "% de apoio", maxi(-2, int(apoio_bonus / 10)))
+	GameState.registrar_escolha("Desarmou a segurança do Palácio através de by-pass cívico", 3)
 	
 	if GameState.is_minigame_mode:
 		await GameState.retornar_para_game_scene_apos_minigame()
@@ -757,80 +581,9 @@ func _ir_para_palacio() -> void:
 		await FadeManager.carregar_cena(PALACIO_SCENE)
 
 
-func _desenhar_monitor_multidao() -> void:
-	var size_rect = crowd_visualizer.size
-	var centro = size_rect * 0.5
-	
-	# Desenha grade radar tático circular
-	var line_color = Color(0.0, 0.5, 0.25, 0.18)
-	
-	# Linhas circulares concêntricas do radar
-	crowd_visualizer.draw_arc(centro, 20.0, 0.0, TAU, 32, line_color, 1.0)
-	crowd_visualizer.draw_arc(centro, 45.0, 0.0, TAU, 48, line_color, 1.0)
-	crowd_visualizer.draw_arc(centro, 70.0, 0.0, TAU, 64, line_color, 1.0)
-	
-	# Cruz central do radar
-	crowd_visualizer.draw_line(Vector2(centro.x - 240, centro.y), Vector2(centro.x + 240, centro.y), line_color, 1.0)
-	crowd_visualizer.draw_line(Vector2(centro.x, centro.y - 70), Vector2(centro.x, centro.y + 70), line_color, 1.0)
-	
-	# Linha rotativa de varredura do radar
-	var sweep_speed = 1.8
-	if em_simulacao:
-		sweep_speed = 5.0
-	var sweep_angle = fmod(Time.get_ticks_msec() * 0.001 * sweep_speed, TAU)
-	var sweep_dir = Vector2(cos(sweep_angle), sin(sweep_angle))
-	var sweep_len = 250.0
-	crowd_visualizer.draw_line(centro, centro + sweep_dir * sweep_len, Color("#62ff86", 0.45), 2.0)
-	
-	# Cone de luz da varredura
-	var tail_angle = sweep_angle - 0.25
-	var tail_dir = Vector2(cos(tail_angle), sin(tail_angle))
-	var radar_pts = PackedVector2Array([
-		centro,
-		centro + sweep_dir * sweep_len,
-		centro + tail_dir * sweep_len
-	])
-	crowd_visualizer.draw_polygon(radar_pts, PackedColorArray([Color("#62ff86", 0.12), Color("#62ff86", 0.0), Color("#62ff86", 0.0)]))
-	
-	# Desenha pontinhos representando os manifestantes na praça (Verde)
-	var manifestantes_count = int(mobilizacao * 1.5)
-	var r = RandomNumberGenerator.new()
-	r.seed = 1337 # Semente constante para não tremer a cada frame
-	
-	for i in range(manifestantes_count):
-		var rx = r.randf_range(centro.x - 220, centro.x + 220)
-		var ry = r.randf_range(centro.y - 60, centro.y + 60)
-		
-		# Adiciona jitter vibracional em simulação
-		if em_simulacao:
-			rx += randf_range(-4.0, 4.0)
-			ry += randf_range(-4.0, 4.0)
-			
-		# Pontinho de manifestante (Verde Brilhante)
-		var p_color = Color("#62ff86", r.randf_range(0.55, 0.95))
-		crowd_visualizer.draw_circle(Vector2(rx, ry), 2.5, p_color)
-		crowd_visualizer.draw_circle(Vector2(rx, ry), 4.5, Color("#62ff86", 0.08))
-
-	# Desenha patrulhas militares cercando a praça (Vermelho)
-	var patrulhas_count = int(tensao * 0.8)
-	var r_p = RandomNumberGenerator.new()
-	r_p.seed = 4321
-	
-	for i in range(patrulhas_count):
-		var rx = r_p.randf_range(centro.x - 240, centro.x + 240)
-		var ry = r_p.randf_range(centro.y - 70, centro.y + 70)
-		
-		if em_simulacao:
-			rx += randf_range(-3.0, 3.0)
-			ry += randf_range(-3.0, 3.0)
-			
-		# Desenha apenas nas bordas externas do radar
-		if Vector2(rx, ry).distance_to(centro) > 75.0:
-			var p_color = Color("#ff4b4b", r_p.randf_range(0.7, 1.0))
-			crowd_visualizer.draw_circle(Vector2(rx, ry), 3.0, p_color)
-			crowd_visualizer.draw_circle(Vector2(rx, ry), 5.5, Color("#ff4b4b", 0.12))
-
-
+# ══════════════════════════════════════════
+# AUXILIARES
+# ══════════════════════════════════════════
 func _play_click() -> void:
 	if sfx_click:
 		sfx_click.play()
@@ -841,10 +594,9 @@ func _limpar(node: Node) -> void:
 		child.queue_free()
 
 
-func _bloquear_botoes(bloquear: bool) -> void:
-	for child in opcoes_box.get_children():
-		if child is Button:
-			child.disabled = bloquear
+func _centralizar(node: Control) -> void:
+	if not node: return
+	node.pivot_offset = node.size * 0.5
 
 
 func _label(texto_lbl: String, tamanho: int, cor: Color, fonte: Font) -> Label:
@@ -854,8 +606,13 @@ func _label(texto_lbl: String, tamanho: int, cor: Color, fonte: Font) -> Label:
 	lbl.add_theme_font_size_override("font_size", tamanho)
 	lbl.add_theme_color_override("font_color", cor)
 	lbl.add_theme_color_override("font_shadow_color", Color.BLACK)
-	lbl.add_theme_constant_override("shadow_offset_x", 2)
-	lbl.add_theme_constant_override("shadow_offset_y", 2)
+	lbl.add_theme_constant_override("shadow_offset_x", 1)
+	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	# Corrige o overlap de linhas devido a métricas de fontes retro
+	if fonte == FONTE:
+		lbl.add_theme_constant_override("line_spacing", 4)
+	else:
+		lbl.add_theme_constant_override("line_spacing", 2)
 	return lbl
 
 
@@ -886,8 +643,8 @@ func _stylebox(bg: Color, border: Color, border_width: int, radius: int) -> Styl
 	sb.corner_radius_top_right = radius
 	sb.corner_radius_bottom_left = radius
 	sb.corner_radius_bottom_right = radius
-	sb.content_margin_left = 12
-	sb.content_margin_right = 12
-	sb.content_margin_top = 10
-	sb.content_margin_bottom = 10
+	sb.content_margin_left = 14
+	sb.content_margin_right = 14
+	sb.content_margin_top = 12
+	sb.content_margin_bottom = 12
 	return sb

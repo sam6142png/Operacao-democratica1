@@ -1,11 +1,13 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.6" transition="Simple Fade"]
 join PROFESSOR (Neutro) rightmost [animation="Fade In" wait="true"]
 join PROTA (Neutro) leftmost [animation="Fade In" wait="true"]
+PROFESSOR (Falando): O transmissor da Rádio Livre está funcionando com potência total. A transmissão de ideias cívicas quebrou a censura e silêncio das salas.
+PROTA: Sim, o pensamento crítico está voltando a florescer aqui. Meus pais, Dantas e Isabela, sabiam que a escola é o coração da liberdade.
 [wait time="1.0"]
-"Aluno": Professor… se o regime garante tanta paz, por que algumas pessoas desaparecem e nunca mais voltam?
-[wait time="3.0"]
-PROFESSOR (Falando): Isso… não faz parte da aula.
-PROTA (Pensando): Alguns deles já estão pensando por conta própria… só precisavam de alguém que acreditasse nisso primeiro.
+"Aluno": Professor… se o regime do Coronel Antônio garante tanta paz, por que algumas pessoas desaparecem e nunca mais voltam?
+[wait time="2.0"]
+PROFESSOR (Falando): Essa é uma excelente pergunta... E que vamos discutir a partir de agora, analisando a história real de nossa constituição.
+PROTA (Pensando): Eles estão pensando por conta própria… O medo do Coronel Antônio não os controla mais.
 [wait time="1.0"]
 [signal arg="fim_fase_3"]
 [end_timeline]

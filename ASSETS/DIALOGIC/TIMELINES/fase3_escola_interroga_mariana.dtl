@@ -1,0 +1,21 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Mariana": Oi... por favor, não fale muito alto. Os guardas do Coronel Antônio estão sempre circulando pelos corredores...
+- "Não se preocupe, eu vou falar baixo. Você parece muito assustada, quer desabafar?"
+	*Mariana olha ao redor nervosa, depois relaxa ligeiramente os ombros e solta um suspiro de alívio.*
+	"Mariana": Obrigada... É que qualquer palavra fora do lugar aqui dentro pode virar um problema enorme. Eu só tento ficar o mais invisível possível aos olhos deles.
+- "Relaxa, os guardas do Coronel Antônio estão ocupados demais bocejando lá no portão."
+	*Mariana solta um risinho nervoso, cobrindo a boca rapidamente com a mão.*
+	"Mariana": Hahaha, você é muito engraçado... mas também bem imprudente. Se eles te ouvirem falar deles assim, você vai direto para a detenção sem escalas!
+- "Se você não fez nada de errado, por que tanto pânico dos soldados?"
+	*Mariana recua um passo, com os olhos arregalados de medo e parecendo magoada.*
+	"Mariana": Você não entende... Qualquer um de nós pode ser denunciado por qualquer bobagem insignificante. Eu só não quero me meter em encrenca!
+
+"Mariana": Mas o que você quer saber? Fale rápido, por favor.
+- "Onde você passou o intervalo?"
+	"Mariana": Eu fiquei comendo meu lanche sentada nos bancos de cimento perto do refeitório. Tinha muita gente por lá jogando bola e conversando, eu só fiquei na minha ouvindo música.
+	PROTA (Pensando): O álibi dela parece extremamente comum e sem contradições. Ela parece apenas uma aluna assustada querendo passar despercebida.
+- "Você ouviu falar de algum informante entre os estudantes?"
+	"Mariana": Todo mundo sussurra sobre isso nos cantos. Dizem que quem fala de Dantas e Isabela acaba levado para a diretoria pela patrulha. Por isso eu prefiro não me envolver e ficar calada.
+	PROTA (Pensando): O medo imposto pelo Coronel Antônio silencia até mesmo os inocentes. E vigiar quem menciona os nomes de meus pais, Dantas e Isabela, mostra o nível de controle que eles querem exercer.
+[end_timeline]

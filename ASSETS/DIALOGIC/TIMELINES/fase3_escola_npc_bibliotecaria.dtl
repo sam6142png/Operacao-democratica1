@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Bibliotecária": A biblioteca escolar? Ah, hoje ela não abriu de jeito nenhum, querido.
+"Bibliotecária": Tive que ir à sede regional da secretaria o dia inteiro para tratar de assuntos do sindicato. Ficou trancada no cadeado desde ontem.
+PROTA (Pensando): A biblioteca esteve fechada o dia todo. Então o álibi de Carlos é falso...
+[signal arg="pista_biblioteca"]
+[end_timeline]

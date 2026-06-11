@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/fim_vingativa.png" fade="1.0"]
+[wait time="0.5"]
+"...": O tirano caiu, mas o ódio que ele plantou por vinte anos colheu seu fruto mais sombrio na praça de Usina Velha.
+"...": Sem paciência para as regras ou para a justiça, a multidão tomou o Palácio. O Coronel Antônio foi executado ali mesmo, sob a ira cega do linchamento.
+"...": A opressão militar terminou, mas a cidade amanhece sob o peso da barbárie. Vencer sem princípios desfigurou a própria promessa de liberdade.
+"...": O medo mudou de lado, e a reconstrução de Usina Velha começa sob a ferida aberta da violência e da anarquia.
+[end_timeline]

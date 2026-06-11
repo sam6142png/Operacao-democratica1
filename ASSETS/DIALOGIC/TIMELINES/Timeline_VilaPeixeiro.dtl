@@ -56,9 +56,9 @@ PEIXEIRO (Falando e Ameaçando): Quem são vocês? Falem logo.
 	PEIXEIRO: O pai dela? Não conheço nenhum homem com esse nome aqui. Vocês parecem espiões do regime! Sumam da minha porta antes que eu chame os guardas!
 	update ATENA (Falando) [animation="Heartbeat"]
 	ATENA: Espere, senhor! Ele mentiu por medo dos guardas que patrulham a vila.
-	ATENA: Nós viemos pelo livro. O livro "Direitos e Deveres do Povo" que Isabela e Julian lhe confiaram.
+	ATENA: Nós viemos pelo livro. O livro "Direitos e Deveres do Povo" que Dantas e Isabela lhe confiaram.
 	update PEIXEIRO (Neutro)
-	PEIXEIRO: Isabela... Isabela e Julian?
+	PEIXEIRO: Dantas... Dantas e Isabela?
 	update PROTA (Determinado)
 	PROTA: Sim. Eu sou Dante, filho deles. Vim recuperar a memória que tentaram apagar.
 	[signal arg="escolha_mentira"]

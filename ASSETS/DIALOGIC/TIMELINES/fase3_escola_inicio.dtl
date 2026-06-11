@@ -1,7 +1,46 @@
-[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.6" transition="Simple Fade"]
-join PROTA (De fininho) leftmost [animation="Fade In" wait="true"]
-PROTA (De fininho): Só decifrar mensagens não vai ser suficiente. Preciso entender o que os alunos daqui estão realmente pensando.
-PROTA (Neutro): Encontrei um caderno abandonado nesta carteira. O regime tentou rasurar e reescrever a redação de um aluno sobre democracia.
-PROTA (De fininho): O professor e o guarda estão vigiando a sala. Preciso usar a borracha para revelar o texto original do aluno antes de ser descoberto!
+[background arg="res://ASSETS/SPRITES/FUNDOS/Escola Externa.png" fade="0.6" transition="Simple Fade" wait="true"]
+join PROTA (Neutro) center [animation="Fade In" wait="true"]
+PROTA (Pensando): A escola municipal de Usina Velha...
+PROTA (Pensando): Após interceptar as comunicações na Rádio, descobri que este lugar está sendo usado para doutrinação sutil pelo regime do Coronel Antônio.
+PROTA (Pensando): Eles alteraram o material didático para convencer os jovens de que o autoritarismo é necessário e incontestável.
+PROTA (Pensando): Fortalecer a resistência exige restaurar o pensamento crítico deles. Mas como entrar sem chamar a atenção dos guardas?
+- Procurar uma entrada escondida
+	PROTA (Pensando): A entrada principal está sob vigilância pesada. Melhor dar a volta e procurar um ponto cego.
+	[wait time="0.5"]
+	PROTA (Pensando): Ali, nos fundos perto da cozinha... Uma janela de serviço está meio aberta. Com cuidado, consigo passar.
+	[signal arg="escolha_escola_escondida"]
+- Entrar pela entrada principal
+	PROTA (Pensando): Tentar ser furtivo pode parecer suspeito. Se eu agir com naturalidade, talvez consiga passar.
+	[wait time="0.5"]
+	leave PROTA
+	join MILITAR (Neutro) left [animation="Slide From Left" wait="true"]
+	join PROTA (Neutro) rightmost [animation="Slide From Right" wait="true"]
+	MILITAR: Ei! Pare aí! O que um jovem faz circulando fora das salas durante o horário de aula? Identifique-se!
+	PROTA (Falando): Me desculpe, senhor. Eu me chamo George Spencer. Minha família apoia a administração local e vim trazer um recado para a diretoria.
+	MILITAR (Apenas Bravo): Spencer? Ah, a família Spencer é uma grande aliada do Coronel Antônio. Perdoe o incômodo, rapaz. Pode prosseguir.
+	[signal arg="escolha_escola_principal"]
+	leave MILITAR
+	update PROTA center
+	PROTA (Pensando): Ufa... O nome do Spencer funcionou como escudo. Mas agora que estou dentro, preciso agir rápido.
+leave --All-- [animation="Fade Out" wait="true"]
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.6" transition="Simple Fade" wait="true"]
+join PROTA (Neutro) center [animation="Fade In" wait="true"]
+PROTA (Pensando): Estou nos corredores. Cartazes de propaganda do Coronel Antônio por todas as paredes... "A obediência é a maior virtude cívica". Que absurdo.
+PROTA (Pensando): Consigo ouvir alguns alunos conversando ali na frente.
+[wait time="0.4"]
+"Aluno A": ...então, o livro novo diz que a democracia do prefeito Dantas só trouxe caos e que o Coronel Antônio restabeleceu a ordem. Faz sentido, né?
+"Aluno B": Não sei... meu irmão mais velho diz que na época de Dantas e Isabela nós tínhamos voz. Agora, se a gente questiona um parágrafo, a diretoria chama a patrulha.
+"Aluno C": Calem a boca! Se a patrulha ou os guardas nos ouvirem falando disso, seremos todos punidos!
+PROTA (Pensando): A vigilância do regime silencia a escola... Eles precisam ouvir a verdade para despertar o pensamento crítico.
+[wait time="0.5"]
+join PROFESSOR (Neutro) right [animation="Slide From Right" wait="true"]
+update PROTA leftmost
+PROFESSOR: Dante! O que você está fazendo aqui? É extremamente perigoso. As patrulhas do Coronel Antônio estão revistando tudo após os incidentes da rádio!
+PROTA: Professor! Vim ver como estão as coisas. O regime está doutrinando os alunos e apagando a memória do legado de meus pais, Dantas e Isabela.
+PROFESSOR (Falando): É terrível, Dante. O regime bloqueou todos os canais de informação e usa a rádio escolar para transmitir propaganda militar contínua.
+PROFESSOR (Falando): A caixa de controle dos alto-falantes fica aqui na sala de aula. Mas os militares embaralharam as frequências de sintonização.
+PROTA: Nós podemos invadir a caixa e sintonizar os canais da Rádio Livre. Se alinharmos o sinal verde de microfone, transmissão e antena com o bloqueio deles, tomaremos o controle da rádio!
+PROFESSOR: É perigoso, Dante, pois o alinhamento causará ruído e os guardas podem vir investigar. Você precisa sintonizar os canais rapidamente antes de ser pego!
+PROTA (Determinado): Pode deixar, professor. Vamos sintonizar a Voz Livre e quebrar essa doutrinação.
 [signal arg="iniciar_minigame_escola"]
 [end_timeline]

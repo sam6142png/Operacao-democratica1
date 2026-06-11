@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/fim_derrota.png" fade="1.0"]
+[wait time="0.5"]
+"...": Os alto-falantes de Usina Velha voltam a ditar a ordem oficial. O cerco militar na praça foi implacável, e a manifestação popular acabou dispersada pelo medo.
+"...": A resistência é forçada a recuar para as sombras dos porões da usina, sob uma vigilância ainda mais severa das patrulhas.
+"...": A censura e o silêncio fecham as portas da escola e da praça. O ditador mantém seu controle de ferro sobre o destino de todos.
+"...": Nas sombras, porém, a semente da Rádio Livre permanece viva na mente daqueles que ouviram. A caminhada será longa, mas a busca pela verdade não pode ser desfeita.
+[end_timeline]

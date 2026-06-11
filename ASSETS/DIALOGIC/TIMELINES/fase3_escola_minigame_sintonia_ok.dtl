@@ -1,8 +1,8 @@
 [background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
 join PROTA (Determinado) leftmost [animation="Fade In" length="0.2" wait="true"]
-join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
 join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
-PROTA: Entrou! A Voz Livre tá saindo em todas as salas.
-ATENA: Agora eles não controlam mais sozinhos o que a escola escuta.
-PROFESSOR: Que os alunos ouçam, comparem e perguntem. É assim que uma escola respira.
+PROTA: Conseguimos! O sinal está perfeitamente sintonizado! Os alto-falantes da escola agora estão conectados à Rádio Livre!
+PROFESSOR: Escute, Dante... O ruído sumiu e a transmissão da resistência começou a ecoar de verdade. O bloqueio foi quebrado.
+PROTA: A verdade sobre nossos direitos finalmente vai alcançar todos os estudantes daqui.
+PROFESSOR: Excelente trabalho. Eles tentaram calar a escola, mas hoje nós devolvemos a voz e o pensamento livre a ela.
 [end_timeline]

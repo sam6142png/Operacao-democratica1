@@ -1,0 +1,22 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Beatriz": Oi, Dante! Tudo bem? Se estiver com dúvidas em matemática, o professor me explicou tudinho sobre álgebra hoje!
+- "Nossa, você deve ser a aluna mais dedicada da escola. Adoraria uma ajuda sua depois!"
+	*Beatriz dá um sorriso brilhante e radiante, ajeitando uma mecha de cabelo atrás da orelha.*
+	"Beatriz": Ah, que fofo! Claro que ajudo! Álgebra parece um bicho de sete cabeças, mas quando você pega o ritmo, vira pura lógica.
+- "Você passou o intervalo inteiro estudando? Isso parece meio entediante..."
+	*Beatriz infla as bochechas, parecendo levemente irritada e desapontada com o comentário.*
+	"Beatriz": Ei! Não é entediante! Estudar é a única forma de sairmos de Usina Velha e termos um futuro decente algum dia. Você devia tentar também, sabia?
+- "O que mais você fez no intervalo além de resolver equações?"
+	*Beatriz cruza os braços, olhando para Dante de forma inquisitiva e arqueando uma sobrancelha.*
+	"Beatriz": Ué, por que esse interesse repentino? Eu só fiquei aqui na sala de aula resolvendo os exercícios difíceis na lousa.
+
+"Beatriz": Mas fala, por que está fazendo essas perguntas?
+- "O professor confirmou que você passou o intervalo todo estudando com ele." [if {pista_professor_descoberta} == true]
+	*Beatriz bate as palmas das mãos de leve, sorrindo de forma aliviada.*
+	"Beatriz": Viu só? Eu não mentiria para você. O professor é maravilhoso, ele até me elogiou pela dedicação em resolver a lista extra.
+	PROTA (Pensando): O álibi dela foi 100% confirmado pelo professor. Ela está falando a verdade e é completamente inocente.
+	[signal arg="suspeita_beatriz_limpa"]
+- "O que você acha das novas regras e cartazes do Coronel Antônio?"
+	"Beatriz": Acho horrível... Não podemos conversar baixo nos corredores que os soldados já nos olham feio. Mas fazer o que, né? A gente tem que aceitar as regras deles e focar nos estudos para tentar passar de ano.
+[end_timeline]

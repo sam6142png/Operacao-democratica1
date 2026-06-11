@@ -1,0 +1,38 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Carlos": Oi... você precisa de alguma coisa? Estou tentando terminar de ler a matéria aqui...
+- "Precisa de ajuda com os estudos? Posso te dar uma força!"
+	*Carlos ajeita os óculos rapidamente, o rosto ficando ligeiramente vermelho. Ele dá um sorriso tímido.*
+	"Carlos": S-sério? Ah, obrigado... Mas eu estou lendo sobre história. Eu me viro bem sozinho... mas aprecio muito a oferta.
+	"Carlos": Mas e você? Por que está andando pela escola em vez de ir para o pátio?
+- "Preciso fazer algumas perguntas sobre o que você fez no intervalo."
+	*Carlos franze o cenho, fechando ligeiramente o livro de história antiga. Sua postura fica visivelmente tensa.*
+	"Carlos": Por que todo mundo quer controlar o que fazemos? Os guardas do Coronel Antônio já ficam patrulhando e nos vigiando, agora você também quer me questionar?
+- "História? Achei que a única matéria permitida hoje fosse 'Como Obedecer ao Coronel Antônio'."
+	*Carlos arregala os olhos, engolindo em seco e olhando para os lados com pânico absoluto.*
+	"Carlos": Shh! Ficou louco?! Falar assim perto das salas... você quer que os guardas nos mandem direto para a diretoria? Não brinque com essas coisas!
+
+"Carlos": Enfim... o que você quer saber exatamente? Eu não fiz nada de errado.
+- "Você disse que passou o intervalo na biblioteca. O que estava lendo?"
+	"Carlos": Eu já disse, estava lendo sobre a história antiga de Usina Velha. Muito interessante, falava sobre a época dos prefeitos e da antiga constituição...
+	PROTA (Pensando): Ele parece falar com naturalidade, mas seus dedos tamborilam nervosamente na capa do livro.
+- "Como você entrou na biblioteca se ela esteve trancada o dia todo?" [if {pista_biblioteca_descoberta} == true]
+	*Carlos congela na hora. A cor some do seu rosto e ele começa a suar frio.*
+	"Carlos": O-o quê?! Trancada? N-não... você deve ter se enganado...
+	- [Confrontar amigavelmente] "Não há erro, Carlos. Eu sei que você está escondendo algo, mas pode confiar em mim. Quem está te forçando?"
+		*Carlos hesita por um segundo, seus lábios tremendo. Ele esconde o rosto com as mãos.*
+		"Carlos": Por favor... não me entregue aos guardas do Coronel Antônio... Eu... eu não fiz por mal...
+		PROTA (Pensando): A mentira dele desmoronou completamente. Ele está apavorado.
+		[signal arg="suspeita_carlos_alta"]
+	- [Confrontar agressivamente] "Você é um mentiroso, Carlos! A biblioteca estava fechada a chave. Você está espionando os alunos para o Coronel Antônio, não é?"
+		*Carlos dá um pulo da cadeira, tremendo da cabeça aos pés. Ele recua até bater as costas contra a lousa.*
+		"Carlos": N-não! Eu... eu não queria! Os guardas... eles ameaçaram suspender minha bolsa e prender minha família se eu não contasse quem anda falando dos antigos líderes!
+		PROTA (Pensando): Sob pressão, ele entrou em pânico total e admitiu tudo.
+		[signal arg="suspeita_carlos_alta"]
+	- [Pressionar com ironia] "Interessante... Não sabia que agora os estudantes sabiam atravessar portas trancadas. Qual é o seu segredo?"
+		*Carlos fica vermelho de vergonha, depois pálido de pavor.*
+		"Carlos": C-como você... Ah, não... D-desculpe... Eu não sei o que dizer... fui pego...
+		[signal arg="suspeita_carlos_alta"]
+- "Você viu algum guarda patrulhando por aqui?"
+	"Carlos": Não, eu fico longe deles. O Coronel Antônio mandou reforçar os guardas nos corredores, e eu só quero fazer minhas obrigações em paz sem chamar atenção.
+[end_timeline]

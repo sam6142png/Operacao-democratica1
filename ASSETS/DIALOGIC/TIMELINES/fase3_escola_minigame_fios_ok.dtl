@@ -2,7 +2,7 @@
 join ATENA (Falando) left [animation="Fade In" length="0.2" wait="true"]
 join PROFESSOR (Falando) rightmost [animation="Fade In" length="0.2" wait="true"]
 join PROTA (Neutro) leftmost [animation="Fade In" length="0.2" wait="true"]
-ATENA: Circuito fechado. Agora o som tem por onde passar sem queimar a sala toda.
-PROFESSOR: Isso também explica muita coisa: eles controlam a escola porque controlam a estrutura.
-PROTA (Determinado): Então vamos tomar a estrutura de volta. Próximo: disjuntores.
+ATENA: Primeiro canal sintonizado! O sinal do microfone (MIC) está limpo e estável.
+PROFESSOR: Eles controlam a escola controlando o que é transmitido. Vocês estão abrindo a primeira brecha.
+PROTA (Determinado): Então vamos continuar abrindo brechas. Próximo: canal de transmissão (TX).
 [end_timeline]

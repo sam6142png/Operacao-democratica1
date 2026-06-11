@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Porteiro": Gabriel (Aluno 4) disse que chegou atrasado hoje? Que conversa furada!
+"Porteiro": Eu mesmo abri o portão principal bem cedinho e ele foi o primeirinho a passar por mim, muito antes do sinal bater. Ele estava com pressa por algum motivo.
+PROTA (Pensando): Gabriel chegou cedo, mas mentiu que chegou atrasado. Por que ele faria isso?
+[signal arg="pista_porteiro"]
+[end_timeline]

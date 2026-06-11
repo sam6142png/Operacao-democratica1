@@ -1,0 +1,9 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join MILITAR (Soldados Aleatórios) center
+join PROTA (De fininho) leftmost
+[wait time="0.2"]
+MILITAR: Aquele contato que temos dentro da escola é muito útil. Ele nos avisa na hora se algum estudante ou professor questionar a doutrinação do Coronel Antônio.
+MILITAR: O Coronel Antônio quer relatórios completos até o fim do dia. Esse infiltrado é a nossa melhor fonte.
+PROTA (Pensando): Os guardas confirmaram que há um espião. Preciso descobrir quem é.
+[signal arg="pista_guardas"]
+[end_timeline]

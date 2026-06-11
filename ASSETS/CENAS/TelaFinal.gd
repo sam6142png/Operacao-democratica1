@@ -5,9 +5,21 @@ const FONTE_MONO = preload("res://ASSETS/FONTES/dogicapixel.ttf")
 
 
 func _ready() -> void:
-	modulate.a = 0.0
-	var tween: Tween = create_tween()
-	tween.tween_property(self, "modulate:a", 1.0, 1.2)
+	_executar_fluxo_final()
+
+
+func _executar_fluxo_final() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
+
+	var resultado: String = GameState.resultado_final
+	var timeline_nome := "fim_" + resultado
+	
+	if timeline_nome == "fim_":
+		timeline_nome = "fim_fragil"
+		
+	await get_tree().process_frame
+	await TimelineManager.tocar_dialogo(timeline_nome, false)
 	_criar_interface()
 
 
@@ -52,14 +64,19 @@ func _get_ranking() -> Dictionary:
 
 
 func _criar_interface() -> void:
+	var interface_container := Control.new()
+	interface_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	interface_container.modulate.a = 0.0
+	add_child(interface_container)
+
 	var bg: ColorRect = ColorRect.new()
 	bg.color = Color("#050508")
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+	interface_container.add_child(bg)
 
 	var center: CenterContainer = CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	interface_container.add_child(center)
 
 	var panel: PanelContainer = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(1080, 720)
@@ -119,6 +136,9 @@ func _criar_interface() -> void:
 	_criar_botao(vbox, "VOLTAR AO MENU PRINCIPAL", func():
 		FadeManager.carregar_cena("res://title_screen.tscn")
 	)
+	
+	var tween: Tween = create_tween()
+	tween.tween_property(interface_container, "modulate:a", 1.0, 1.2)
 
 
 func _texto_rota() -> String:

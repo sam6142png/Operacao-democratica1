@@ -1,0 +1,7 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/fim_fragil.png" fade="1.0"]
+[wait time="0.5"]
+"...": O Coronel Antônio aceita o acordo e deixa Usina Velha. O ditador parte rumo ao exílio, livre de qualquer julgamento pelos abusos cometidos.
+"...": A ausência de sangue na praça poupou vidas, trazendo um alívio temporário às ruas. Contudo, o silêncio que se instala é carregado de frustração.
+"...": Sem confissões, sem tribunais e com arquivos selados, a verdade sobre o regime militar permanece incompleta.
+"...": A paz provisória se consolida, mas a nova democracia de Usina Velha nasce sob a sombra da impunidade e de feridas históricas que seguem abertas.
+[end_timeline]

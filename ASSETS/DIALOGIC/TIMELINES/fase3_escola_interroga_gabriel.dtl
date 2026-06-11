@@ -1,0 +1,31 @@
+[background arg="res://ASSETS/SPRITES/FUNDOS/Sala de Aula.png" fade="0.0"]
+join PROTA (Neutro) leftmost
+"Gabriel": E aí, cara! Beleza? Se for sobre o meu atraso de hoje, eu já dei a desculpa clássica pro inspetor de que dormi demais e perdi a hora.
+- "Dormir demais? Sei bem como é... O campo magnético da cama de manhã é impossível de vencer!"
+	*Gabriel dá uma gargalhada alta, dando um tapinha descontraído e amigável no ombro de Dante.*
+	"Gabriel": Hahaha! Exatamente, cara! Você me entende perfeitamente! O despertador tocou, mas quem disse que o corpo obedeceu? É uma luta diária contra os lençóis!
+- "Essa desculpa de dormir demais é a mais manjada do colégio. O inspetor realmente caiu nessa?"
+	*Gabriel dá de ombros com um sorrisinho travesso e convencido.*
+	"Gabriel": Bom, ele reclamou bastante, mas teve que engolir a seco. O que ele ia fazer? Me dar uma bronca não me faz voltar no tempo mesmo.
+- "Você parece estar bem desperto e elétrico agora para quem acabou de acordar."
+	*Gabriel cruza os braços, olhando para Dante com desconfiança e com um meio sorriso desafiador.*
+	"Gabriel": Ué, o que você quer dizer com isso? Está querendo virar meu despertador pessoal ou meu guarda-costas agora?
+
+"Gabriel": Mas enfim, o que você quer de verdade?
+- "Gabriel, o porteiro confirmou que você chegou super cedo hoje, bem antes do sinal. Por que mentiu sobre o atraso?" [if {pista_porteiro_descoberta} == true]
+	*Gabriel arregala os olhos, o sorriso sumindo instantaneamente do seu rosto. Ele olha para os lados com pânico.*
+	"Gabriel": O quê?! Aquele porteiro fofoqueiro de plantão... Cara, por favor, fala baixo! Você quer me foder?!
+	- [Pressionar amigavelmente] "Fica calmo, cara. Eu não vou te dedurar. Só quero saber o que você estava fazendo para chegar tão cedo."
+		*Gabriel respira fundo, passando a mão no cabelo de forma nervosa.*
+		"Gabriel": Olha... eu menti porque eu estava grafitando 'LIBERDADE' no muro de trás da quadra bem cedinho! Se os guardas do Coronel Antônio descobrirem que fui eu, eu sou expulso na hora ou pior!
+		"Gabriel": Mas eu juro pra você que não sou o informante deles! Eu odeio o regime do Coronel Antônio de todo o meu coração!
+		PROTA (Pensando): Ele mentiu para acobertar uma pichação de protesto rebelde contra o regime. Ele é da resistência, não o espião.
+		[signal arg="suspeita_gabriel_media"]
+	- [Pressionar ironicamente] "Dormiu demais no portão da escola então? Porque você entrou bem cedo. O que estava aprontando?"
+		*Gabriel cora ligeiramente, coçando a nuca com um sorriso sem graça e encabulado.*
+		"Gabriel": Puts... Fui pego totalmente no flagra. Cara, eu estava pichando o muro da escola contra o regime. Por favor, não conta pros guardas do Coronel Antônio! Eu odeio eles!
+		[signal arg="suspeita_gabriel_media"]
+- "O que você estava fazendo no portão quando chegou?"
+	"Gabriel": Ah, só entrei correndo pra não perder a primeira aula... sabe como é, né? O inspetor fica na cola.
+	PROTA (Pensando): Ele está visivelmente nervoso e evitando olhar nos olhos. Ele está escondendo alguma coisa sobre a chegada dele, mas sem a pista do porteiro não posso confrontá-lo ainda.
+[end_timeline]
