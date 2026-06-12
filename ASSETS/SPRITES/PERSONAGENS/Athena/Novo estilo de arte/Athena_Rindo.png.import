@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Athena_Rindo.png-2f3af72d375edb1a9977f519c899
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

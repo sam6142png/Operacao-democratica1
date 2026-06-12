@@ -97,6 +97,8 @@ var painel_dialogo: PanelContainer
 var dante_sprite_rect: TextureRect
 var dialogo_lbl: Label
 var dialogo_continuar_lbl: Label
+var blocker: Control
+var _transicionando: bool = false
 
 # UI Principal da Explicação
 var painel_explicação: PanelContainer
@@ -178,7 +180,7 @@ func _construir_painel_dialogo() -> void:
 	var viewport_size = Vector2(1920, 1080)
 	
 	# Container invisível para bloquear cliques
-	var blocker = Control.new()
+	blocker = Control.new()
 	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
 	blocker.gui_input.connect(func(event):
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -258,12 +260,18 @@ func _construir_painel_dialogo() -> void:
 	tw.tween_property(painel_dialogo, "scale", Vector2.ONE, 0.45).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 func _input(event: InputEvent) -> void:
+	if _transicionando:
+		return
 	if painel_dialogo and painel_dialogo.visible:
 		if event.is_action_pressed("dialogic_default_action") or event.is_action_pressed("ui_accept"):
 			_mostrar_proximo_dialogo()
 
 func _mostrar_proximo_dialogo() -> void:
+	if _transicionando:
+		return
+		
 	if diálogo_idx >= INTRO_DIALOGUE.size():
+		_transicionando = true
 		# Encerrar diálogo e carregar explicação
 		_play_sfx(sfx_close)
 		var tw = create_tween().set_parallel(true)
@@ -271,8 +279,13 @@ func _mostrar_proximo_dialogo() -> void:
 		tw.tween_property(dante_sprite_rect, "modulate:a", 0.0, 0.25)
 		await tw.finished
 		
-		painel_dialogo.queue_free()
-		dante_sprite_rect.queue_free()
+		if is_instance_valid(painel_dialogo):
+			painel_dialogo.queue_free()
+		if is_instance_valid(dante_sprite_rect):
+			dante_sprite_rect.queue_free()
+		if is_instance_valid(blocker):
+			blocker.queue_free()
+			
 		_construir_painel_explicacao(0)
 		return
 		

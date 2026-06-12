@@ -54,6 +54,8 @@ var btn_finish: Button
 var oscilloscope: Control
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
 	

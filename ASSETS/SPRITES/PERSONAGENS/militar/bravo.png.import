@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/bravo.png-b5f91e61282ab69ee012e1e99aae5aca.ct
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

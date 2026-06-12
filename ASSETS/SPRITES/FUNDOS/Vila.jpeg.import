@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Vila.jpeg-28f024dc641ea6b5d07dd017772653bd.ct
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

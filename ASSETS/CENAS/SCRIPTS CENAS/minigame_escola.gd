@@ -75,6 +75,8 @@ var lbl_helper_freq: Label
 # INICIALIZAÇÃO
 # ==========================================
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
 	if get_tree().root.has_node("MedidorConfianca"):
 		get_tree().root.get_node("MedidorConfianca").visible = false
 
@@ -534,6 +536,7 @@ func _concluir_canal_atual() -> void:
 		speech_player.finished.connect(func(): speech_player.queue_free())
 		
 		await TimelineManager.tocar_dialogo("fase3_escola_minigame_sintonia_ok", false)
+		await _mostrar_card_transmissao()
 		_finalizar_sucesso()
 
 func _trigger_defeat() -> void:
@@ -551,6 +554,94 @@ func _finalizar_sucesso() -> void:
 	GameState.fase3_passo = "escola_concluida"
 	GameState.desbloquear_conquista("escola_ok")
 	await GameState.retornar_para_game_scene_apos_minigame()
+
+func _mostrar_card_transmissao() -> void:
+	# Painel de escurecimento de fundo
+	var overlay_dim = ColorRect.new()
+	overlay_dim.color = Color(0.02, 0.02, 0.03, 0.85)
+	overlay_dim.set_anchors_preset(PRESET_FULL_RECT)
+	layer.add_child(overlay_dim)
+	
+	# Painel do Card
+	var card_panel = PanelContainer.new()
+	card_panel.custom_minimum_size = Vector2(720, 460)
+	card_panel.set_anchors_preset(PRESET_CENTER)
+	card_panel.grow_horizontal = GROW_DIRECTION_BOTH
+	card_panel.grow_vertical = GROW_DIRECTION_BOTH
+	card_panel.add_theme_stylebox_override("panel", _stylebox(COR_PANEL_BG, COR_GREEN_WAVE, 4, 12))
+	overlay_dim.add_child(card_panel)
+	
+	# Container vertical
+	var vbox = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 24)
+	
+	var margin = _margin(28)
+	card_panel.add_child(margin)
+	margin.add_child(vbox)
+	
+	# Ícone ou Detalhe Estético (ex: Ondas de Rádio)
+	var lbl_status = _label("— TRANSMISSÃO RECEBIDA —", 22, COR_GREEN_WAVE, FONTE)
+	lbl_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl_status)
+	
+	# Texto da Mensagem
+	var lbl_mensagem = Label.new()
+	lbl_mensagem.text = "Você está ouvindo a transmissão Voz Livre — em uma frequência que eles não conseguem captar. Se esta mensagem chQegou até você, é porque alguém conseguiu libertar um de nossos canais. Amanhã, Praça do Palácio, ao meio-dia. Não venha com medo — venha com verdade. Nos encontramos lá! Câmbio e desligo."
+	lbl_mensagem.add_theme_font_override("font", FONTE)
+	lbl_mensagem.add_theme_font_size_override("font_size", 22)
+	lbl_mensagem.add_theme_color_override("font_color", COR_TEXT_PRI)
+	lbl_mensagem.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lbl_mensagem.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_mensagem.custom_minimum_size = Vector2(620, 0)
+	vbox.add_child(lbl_mensagem)
+	
+	# Divisor estético
+	var div = ColorRect.new()
+	div.custom_minimum_size = Vector2(400, 2)
+	div.color = Color(COR_GREEN_WAVE.r, COR_GREEN_WAVE.g, COR_GREEN_WAVE.b, 0.3)
+	div.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(div)
+	
+	# Botão de Sair/Seguir
+	var btn_seguir = Button.new()
+	btn_seguir.text = "SEGUIR"
+	btn_seguir.custom_minimum_size = Vector2(200, 50)
+	btn_seguir.add_theme_font_override("font", FONTE)
+	btn_seguir.add_theme_font_size_override("font_size", 22)
+	btn_seguir.add_theme_stylebox_override("normal", _stylebox(Color("#142d20"), COR_GREEN_WAVE, 2, 6))
+	btn_seguir.add_theme_stylebox_override("hover", _stylebox(COR_GREEN_WAVE, COR_GREEN_WAVE, 2, 6))
+	btn_seguir.add_theme_stylebox_override("pressed", _stylebox(COR_GREEN_WAVE.darkened(0.2), COR_GREEN_WAVE, 2, 6))
+	btn_seguir.add_theme_color_override("font_color", Color("#fff4dd"))
+	btn_seguir.add_theme_color_override("font_hover_color", Color("#0b0b0d"))
+	btn_seguir.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_seguir.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(btn_seguir)
+	
+	# Efeito de Entrada Suave (Tween)
+	card_panel.modulate.a = 0.0
+	card_panel.scale = Vector2(0.9, 0.9)
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(card_panel, "modulate:a", 1.0, 0.3)
+	tw.tween_property(card_panel, "scale", Vector2.ONE, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	
+	btn_seguir.mouse_entered.connect(func():
+		if sfx_hover: sfx_hover.play()
+		btn_seguir.add_theme_color_override("font_color", Color("#0b0b0d"))
+	)
+	btn_seguir.mouse_exited.connect(func():
+		btn_seguir.add_theme_color_override("font_color", Color("#fff4dd"))
+	)
+	
+	await btn_seguir.pressed
+	if sfx_click: sfx_click.play()
+	
+	# Efeito de Saída Suave (Tween)
+	var tw_out = create_tween().set_parallel(true)
+	tw_out.tween_property(card_panel, "modulate:a", 0.0, 0.2)
+	tw_out.tween_property(overlay_dim, "color:a", 0.0, 0.2)
+	await tw_out.finished
+	overlay_dim.queue_free()
 
 func _set_interacao(ativo: bool) -> void:
 	if slider_amp: slider_amp.editable = ativo

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Casa do veio.jpeg-a0ea356550d81763e7b067f6615
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

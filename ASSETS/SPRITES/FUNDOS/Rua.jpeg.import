@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Rua.jpeg-04a57091e461d4531126ec65e4c974da.cte
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/fim_derrota.png-a4f665a432164a5967f6b4c314310
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

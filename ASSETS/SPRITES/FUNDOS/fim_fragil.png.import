@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/fim_fragil.png-b9baa87f29802451f18a12ab0d259c
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Atena Neutra.png-092ad9e91ad014ea8fd6aec64e29
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

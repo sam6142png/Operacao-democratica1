@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Rua de noite.png-7e1736a6aede1c13474e93ff51e3
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

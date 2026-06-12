@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Luis Neutro.png-6e1788cac3275781d219f8f1532d7
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

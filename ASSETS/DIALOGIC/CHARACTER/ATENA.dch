@@ -64,7 +64,7 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": "\"res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Neutra.png\""
+"image": "res://ASSETS/SPRITES/PERSONAGENS/Athena/Novo estilo de arte/Athena_Neutra.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),

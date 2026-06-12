@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/fundo1.png-032f9767c7cd24f59e7df2597d4f9adb.c
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

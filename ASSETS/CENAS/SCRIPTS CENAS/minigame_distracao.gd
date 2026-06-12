@@ -30,6 +30,8 @@ var trajetoria_escolha := ""
 var ondas_impacto := [] # Array de dicionários: {pos, radius, max_radius, alpha}
 
 func _ready() -> void:
+	if has_node("/root/MusicManager"):
+		get_node("/root/MusicManager").play_default_music()
 	randomize()
 	
 	# Monta a cena via script para garantir estabilidade e estilos precisos

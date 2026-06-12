@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0qrn2brqvl31"
-path="res://.godot/imported/M1.png-20c733c8902144cae9c4985e4452fd50.ctex"
+uid="uid://6elp7qwdy5ta"
+path="res://.godot/imported/ProfessorFalando.png-d08b36d7cf123b36de68deeb37803be2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ASSETS/SPRITES/ÍCONES/M1.png"
-dest_files=["res://.godot/imported/M1.png-20c733c8902144cae9c4985e4452fd50.ctex"]
+source_file="res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/ProfessorFalando.png"
+dest_files=["res://.godot/imported/ProfessorFalando.png-d08b36d7cf123b36de68deeb37803be2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/assustada segurando a placa.png-4f5e7423d6e95
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

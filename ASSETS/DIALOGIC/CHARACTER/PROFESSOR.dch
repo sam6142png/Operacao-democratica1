@@ -19,7 +19,7 @@
 &"portraits": {
 "Bravo e flaando": {
 "export_overrides": {
-"image": "res://ASSETS/SPRITES/PERSONAGENS/Velho 3/falando bravo sem fundo.png"
+"image": "res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/ProfessorBravo.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -28,7 +28,7 @@
 },
 "Falando": {
 "export_overrides": {
-"image": "res://ASSETS/SPRITES/PERSONAGENS/Velho 3/falando sem fundo.png"
+"image": "res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/ProfessorFalando.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -37,7 +37,7 @@
 },
 "Neutro": {
 "export_overrides": {
-"image": "res://ASSETS/SPRITES/PERSONAGENS/Velho 3/neutro sem fundo.png"
+"image": "res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/Neutro.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -46,7 +46,7 @@
 },
 "Rindo": {
 "export_overrides": {
-"image": "res://ASSETS/SPRITES/PERSONAGENS/Velho 3/sorrindo sem fundo.png"
+"image": ""
 },
 "mirror": false,
 "offset": Vector2(0, 0),
@@ -55,7 +55,7 @@
 },
 "bravo": {
 "export_overrides": {
-"image": "res://ASSETS/SPRITES/PERSONAGENS/Velho 3/bravo sem fundo.png"
+"image": "res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/ProfessorBravo.png"
 },
 "mirror": false,
 "offset": Vector2(0, 0),

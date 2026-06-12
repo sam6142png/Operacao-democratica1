@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Surpreso.png-efe36c8c07d4f5a8d4a796818066fa32
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

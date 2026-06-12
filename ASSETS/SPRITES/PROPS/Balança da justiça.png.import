@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/Balança da justiça.png-f31d8ded29c9e5e3ecd2
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

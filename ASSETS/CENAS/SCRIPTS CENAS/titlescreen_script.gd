@@ -17,12 +17,10 @@ var painel_creditos: Panel
 var painel_sair: Panel
 var painel_personalizar: Panel
 var painel_modo: Panel
-var preview_dante: TextureRect
 var painel_ativo: Panel = null
 var rastro_fogo: CPUParticles2D
 var menu_container: MarginContainer
 var vbox_botoes: VBoxContainer
-var _current_skin_idx: int = 0
 var _current_tb_idx: int = 0
 
 # Tipografia Exclusiva para Botões Principais
@@ -619,7 +617,7 @@ func _criar_painel_opcoes() -> void:
 	tr_refs["lbl_resolucao"] = sel_resolucao.get_child(0)
 	
 	# Novos Seletores (Narrativos do Tópico 1)
-	var sl_delay_container: VBoxContainer
+	var sl_delay_container: VBoxContainer = null
 	
 	# Auto-Avanço
 	var sel_auto = _criar_seletor(scroll_vbox, "auto_avanco", _t("auto_avanco"), [_t("desligado"), _t("ligado")], func(v):
@@ -1348,10 +1346,10 @@ func _criar_painel_personalizar() -> void:
 	var info_conquistas = [
 		{"id": "historiador", "titulo": "Guardião da Memória", "desc": "Fase 1: Recuperou o Livro de Direitos do Povo.", "recompensa": "Desbloqueia Estilo 'Xilogravura do Cariri'"},
 		{"id": "radio_perfeito", "titulo": "Verdade nas Ondas", "desc": "Fase 2: Decifrou a rádio sem falhar.", "recompensa": "Desbloqueia Estilo 'Neon Hacker'"},
-		{"id": "escola_ok", "titulo": "Voz da Escola", "desc": "Fase 3: Interceptou e libertou os alto-falantes.", "recompensa": "Desbloqueia Skin 'Dante Estudante'"},
-		{"id": "praca_pacifica", "titulo": "Líder Pacífico", "desc": "Fase 4: Concluiu a Praça sem violência e com Segurança > 80%.", "recompensa": "Desbloqueia Skin 'Dante Diplomata'"},
+		{"id": "escola_ok", "titulo": "Voz da Escola", "desc": "Fase 3: Interceptou e libertou os alto-falantes.", "recompensa": ""},
+		{"id": "praca_pacifica", "titulo": "Líder Pacífico", "desc": "Fase 4: Concluiu a Praça sem violência e com Segurança > 80%.", "recompensa": "Desbloqueia Estilo 'Renda & Jangada'"},
 		{"id": "fim_democratico", "titulo": "Vontade do Povo", "desc": "Final: Julgou o ditador sob a lei e ampla defesa.", "recompensa": "Desbloqueia Estilo 'Palácio Dourado'"},
-		{"id": "fim_qualquer", "titulo": "Coração da Resistência", "desc": "Final: Concluiu a jornada em qualquer rota.", "recompensa": "Desbloqueia Skin 'Dante Revolucionário'"}
+		{"id": "fim_qualquer", "titulo": "Coração da Resistência", "desc": "Final: Concluiu a jornada em qualquer rota.", "recompensa": ""}
 	]
 	
 	for conq in info_conquistas:
@@ -1389,7 +1387,10 @@ func _criar_painel_personalizar() -> void:
 		conq_vbox.add_child(conq_lbl_title)
 		
 		var conq_lbl_desc = Label.new()
-		conq_lbl_desc.text = conq["desc"] + "\n[RECOMPENSA: " + conq["recompensa"] + "]"
+		if conq["recompensa"] != "":
+			conq_lbl_desc.text = conq["desc"] + "\n[RECOMPENSA: " + conq["recompensa"] + "]"
+		else:
+			conq_lbl_desc.text = conq["desc"]
 		conq_lbl_desc.add_theme_font_size_override("font_size", 13)
 		conq_lbl_desc.add_theme_color_override("font_color", Color("#d7c9aa") if desbloqueada else Color("#555555"))
 		conq_lbl_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -1406,79 +1407,21 @@ func _criar_painel_personalizar() -> void:
 	# --- PÁGINA DIREITA: CUSTOMIZAÇÃO ---
 	var col_right = VBoxContainer.new()
 	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col_right.add_theme_constant_override("separation", 12)
+	col_right.add_theme_constant_override("separation", 24)
 	hbox_paginas.add_child(col_right)
 	
 	var lbl_hdr_armario = Label.new()
-	lbl_hdr_armario.text = "ARMÁRIO DO CIDADÃO"
+	lbl_hdr_armario.text = "ESTILOS E INTERFACE"
 	lbl_hdr_armario.add_theme_font_size_override("font_size", 18)
 	lbl_hdr_armario.add_theme_color_override("font_color", Color("#ffe28a"))
 	col_right.add_child(lbl_hdr_armario)
 	
-	# Preview do Dante
-	var preview_panel = PanelContainer.new()
-	preview_panel.custom_minimum_size = Vector2(0, 180)
-	var pr_sb = StyleBoxFlat.new()
-	pr_sb.bg_color = Color("#11131c")
-	pr_sb.border_width_left = 1; pr_sb.border_width_top = 1
-	pr_sb.border_width_right = 1; pr_sb.border_width_bottom = 1
-	pr_sb.border_color = Color("#54d6ff", 0.4)
-	pr_sb.corner_radius_top_left = 6; pr_sb.corner_radius_top_right = 6
-	pr_sb.corner_radius_bottom_left = 6; pr_sb.corner_radius_bottom_right = 6
-	preview_panel.add_theme_stylebox_override("panel", pr_sb)
-	col_right.add_child(preview_panel)
-	
-	var pr_hbox = HBoxContainer.new()
-	pr_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	preview_panel.add_child(pr_hbox)
-	
-	preview_dante = TextureRect.new()
-	preview_dante.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	preview_dante.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	preview_dante.custom_minimum_size = Vector2(160, 160)
-	pr_hbox.add_child(preview_dante)
-	
-	# Seleção de Skin (Dante)
-	var lbl_sel_skin = Label.new()
-	lbl_sel_skin.text = "SELECIONAR SKIN DO DANTE"
-	lbl_sel_skin.add_theme_font_size_override("font_size", 15)
-	lbl_sel_skin.add_theme_color_override("font_color", Color("#8f8875"))
-	col_right.add_child(lbl_sel_skin)
-	
-	var skins_options = [
-		{"id": "padrao", "nome": "Dante Padrão", "cond": "", "conq_id": ""},
-		{"id": "estudante", "nome": "Dante Estudante [Escola]", "cond": "Bloqueado: Conclua a Escola (Fase 3)", "conq_id": "escola_ok"},
-		{"id": "diplomata", "nome": "Dante Diplomata [Paz]", "cond": "Bloqueado: Conclua a Praça (Fase 4) pacificamente", "conq_id": "praca_pacifica"},
-		{"id": "revolucionario", "nome": "Dante Resistência [Punho]", "cond": "Bloqueado: Complete o jogo", "conq_id": "fim_qualquer"}
-	]
-	
-	_current_skin_idx = 0
-	for i in range(skins_options.size()):
-		if skins_options[i]["id"] == GameState.skin_dante_selecionada:
-			_current_skin_idx = i
-			
-	var skin_selector = HBoxContainer.new()
-	skin_selector.add_theme_constant_override("separation", 10)
-	col_right.add_child(skin_selector)
-	
-	var btn_skin_esq = Button.new()
-	btn_skin_esq.text = " < "
-	btn_skin_esq.add_theme_font_size_override("font_size", 20)
-	_aplicar_estilo_neon(btn_skin_esq, Color("#54d6ff"), true)
-	skin_selector.add_child(btn_skin_esq)
-	
-	var lbl_skin_nome = Label.new()
-	lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
-	lbl_skin_nome.add_theme_font_size_override("font_size", 20)
-	lbl_skin_nome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_skin_nome.custom_minimum_size.x = 240
-	skin_selector.add_child(lbl_skin_nome)
-	
-	var btn_skin_dir = Button.new()
-	btn_skin_dir.text = " > "
-	btn_skin_dir.add_theme_font_size_override("font_size", 20)
-	_aplicar_estilo_neon(btn_skin_dir, Color("#54d6ff"), true)
-	skin_selector.add_child(btn_skin_dir)
+	var lbl_desc_estilos = Label.new()
+	lbl_desc_estilos.text = "Aqui você pode personalizar a aparência das caixas de texto e da tipografia dos diálogos do jogo. Desbloqueie novos estilos realizando feitos importantes e conquistando conquistas cívicas."
+	lbl_desc_estilos.add_theme_font_size_override("font_size", 15)
+	lbl_desc_estilos.add_theme_color_override("font_color", Color("#cbd7e8"))
+	lbl_desc_estilos.autowrap_mode = TextServer.AUTOWRAP_WORD
+	col_right.add_child(lbl_desc_estilos)
 	
 	# Seleção de Caixa de Texto (Estilo)
 	var lbl_sel_tb = Label.new()
@@ -1494,6 +1437,14 @@ func _criar_painel_personalizar() -> void:
 		{"nome": "Neon Hacker [Hacker]", "caminho": "res://ASSETS/DIALOGIC/STYLES/NeonHacker.tres", "cond": "Bloqueado: Decifre a rádio sem falhar (Fase 2)", "conq_id": "radio_perfeito"},
 		{"nome": "Palácio Dourado [Palacio]", "caminho": "res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres", "cond": "Bloqueado: Rota de Julgamento Civil no final", "conq_id": "fim_democratico"}
 	]
+	
+	var tb_descriptions = {
+		"res://ASSETS/DIALOGIC/STYLES/Base_testebox.tres": "O estilo clássico e padrão de Usina Velha, com visual retrô e limpo.",
+		"res://ASSETS/DIALOGIC/STYLES/XilografiaCariri.tres": "Inspirado na arte tradicional da xilogravura e na estética da literatura de cordel.",
+		"res://ASSETS/DIALOGIC/STYLES/JangadaRenda.tres": "Estilo estético e poético inspirado nas rendas cearenses e na navegação das jangadas.",
+		"res://ASSETS/DIALOGIC/STYLES/NeonHacker.tres": "Estilo tecnológico e futurista, com temática cyberpunk de invasão e frequências neon.",
+		"res://ASSETS/DIALOGIC/STYLES/PalacioDourado.tres": "Estilo solene com detalhes dourados e tipografia clássica, representando a justiça cívica."
+	}
 	
 	_current_tb_idx = 0
 	for i in range(tb_options.size()):
@@ -1523,6 +1474,14 @@ func _criar_painel_personalizar() -> void:
 	_aplicar_estilo_neon(btn_tb_dir, Color("#54d6ff"), true)
 	tb_selector.add_child(btn_tb_dir)
 	
+	# Descrição do estilo ativo
+	var lbl_desc_style_ativo = Label.new()
+	lbl_desc_style_ativo.add_theme_font_size_override("font_size", 16)
+	lbl_desc_style_ativo.add_theme_color_override("font_color", Color("#a5b4fc"))
+	lbl_desc_style_ativo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_desc_style_ativo.autowrap_mode = TextServer.AUTOWRAP_WORD
+	col_right.add_child(lbl_desc_style_ativo)
+	
 	# Feedback de bloqueio / instruções
 	var lbl_armario_feedback = Label.new()
 	lbl_armario_feedback.text = ""
@@ -1533,53 +1492,14 @@ func _criar_painel_personalizar() -> void:
 	col_right.add_child(lbl_armario_feedback)
 	
 	# Funções de atualização local
-	var atualizar_preview = func():
-		var preview_path = GameState.obter_caminho_sprite_dante("neutro.png")
-		preview_dante.texture = load(preview_path)
-		
 	var verificar_selecoes = func():
-		atualizar_preview.call()
 		lbl_armario_feedback.text = ""
-		# Validar skin
-		var skin = skins_options[_current_skin_idx]
-		if skin["conq_id"] != "" and not GameState.conquistas_desbloqueadas.get(skin["conq_id"], false):
-			lbl_armario_feedback.text = skin["cond"]
-		# Validar textbox
 		var tb = tb_options[_current_tb_idx]
+		lbl_desc_style_ativo.text = tb_descriptions.get(tb["caminho"], "")
 		if tb["conq_id"] != "" and not GameState.conquistas_desbloqueadas.get(tb["conq_id"], false):
-			if lbl_armario_feedback.text != "":
-				lbl_armario_feedback.text += "\n"
-			lbl_armario_feedback.text += tb["cond"]
+			lbl_armario_feedback.text = tb["cond"]
 			
-	atualizar_preview.call()
-	
-	btn_skin_esq.pressed.connect(func():
-		_tocar_deslize()
-		_current_skin_idx = _current_skin_idx - 1
-		if _current_skin_idx < 0: _current_skin_idx = skins_options.size() - 1
-		lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
-		var skin = skins_options[_current_skin_idx]
-		var unlocked = skin["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(skin["conq_id"], false)
-		if unlocked:
-			GameState.skin_dante_selecionada = skin["id"]
-			GameState.aplicar_estilizacao_dialogic()
-			GameState.salvar_jogo(false)
-		verificar_selecoes.call()
-	)
-	
-	btn_skin_dir.pressed.connect(func():
-		_tocar_deslize()
-		_current_skin_idx = _current_skin_idx + 1
-		if _current_skin_idx >= skins_options.size(): _current_skin_idx = 0
-		lbl_skin_nome.text = skins_options[_current_skin_idx]["nome"]
-		var skin = skins_options[_current_skin_idx]
-		var unlocked = skin["conq_id"] == "" or GameState.conquistas_desbloqueadas.get(skin["conq_id"], false)
-		if unlocked:
-			GameState.skin_dante_selecionada = skin["id"]
-			GameState.aplicar_estilizacao_dialogic()
-			GameState.salvar_jogo(false)
-		verificar_selecoes.call()
-	)
+	verificar_selecoes.call()
 	
 	btn_tb_esq.pressed.connect(func():
 		_tocar_deslize()
@@ -1615,10 +1535,6 @@ func _criar_painel_personalizar() -> void:
 	vbox.add_child(btn_fechar_pers)
 	
 	# Adiciona aos botões de hover para consistência de áudio/escala
-	btn_skin_esq.mouse_entered.connect(func(): _on_hover_container_btn(btn_skin_esq))
-	btn_skin_esq.mouse_exited.connect(func(): _on_unhover_container_btn(btn_skin_esq))
-	btn_skin_dir.mouse_entered.connect(func(): _on_hover_container_btn(btn_skin_dir))
-	btn_skin_dir.mouse_exited.connect(func(): _on_unhover_container_btn(btn_skin_dir))
 	btn_tb_esq.mouse_entered.connect(func(): _on_hover_container_btn(btn_tb_esq))
 	btn_tb_esq.mouse_exited.connect(func(): _on_unhover_container_btn(btn_tb_esq))
 	btn_tb_dir.mouse_entered.connect(func(): _on_hover_container_btn(btn_tb_dir))

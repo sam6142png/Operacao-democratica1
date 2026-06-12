@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgprqdntt18wj"
-path="res://.godot/imported/download-removebg-preview.png-d2cfa73ad8bda726fecc2d472babc782.ctex"
+uid="uid://ldrtnhrors7t"
+path="res://.godot/imported/Neutro.png-3080852e5c19e6990499cb31930117a9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ASSETS/LIXEIRA_PRE_DEPLOY/download-removebg-preview.png"
-dest_files=["res://.godot/imported/download-removebg-preview.png-d2cfa73ad8bda726fecc2d472babc782.ctex"]
+source_file="res://ASSETS/SPRITES/PERSONAGENS/PROFESSOR/Neutro.png"
+dest_files=["res://.godot/imported/Neutro.png-3080852e5c19e6990499cb31930117a9.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

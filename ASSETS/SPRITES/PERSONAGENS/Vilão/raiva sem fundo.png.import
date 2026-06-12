@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/raiva sem fundo.png-32cd3b62006fac6c2e4ad66c1
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
