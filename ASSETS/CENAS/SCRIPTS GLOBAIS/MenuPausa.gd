@@ -28,6 +28,8 @@ func alternar_pausa():
 	painel_pausa.visible = novo_estado
 	
 	if novo_estado:
+		if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+			Dialogic.Inputs.auto_skip.enabled = false
 		if is_instance_valid(btn_salvar):
 			btn_salvar.visible = !GameState.is_minigame_mode
 		_atualizar_painel_confianca()

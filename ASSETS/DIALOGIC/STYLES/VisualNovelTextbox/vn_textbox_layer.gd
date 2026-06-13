@@ -295,9 +295,73 @@ func _apply_sounds_settings() -> void:
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+	print("[VNTextbox] _ready chamado no vn_textbox_layer.gd customizado!")
 	var dialog_text: DialogicNode_DialogText = %DialogicNode_DialogText
 	if dialog_text:
 		dialog_text.started_revealing_text.connect(_on_dialog_started_revealing)
+
+	# Lógica do botão de Pular
+	var skip_button: Button = get_node_or_null("%SkipButton")
+	if not skip_button:
+		skip_button = get_node_or_null("Anchor/AnimationParent/Sizer/SkipButton")
+	
+	print("[VNTextbox] SkipButton encontrado: ", skip_button != null)
+		
+	if skip_button:
+		skip_button.pressed.connect(_on_skip_button_pressed)
+		
+		# Evita que o próprio clique no botão cancele o skip imediatamente
+		skip_button.mouse_entered.connect(func():
+			if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+				Dialogic.Inputs.auto_skip.disable_on_user_input = false
+		)
+		skip_button.mouse_exited.connect(func():
+			if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+				Dialogic.Inputs.auto_skip.disable_on_user_input = true
+		)
+		
+		# Conecta sinais do Choices para desligar o skip automaticamente ao chegar numa escolha
+		if Dialogic.has_subsystem("Choices"):
+			Dialogic.Choices.question_shown.connect(func(info): _desativar_skip_automatico())
+		
+		# Conecta sinal de final de timeline
+		Dialogic.timeline_ended.connect(func(): _desativar_skip_automatico())
+		
+		# Sincroniza estado inicial e mudanças futuras do auto_skip
+		if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+			Dialogic.Inputs.auto_skip.toggled.connect(_on_skip_toggled)
+			_on_skip_toggled(Dialogic.Inputs.auto_skip.enabled)
+
+
+func _on_skip_button_pressed() -> void:
+	if Dialogic.has_subsystem("Inputs"):
+		var inputs = Dialogic.Inputs
+		if inputs.auto_skip:
+			# Alterna o estado do auto_skip
+			inputs.auto_skip.enabled = !inputs.auto_skip.enabled
+			# Quando ativamos via clique, forçamos provisoriamente disable_on_user_input a false
+			# para que o mesmo evento de clique não o cancele no processador de input.
+			inputs.auto_skip.disable_on_user_input = false
+
+
+func _desativar_skip_automatico() -> void:
+	if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+		Dialogic.Inputs.auto_skip.enabled = false
+		Dialogic.Inputs.auto_skip.disable_on_user_input = true
+
+
+func _on_skip_toggled(is_enabled: bool) -> void:
+	var skip_button: Button = get_node_or_null("%SkipButton")
+	if not skip_button:
+		skip_button = get_node_or_null("Anchor/AnimationParent/Sizer/SkipButton")
+		
+	if skip_button:
+		if is_enabled:
+			skip_button.text = "Pulando..."
+		else:
+			skip_button.text = "Pular >>"
+			if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+				Dialogic.Inputs.auto_skip.disable_on_user_input = true
 
 
 func _on_dialog_started_revealing() -> void:

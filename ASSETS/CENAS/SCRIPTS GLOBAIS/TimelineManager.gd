@@ -70,6 +70,8 @@ func _aplicar_config_auto_advance() -> void:
 
 func parar_tudo():
 	esta_tocando = false
+	if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+		Dialogic.Inputs.auto_skip.enabled = false
 	# Encerra qualquer timeline ativa imediatamente ignorando animações de saída
 	Dialogic.end_timeline(true)
 	
@@ -114,6 +116,8 @@ func tocar_dialogo(nome: String, salvar_ao_final: bool = true):
 		await get_tree().process_frame
 	
 	Dialogic.paused = false
+	if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+		Dialogic.Inputs.auto_skip.enabled = false
 	_aplicar_config_auto_advance()
 	
 	esta_tocando = true
@@ -167,3 +171,37 @@ func ajustar_reputacao(delta: int = 1):
 	if atual == null: atual = 0
 	definir_var("Game.Reputacao", atual + delta)
 	print("[TimelineManager] Reputação ajustada: ", atual + delta)
+
+
+func retomar_dialogo_salvo(nome: String) -> void:
+	if esta_tocando:
+		push_warning("[TimelineManager] Já existe um diálogo em execução ao tentar retomar.")
+		return
+	
+	Dialogic.paused = false
+	if Dialogic.has_subsystem("Inputs") and Dialogic.Inputs.auto_skip:
+		Dialogic.Inputs.auto_skip.enabled = false
+	esta_tocando = true
+	_timeline_atual_nome = nome
+	GameState.timeline_atual = nome
+	_aplicar_config_auto_advance()
+	dialogo_iniciado.emit(nome)
+	print("[TimelineManager] Retomando diálogo salvo: ", nome)
+	
+	# Carrega o estado salvo do Dialogic. Isso inicia/retoma o diálogo automaticamente.
+	Dialogic.Save.load("autosave")
+	
+	await Dialogic.timeline_ended
+	
+	# GUARDA CRÍTICA: Se esta_tocando já é false, significa que parar_tudo()
+	# foi chamado. NÃO devemos salvar aqui.
+	if not esta_tocando:
+		print("[TimelineManager] Dialogo retomado foi interrompido (menu). Save preservado.")
+		dialogo_finalizado.emit(nome)
+		return
+		
+	esta_tocando = false
+	_timeline_atual_nome = ""
+	GameState.limpar_timeline_ativa()
+	dialogo_finalizado.emit(nome)
+	print("[TimelineManager] Finalizado diálogo retomado: ", nome)

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dm3lnrgwkmokn"]
 
-[ext_resource type="Script" uid="uid://bl43m5qw8pso3" path="res://addons/dialogic/Modules/DefaultLayoutParts/Layer_VN_Textbox/vn_textbox_layer.gd" id="1_bpydr"]
+[ext_resource type="Script" uid="uid://dt1wacf3d5lb" path="res://ASSETS/DIALOGIC/STYLES/VisualNovelTextbox/vn_textbox_layer.gd" id="1_bpydr"]
 [ext_resource type="Script" uid="uid://bfc03rn8slceu" path="res://addons/dialogic/Modules/DefaultLayoutParts/Layer_VN_Textbox/animations.gd" id="2_xy7a2"]
 [ext_resource type="FontFile" uid="uid://c731g01hgfie2" path="res://ASSETS/FONTES/determination.ttf" id="3_0grvl"]
 [ext_resource type="Script" uid="uid://drhfq6rmdeuri" path="res://addons/dialogic/Modules/Text/node_dialog_text.gd" id="3_4634k"]
@@ -237,6 +237,40 @@ corner_radius_bottom_left = 6
 shadow_color = Color(1, 0.549, 0, 0.3)
 shadow_size = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_skip_normal"]
+content_margin_left = 14.0
+content_margin_top = 4.0
+content_margin_right = 14.0
+content_margin_bottom = 4.0
+bg_color = Color(0.02, 0.02, 0.02, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.549, 0, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_skip_hover"]
+content_margin_left = 14.0
+content_margin_top = 4.0
+content_margin_right = 14.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 0.549, 0, 0.2)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.549, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(1, 0.549, 0, 0.4)
+shadow_size = 6
+
 [node name="VN_TextboxLayer" type="Control" unique_id=1069355480]
 layout_mode = 3
 anchors_preset = 12
@@ -274,6 +308,7 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="AnimationParent" type="Control" parent="Anchor" unique_id=575481160]
 layout_mode = 1
@@ -399,3 +434,23 @@ theme_override_font_sizes/font_size = 15
 text = "S"
 script = ExtResource("7_bi7sh")
 name_label_root = NodePath("..")
+
+[node name="SkipButton" type="Button" parent="Anchor/AnimationParent/Sizer" unique_id=999999]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = -36.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("9_35elu")
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_skip_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_skip_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_skip_hover")
+text = "Pular >>"

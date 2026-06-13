@@ -23,51 +23,76 @@ func _tentar_iniciar_sequencia() -> void:
 	_sequencia_em_execucao = true
 	if GameState.aguardando_sequencia_fase:
 		GameState.aguardando_sequencia_fase = false
-	GameState.limpar_timeline_ativa()
+		GameState.limpar_timeline_ativa()
 	await iniciar_sequencia_fase()
 	_sequencia_em_execucao = false
 
 
 func _deve_iniciar_sequencia_fase() -> bool:
-	if GameState.aguardando_sequencia_fase:
-		return true
-	if GameState.timeline_atual == "" and GameState.cena_atual.ends_with("game_scene.tscn"):
-		return true
-	if GameState.fase_atual >= 2 and _timeline_preso_na_fase_1():
-		GameState.limpar_timeline_ativa()
-		return true
-	return false
+	return true
 
 
-func _timeline_preso_na_fase_1() -> bool:
-	var tl := GameState.timeline_atual
-	if tl.is_empty():
-		return false
-	var fase1 := [
-		"Intro_Narrativa", "m01_rua_velho", "Dante_na_usina_Fase1",
-		"Timeline_VilaPeixeiro", "res://ASSETS/DIALOGIC/TIMELINES/Timeline_VilaPeixeiro"
-	]
-	for nome in fase1:
-		if tl.contains(nome):
-			return true
-	return false
+func executar_passo_timeline(timeline_nome: String, passo_id: String, proximo_passo_id: String, salvar_ao_final: bool = true) -> void:
+	var passo_atual_gravado = ""
+	match GameState.fase_atual:
+		1: passo_atual_gravado = GameState.fase1_passo
+		2: passo_atual_gravado = GameState.fase2_passo
+		3: passo_atual_gravado = GameState.fase3_passo
+		4: passo_atual_gravado = GameState.fase4_passo
+	
+	# Caso 1: Se o jogador salvou exatamente no meio desta timeline, retomamos
+	if GameState.timeline_atual == timeline_nome:
+		print("[game_scene] Retomando timeline salva no meio: ", timeline_nome)
+		await TimelineManager.retomar_dialogo_salvo(timeline_nome)
+		_atualizar_passo_fase(proximo_passo_id)
+		return
+
+	# Caso 2: Se estamos carregando e o passo gravado já passou deste passo, pulamos
+	if passo_atual_gravado != passo_id:
+		print("[game_scene] Pulando timeline ", timeline_nome, " (passo gravado: ", passo_atual_gravado, ", passo esperado: ", passo_id, ")")
+		return
+
+	# Caso padrão: Executa a timeline normalmente
+	print("[game_scene] Executando timeline normalmente: ", timeline_nome)
+	await TimelineManager.tocar_dialogo(timeline_nome, salvar_ao_final)
+	_atualizar_passo_fase(proximo_passo_id)
+
+
+func _atualizar_passo_fase(novo_passo: String) -> void:
+	match GameState.fase_atual:
+		1: GameState.fase1_passo = novo_passo
+		2: GameState.fase2_passo = novo_passo
+		3: GameState.fase3_passo = novo_passo
+		4: GameState.fase4_passo = novo_passo
+
 
 func iniciar_sequencia_fase():
 	match GameState.fase_atual:
 		1:
-			await FadeManager.mostrar_intro_fase(1, "Um pequeno passo para o homem, um grande passo para a humanidade")
-			await TimelineManager.tocar_dialogo("Intro_Narrativa")
-			if has_node("/root/MusicManager"):
-				get_node("/root/MusicManager").play_default_music()
-			await FadeManager.transicao_com_dica()
-			await _mostrar_tutorial()
-			await TimelineManager.tocar_dialogo("m01_rua_velho")
-			await FadeManager.transicao_com_dica()
-			await TimelineManager.tocar_dialogo("Dante_na_usina_Fase1")
-			await FadeManager.transicao_com_dica()
-			await TimelineManager.tocar_dialogo("Timeline_VilaPeixeiro")
+			if GameState.fase1_passo == "inicio" and GameState.timeline_atual == "":
+				await FadeManager.mostrar_intro_fase(1, "Um pequeno passo para o homem, um grande passo para a humanidade")
+			
+			await executar_passo_timeline("Intro_Narrativa", "inicio", "rua_velho")
+			
+			if GameState.fase1_passo == "rua_velho" and GameState.timeline_atual == "":
+				if has_node("/root/MusicManager"):
+					get_node("/root/MusicManager").play_default_music()
+				await FadeManager.transicao_com_dica()
+				await _mostrar_tutorial()
+			
+			await executar_passo_timeline("m01_rua_velho", "rua_velho", "usina")
+			
+			if GameState.fase1_passo == "usina" and GameState.timeline_atual == "":
+				await FadeManager.transicao_com_dica()
+			
+			await executar_passo_timeline("Dante_na_usina_Fase1", "usina", "vila")
+			
+			if GameState.fase1_passo == "vila" and GameState.timeline_atual == "":
+				await FadeManager.transicao_com_dica()
+			
+			await executar_passo_timeline("Timeline_VilaPeixeiro", "vila", "concluido")
 		2:
-			if GameState.fase2_passo == "inicio":
+			if GameState.fase2_passo == "inicio" and GameState.timeline_atual == "":
 				await GameState.mostrar_resumo_transicao_fase(1, {
 					"titulo_fase": "FASE 1 CONCLUÍDA: A BUSCA PELO LIVRO",
 					"aprendido": "Localizamos o livro proibido 'Direitos e Deveres do Povo' na Vila do Açude Seco e removemos as mentiras e propagandas que o regime tentou impor.\n\nLição: Conhecer os direitos constitucionais e combater a desinformação oficial é o primeiro passo de qualquer resistência cívica.",
@@ -75,19 +100,29 @@ func iniciar_sequencia_fase():
 					"objetivos": "• Despistar as patrulhas militares das ruas de Usina Velha.\n• Invadir o prédio da Rádio sob o controle do regime.\n• Decifrar as transmissões criptografadas da 'Operação Frequência'.\n\nLição: Compreender a importância do livre fluxo de informação no combate ao autoritarismo estatal."
 				})
 				await FadeManager.mostrar_intro_fase(2, "Voz nas Entrelinhas")
-				await TimelineManager.tocar_dialogo("timeline_resultado_paginas")
+			
+			await executar_passo_timeline("timeline_resultado_paginas", "inicio", "guardas")
+			
+			if GameState.fase2_passo == "guardas" and GameState.timeline_atual == "":
 				await FadeManager.transicao_com_dica()
-				await TimelineManager.tocar_dialogo("fase2_guardas")
-			elif GameState.fase2_passo == "casa_velho":
-				await TimelineManager.tocar_dialogo("fase2_casa_velho")
-			elif GameState.fase2_passo == "radio_concluida":
-				await TimelineManager.tocar_dialogo("fase2_reacao_mensagem_1")
+				
+			await executar_passo_timeline("fase2_guardas", "guardas", "inicio_jogo_fase2")
+			
+			await executar_passo_timeline("fase2_casa_velho", "casa_velho", "casa_velho_concluida")
+			
+			await executar_passo_timeline("fase2_reacao_mensagem_1", "radio_concluida", "reacao_msg2")
+			
+			if GameState.fase2_passo == "reacao_msg2" and GameState.timeline_atual == "":
 				await FadeManager.transicao_com_dica()
-				await TimelineManager.tocar_dialogo("fase2_reacao_mensagem_2")
+				
+			await executar_passo_timeline("fase2_reacao_mensagem_2", "reacao_msg2", "reacao_final")
+			
+			if GameState.fase2_passo == "reacao_final" and GameState.timeline_atual == "":
 				await FadeManager.transicao_com_dica()
-				await TimelineManager.tocar_dialogo("fase2_reacao_final")
+				
+			await executar_passo_timeline("fase2_reacao_final", "reacao_final", "fase2_concluida")
 		3:
-			if GameState.fase3_passo == "inicio":
+			if GameState.fase3_passo == "inicio" and GameState.timeline_atual == "":
 				await GameState.mostrar_resumo_transicao_fase(2, {
 					"titulo_fase": "FASE 2 CONCLUÍDA: VOZ NAS ENTRELINHAS",
 					"aprendido": "Distraímos as patrulhas nas ruas, invadimos o centro de transmissões da rádio estatal e deciframos as comunicações da 'Operação Frequência'.\n\nLição: A lógica e a persistência cívica superam a censura técnica. A informação livre é a maior ameaça à propaganda.",
@@ -95,13 +130,16 @@ func iniciar_sequencia_fase():
 					"objetivos": "• Infiltrar a Escola de Usina Velha sob vigilância das patrulhas.\n• Conectar o sinal da rádio livre na caixa de controle de alto-falantes.\n• Distribuir cartilhas históricas corretas aos estudantes.\n\nLição: Defender a educação livre e o pensamento crítico é garantir a memória e a consciência democrática."
 				})
 				await FadeManager.mostrar_intro_fase(3, "Mentes em disputa")
-				await TimelineManager.tocar_dialogo("fase3_escola_inicio")
-			elif GameState.fase3_passo == "escola_concluida":
-				await TimelineManager.tocar_dialogo("fase3_escola_conclusao")
+				
+			await executar_passo_timeline("fase3_escola_inicio", "inicio", "escola_jogo")
+			
+			await executar_passo_timeline("fase3_escola_conclusao", "escola_concluida", "fase3_concluida")
 		4:
-			if GameState.fase4_passo == "inicio":
+			if GameState.fase4_passo == "inicio" and GameState.timeline_atual == "":
 				await FadeManager.mostrar_intro_fase(4, "Praça da Liberdade")
-				await TimelineManager.tocar_dialogo("fase4_praca_inicio")
+				
+			await executar_passo_timeline("fase4_praca_inicio", "inicio", "praca_jogo")
+
 
 # ══════════════════════════════════════════════
 #  TELA DE TUTORIAL (30s auto-close + botão X)

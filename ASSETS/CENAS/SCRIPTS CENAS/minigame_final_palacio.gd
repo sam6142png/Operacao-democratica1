@@ -292,14 +292,19 @@ func _process(delta: float) -> void:
 		fx_layer.queue_redraw()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if step != "heartbeat_qte" or not event.is_pressed():
 		return
 		
 	# Tecla ESPAÇO no tempo do EKG
 	if event.is_action_pressed("ui_accept"):
+		get_viewport().set_input_as_handled()
+		
+		if peak_hit_in_this_cycle:
+			return # Ignora inputs extras neste ciclo
+			
 		var janela = _obter_janela_qte()
-		if ekg_peak_pos >= janela[0] and ekg_peak_pos <= janela[1] and not peak_hit_in_this_cycle:
+		if ekg_peak_pos >= janela[0] and ekg_peak_pos <= janela[1]:
 			qte_successes += 1
 			qte_msg = "PERFEITO! " + str(qte_successes) + "/3"
 			qte_msg_color = Color("#00FF66")

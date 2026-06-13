@@ -35,7 +35,7 @@ const BASE_X = 100.0
 
 # === ESTADO DAS CONFIGURAÇÕES ===
 var config = {
-	"tela_cheia": 0, # 0 = Ligado (Fullscreen), 1 = Desligado (Janela)
+	"tela_cheia": 1 if OS.has_feature("web") else 0, # 0 = Ligado (Fullscreen), 1 = Desligado (Janela)
 	"resolucao": 1,
 	"vol_musica": 50.0,
 	"vol_sfx": 50.0,
@@ -448,12 +448,19 @@ func _aplicar_todas_configuracoes(silent: bool = false) -> void:
 		_tocar_clique()
 	
 	# Fullscreen
-	if config["tela_cheia"] == 0:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-	else:
+	# No Web, não podemos entrar em tela cheia na inicialização (sem interação do usuário)
+	if OS.has_feature("web") and silent:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		config["tela_cheia"] = 1
+		if typeof(GameState) != TYPE_NIL:
+			GameState.tela_cheia = 1
+	else:
+		if config["tela_cheia"] == 0:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		
-	# Resolução (Só tem efeito visual claro se estiver no modo Janela)
+	# Resolução (Só tem efeito visual claro se estiver no modo Janela e não for Web)
 	var res_map = {
 		0: Vector2i(2560, 1440),
 		1: Vector2i(1920, 1080),
@@ -465,7 +472,7 @@ func _aplicar_todas_configuracoes(silent: bool = false) -> void:
 	}
 	var res = res_map.get(config["resolucao"], Vector2i(1920, 1080))
 	
-	if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
+	if not OS.has_feature("web") and DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
 		get_window().size = res
 		# Centraliza de forma perfeita no monitor atual (Suporte a múltiplos monitores)
 		var tela_atual = DisplayServer.window_get_current_screen()
@@ -497,7 +504,7 @@ func _aplicar_todas_configuracoes(silent: bool = false) -> void:
 func _restaurar_padroes() -> void:
 	_tocar_deslize()
 	config = {
-		"tela_cheia": 0,
+		"tela_cheia": 1 if OS.has_feature("web") else 0,
 		"resolucao": 1,
 		"vol_musica": 50.0,
 		"vol_sfx": 50.0,
@@ -514,7 +521,7 @@ func _restaurar_padroes() -> void:
 	ui_refs["vel_dialogos"].value = 1.0
 	ui_refs["auto_avanco_delay"].value = 2.5
 	
-	ui_refs["tela_cheia"].text = TELA_CHEIA_OPCOES[0]
+	ui_refs["tela_cheia"].text = TELA_CHEIA_OPCOES[config["tela_cheia"]]
 	ui_refs["resolucao"].text = "1920x1080"
 	
 	_aplicar_idioma()
@@ -526,7 +533,7 @@ func _restaurar_padroes() -> void:
 		GameState.vol_musica = 50.0
 		GameState.vol_sfx = 50.0
 		GameState.vel_dialogos = 1.0
-		GameState.tela_cheia = 0
+		GameState.tela_cheia = config["tela_cheia"]
 		GameState.resolucao = 1
 		GameState.auto_avanco = 0
 		GameState.auto_avanco_delay = 2.5

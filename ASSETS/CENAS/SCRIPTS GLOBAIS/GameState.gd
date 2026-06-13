@@ -9,7 +9,7 @@ signal confianca_changed(novo_valor: int, delta: int)
 var vol_musica: float = 50.0
 var vol_sfx: float = 50.0
 var vel_dialogos: float = 1.0
-var tela_cheia: int = 0
+var tela_cheia: int = 1 if OS.has_feature("web") else 0
 var resolucao: int = 1
 var auto_avanco: int = 0
 var auto_avanco_delay: float = 2.5
@@ -42,6 +42,7 @@ var decisoes_fase_1 = {
 }
 var decisoes_fase_2 = {}
 var decisoes_fase_3 = {}
+var fase1_passo: String = "inicio"
 var fase2_passo: String = "inicio"
 var fase3_passo: String = "inicio"
 var fase4_passo: String = "praca"
@@ -392,6 +393,7 @@ func salvar_jogo(capturar_cena_atual: bool = true):
 		"decisoes_fase_1": decisoes_fase_1,
 		"decisoes_fase_2": decisoes_fase_2,
 		"decisoes_fase_3": decisoes_fase_3,
+		"fase1_passo": fase1_passo,
 		"fase2_passo": fase2_passo,
 		"fase3_passo": fase3_passo,
 		"fase4_passo": fase4_passo,
@@ -650,6 +652,7 @@ const CENA_MINIGAME_PAGINAS: String = "res://ASSETS/CENAS/minigame_paginas.tscn"
 func atalho_ir_minigame_paginas() -> void:
 	ChoiceTimer.forcar_parar()
 	fase_atual = 1
+	fase1_passo = "inicio"
 	fase2_passo = "inicio"
 	fase3_passo = "inicio"
 	acertos_paginas_fase1 = 0
@@ -687,10 +690,14 @@ func continuar_jogo():
 		print("[GameState] Retomando sequência de fase após minigame...")
 		_garantir_sequencia_fase_na_cena_atual()
 	elif timeline_atual != "":
-		print("[GameState] Retomando estado preciso do Dialogic...")
-		# Carregamos o estado completo. O Dialogic 2 cuida de reabrir a timeline 
-		# no índice exato (current_event_idx) que foi salvo no state.txt.
-		Dialogic.Save.load("autosave")
+		# Se a cena atual for a cena do jogo, a própria sequência da cena vai retomar
+		# o diálogo no momento correto da timeline para manter a ordem da fila.
+		# Caso contrário, carregamos diretamente.
+		if not cena_atual.ends_with("game_scene.tscn"):
+			print("[GameState] Retomando estado preciso do Dialogic fora da game_scene...")
+			Dialogic.Save.load("autosave")
+		else:
+			print("[GameState] Delegando retomada do Dialogic para a game_scene...")
 
 func _carregar_dados_json():
 	var file = FileAccess.open(SAVE_FILE, FileAccess.READ)
@@ -710,6 +717,7 @@ func _carregar_dados_json():
 				decisoes_fase_1 = data.get("decisoes_fase_1", decisoes_fase_1)
 				decisoes_fase_2 = data.get("decisoes_fase_2", decisoes_fase_2)
 				decisoes_fase_3 = data.get("decisoes_fase_3", {})
+				fase1_passo = data.get("fase1_passo", "inicio")
 				fase2_passo = data.get("fase2_passo", "inicio")
 				fase3_passo = data.get("fase3_passo", "inicio")
 				fase4_passo = data.get("fase4_passo", "praca")
@@ -750,6 +758,7 @@ func reset_save():
 	decisoes_fase_1 = {"falou_com_velho": false, "ajudou_vila": false}
 	decisoes_fase_2 = {}
 	decisoes_fase_3 = {}
+	fase1_passo = "inicio"
 	fase2_passo = "inicio"
 	fase3_passo = "inicio"
 	fase4_passo = "praca"
